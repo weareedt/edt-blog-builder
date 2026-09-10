@@ -48,7 +48,7 @@ export interface ArticleDoc {
   status: ArticleStatus;
   errorCode: ArticleErrorCode | null;
   errorMessage: string | null;
-  structuredContent: unknown | null; // persisted BEFORE rendering
+  structuredContent: string | null; // JSON string, persisted BEFORE rendering — see generateArticle.ts
   // The rendered article is stored in Cloud Storage, not inline here —
   // base64-inlined images (see D6) can easily push a rendered article past
   // Firestore's 1MiB per-document limit. This doc only holds a pointer.
