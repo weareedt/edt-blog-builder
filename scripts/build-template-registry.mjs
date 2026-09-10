@@ -30,6 +30,13 @@ const TEMPLATES = [
     metaImport: { name: 'template03Meta', from: '../content/template03.meta' },
     schemaImport: { name: 'template03Content', from: '../content/template03.schema' },
   },
+  {
+    kind: 'template',
+    id: 'template-01-case-study-roundup',
+    dir: 'template-01-case-study-roundup',
+    metaImport: { name: 'template01Meta', from: '../content/template01.meta' },
+    schemaImport: { name: 'template01Content', from: '../content/template01.schema' },
+  },
 ];
 
 const GALLERIES = [

@@ -1,0 +1,134 @@
+{
+  "title": "12 PROJECTS THAT SHOW WHAT EDT ACTUALLY BUILDS",
+  "dek": "No pitch-deck language, just the work — twelve activations, installations and realtime characters we've shipped across Malaysia and the region, with the numbers each one actually posted.",
+  "category": "Case Studies",
+  "readTimeMinutes": 7,
+  "intro": "Every one of these started as a brief that sounded slightly too ambitious — a hologram that had to hold a real conversation, a projection that had to win against a live jury, an AI persona that had to talk back on a golf course. We build the technical layer other studios say is too complex, then we ship it.",
+  "entries": [
+    {
+      "windowLabel": "METAHRISE.EXE",
+      "projectName": "MetaHRise",
+      "category": "VR Training",
+      "client": "MCMC",
+      "blurb": "MCMC's induction used to be a slide deck and a printed handbook — forgettable by the second slide. We rebuilt it as a VR game new hires actually finish, learning the organisation by moving through it instead of sitting through it. It's the reason MetaHRise now holds a Malaysia Book of Records entry, not the other way around.",
+      "statLine": "93% satisfaction · Malaysia Book of Records 2024",
+      "imageId": "img-1",
+      "imageAlt": "MetaHRise VR training scene"
+    },
+    {
+      "windowLabel": "TIGER.EXE",
+      "projectName": "Say Hello, Tiger",
+      "category": "Realtime AI Persona",
+      "client": "Maybank Championship",
+      "blurb": "Mascots are usually a photo op — wave, pose, move on. The brief asked for one that could actually talk, so we gave Tiger a realtime voice and a face that performs in sync with it. What's in the recap isn't a demo-reel moment; it's an unscripted exchange, captured live on the course.",
+      "statLine": "Live voice + facial performance, on-ground",
+      "imageId": null,
+      "imageAlt": null
+    },
+    {
+      "windowLabel": "CHERITAR.EXE",
+      "projectName": "CheritAR",
+      "category": "AR Heritage",
+      "client": "Think City",
+      "blurb": "Think City wanted heritage buildings to speak for themselves without another plaque nobody reads. We layered the stories into AR instead — point a phone at a building and the history behind it surfaces on the spot. It's since travelled further than the brief asked for: the same trail has been picked up in twelve countries.",
+      "statLine": "12 countries reached · 1,442 AR impressions",
+      "imageId": "img-2",
+      "imageAlt": "CheritAR heritage trail experience"
+    },
+    {
+      "windowLabel": "ARFESTKL.EXE",
+      "projectName": "ARFestKL",
+      "category": "AR Event",
+      "client": "ARFestKL",
+      "blurb": "A festival footprint only means something if people actually walk it. ARFestKL needed Downtown KL turned into a trail dense enough to survive a full weekend of foot traffic, so we built a QR-to-AR funnel engineered to take the volume without breaking. It held — over fifty thousand impressions and twelve thousand scans in two days.",
+      "statLine": "52,417 AR impressions · 12,040 QR scans",
+      "imageId": "img-3",
+      "imageAlt": "ARFestKL festival AR trail"
+    },
+    {
+      "windowLabel": "IKAT.EXE",
+      "projectName": "IKAT Malaysia",
+      "category": "Immersive Exhibition",
+      "client": "Ministry of Textile",
+      "blurb": "Ikat weaving is generations of technique that doesn't survive well behind glass. The Ministry of Textile wanted people to feel the craft, not just read a wall label about it, so we staged the history as a full immersive environment instead of a static display. It pulled RM3.2 million in media value and over 5,800 visitors through the doors.",
+      "statLine": "RM3.2M media value · 5,822 visitors",
+      "imageId": "img-4",
+      "imageAlt": "IKAT Malaysia immersive exhibition"
+    },
+    {
+      "windowLabel": "FOUNDERS.EXE",
+      "projectName": "AirAsia Founders' Gallery",
+      "category": "Interactive Installation",
+      "client": "AirAsia",
+      "blurb": "A founders' story told as wall text gets skimmed once and forgotten. AirAsia wanted theirs to be a place people actually walk through, so we combined interactive walls, AR overlays and an AI layer into one permanent gallery — the story you touch, not just read.",
+      "statLine": "Interactive walls + AR + AI, permanent install",
+      "imageId": "img-5",
+      "imageAlt": "AirAsia Founders' Gallery interactive wall"
+    },
+    {
+      "windowLabel": "GREYDAY.EXE",
+      "projectName": "New Balance Grey Day",
+      "category": "AR + Immersive Room",
+      "client": "New Balance",
+      "blurb": "Sneaker drops live and die on how they photograph. For Grey Day, New Balance needed an experience people would actually queue for and post, so we put a realtime AR try-on inside a fully immersive room built to look good from every angle a phone camera finds.",
+      "statLine": "Realtime AR try-on experience",
+      "imageId": "img-6",
+      "imageAlt": "New Balance Grey Day AR try-on room"
+    },
+    {
+      "windowLabel": "HOLOGRAM.EXE",
+      "projectName": "Hologram Stewardess",
+      "category": "AI Hologram",
+      "client": "Malaysia Airlines",
+      "blurb": "A counter needs staffing; a hologram doesn't. Malaysia Airlines needed a first point of contact at MATIC KL that could answer real questions, so we deployed an AI stewardess as a hologram — live, responsive, and on duty for every visitor who walks up.",
+      "statLine": "Deployed live at MATIC KL",
+      "imageId": "img-7",
+      "imageAlt": "Malaysia Airlines hologram stewardess"
+    },
+    {
+      "windowLabel": "PNB118.EXE",
+      "projectName": "PNB 118 Stories",
+      "category": "Interactive Wall",
+      "client": "PNB",
+      "blurb": "A tower this size needed a lobby that didn't feel like an afterthought. PNB wanted the building's own story told at its base, so we built the largest interactive wall EDT has shipped for a single structure — the tower's history, made touchable by anyone walking in.",
+      "statLine": "Largest interactive install built for the tower",
+      "imageId": "img-8",
+      "imageAlt": "PNB 118 lobby interactive wall"
+    },
+    {
+      "windowLabel": "ARVENA.EXE",
+      "projectName": "AirAsia Supersale",
+      "category": "Virtual Production",
+      "client": "AirAsia",
+      "blurb": "Supersale needed broadcast-grade sets on a campaign timeline, not a construction schedule. We ran the whole shoot through ARVENA, EDT's virtual production platform, building every set in-engine instead of on a soundstage — same polish, none of the build time.",
+      "statLine": "ARVENA platform, full deployment",
+      "imageId": "img-9",
+      "imageAlt": "AirAsia Supersale virtual production set"
+    },
+    {
+      "windowLabel": "SHAYLA.EXE",
+      "projectName": "Shayla Sis Shayla",
+      "category": "AI Virtual Influencer",
+      "client": "Safi",
+      "blurb": "Safi didn't want a spokesperson who ages out of a campaign — they wanted a persona that's entirely theirs. We built Shayla from scratch: a face, a voice, and a posting schedule, deployed as a fully virtual influencer for the national campaign.",
+      "statLine": "National campaign deployment",
+      "imageId": "img-10",
+      "imageAlt": "Shayla virtual influencer campaign"
+    },
+    {
+      "windowLabel": "EARTHQUAKE.EXE",
+      "projectName": "VR Earthquake Simulation",
+      "category": "VR Training",
+      "client": "Tokyo Fire Department",
+      "blurb": "You can't schedule an earthquake to train for it. Tokyo Fire Department needed responders to feel the disorientation before the real event does, so we built a VR simulation that puts them through the shake — training that rehearses a moment training usually can't reach.",
+      "statLine": "Deployed for disaster-preparedness training, Japan",
+      "imageId": "img-11",
+      "imageAlt": "Tokyo Fire Department VR earthquake simulation"
+    }
+  ],
+  "cta": {
+    "heading": "Got a brief that sounds too ambitious?",
+    "body": "That's usually the one we want. Tell us what you're trying to build and we'll tell you exactly how EDT would ship it."
+  },
+  "galleryPlacement": null
+}
