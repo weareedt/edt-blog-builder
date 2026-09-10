@@ -64,7 +64,11 @@ function stripHeaderFooterChrome(html: string): string {
     .replace(/<header[\s\S]*?<\/header>\n*/, '')
     .replace(/<footer[\s\S]*?<\/footer>\n*/, '')
     .replace(/\/\* =+ SITE HEADER =+ \*\/[\s\S]*?(?=\.btn\{)/, '')
-    .replace(/\/\* =+ FOOTER =+ \*\/[\s\S]*?(?=<\/style>)/, '');
+    .replace(/\/\* =+ FOOTER =+ \*\/[\s\S]*?(?=<\/style>)/, '')
+    // The "Template NN — ..." tag is a dev/preview label, not real
+    // content — same reasoning as header/footer.
+    .replace(/\s*<div class="template-tag">[\s\S]*?<\/div>/, '')
+    .replace(/\s*\.template-tag\{[^}]*\}/, '');
 }
 
 describe('template-03 golden round-trip', () => {
@@ -172,7 +176,7 @@ describe('template-03 golden round-trip', () => {
     }
   });
 
-  it('has no <header>/<footer> chrome, and TOC links scroll via JS rather than native anchor navigation', () => {
+  it('has no <header>/<footer>/template-tag chrome, and TOC links scroll via JS rather than native anchor navigation', () => {
     const hbsSource = readFileSync(join(ANNOTATED_DIR, 'template.hbs'), 'utf8');
     const exampleJson = JSON.parse(readFileSync(join(ANNOTATED_DIR, 'example-content.json'), 'utf8'));
     const content = template03Content.parse(exampleJson);
@@ -185,6 +189,12 @@ describe('template-03 golden round-trip', () => {
     expect(rendered).not.toContain('site-header');
     expect(rendered).not.toContain('primary-nav');
     expect(rendered).not.toContain('weareedt.com');
+    expect(rendered).not.toContain('template-tag');
+    expect(rendered).not.toContain('Standard article'); // the dev-label tag's text
+
+    // The breadcrumb itself is explicitly kept — only the template-tag
+    // label next to it (a dev/preview artifact) was removed.
+    expect(rendered).toContain('class="crumb-bar"');
 
     // The dynamic CTA at the bottom is explicitly kept.
     expect(rendered).toContain('class="cta"');
