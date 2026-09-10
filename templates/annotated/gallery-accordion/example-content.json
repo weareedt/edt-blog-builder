@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "imageId": "img-1", "tag": "AR Event", "title": "ARFestKL", "metric": "52,417 AR impressions · 12,040 QR scans" },
+    { "imageId": "img-2", "tag": "Immersive Exhibition", "title": "IKAT Malaysia", "metric": "RM3.2M media value · 5,822 visitors" },
+    { "imageId": "img-3", "tag": "AR Heritage", "title": "CheritAR", "metric": "12 countries reached · 1,442 AR impressions" },
+    { "imageId": "img-4", "tag": "AR + Immersive Room", "title": "New Balance Grey Day", "metric": "Realtime AR try-on experience" },
+    { "imageId": "img-5", "tag": "Interactive Wall", "title": "PNB 118 Stories", "metric": "Largest interactive install built for the tower" },
+    { "imageId": "img-6", "tag": "Interactive Installation", "title": "AirAsia Founders' Gallery", "metric": "Interactive walls + AR + AI, permanent install" }
+  ]
+}

@@ -1,0 +1,42 @@
+<style>
+  .gallery-wrap{max-width:1180px;margin:0 auto;padding:40px 24px;}
+  @media(min-width:900px){.gallery-wrap{padding:56px 80px;}}
+
+  /* ============ ACCORDION GALLERY — drop this block into any article ============ */
+  .accordion{
+    display:flex;gap:6px;height:min(72vh,620px);border:1px solid var(--hairline);padding:6px;background:var(--surface);
+  }
+  .panel{position:relative;flex:1;overflow:hidden;cursor:pointer;transition:flex 0.6s cubic-bezier(.19,1,.22,1);min-width:44px;}
+  .accordion:not(:hover) .panel[data-default="true"]{flex:6;}
+  .accordion .panel:hover{flex:6;}
+  .panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.2) contrast(1.1) brightness(.82) saturate(.95);}
+  .panel .tint{position:absolute;inset:0;background:var(--blue);opacity:.18;mix-blend-mode:multiply;}
+  .panel .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.85) 100%);}
+  .panel .index{position:absolute;top:14px;left:14px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:0.06em;}
+  .panel .cap{position:absolute;left:14px;right:14px;bottom:14px;opacity:0;transition:opacity .3s ease .1s;white-space:nowrap;}
+  .accordion:not(:hover) .panel[data-default="true"] .cap,
+  .accordion .panel:hover .cap{opacity:1;}
+  .panel .cap .tag{display:inline-block;border:1px solid var(--blue);color:var(--blue);background:rgba(10,10,10,0.6);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;margin-bottom:8px;}
+  .panel .cap h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:var(--white);line-height:1.25;}
+  .panel .cap p{margin-top:4px;font-size:12.5px;color:rgba(255,255,255,0.8);font-weight:300;}
+  @media(max-width:760px){
+    .accordion{flex-direction:column;height:auto;}
+    .panel{flex:none !important;height:64px;transition:height .5s ease;}
+    .accordion:not(:hover) .panel[data-default="true"]{height:340px;}
+    .panel:hover, .panel:focus-within{height:340px;}
+    .panel .cap{white-space:normal;}
+  }
+</style>
+
+<div class="gallery-wrap">
+  <div class="accordion">
+    {{#each items}}
+    <div class="panel"{{#if this.isDefault}} data-default="true"{{/if}}>
+      <img src="{{{this.src}}}" alt="placeholder">
+      <div class="tint"></div><div class="scrim"></div>
+      <span class="index">{{pad2 @index}}</span>
+      <div class="cap"><span class="tag">{{this.tag}}</span><h3>{{this.title}}</h3><p>{{this.metric}}</p></div>
+    </div>
+    {{/each}}
+  </div>
+</div>

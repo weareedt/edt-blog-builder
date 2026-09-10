@@ -1,0 +1,162 @@
+{
+  "title": "AR, VR OR MIXED REALITY: WHICH ONE ACTUALLY FITS YOUR EVENT?",
+  "dek": "A practical guide to picking the right immersive format before you brief a vendor — what each one is good at, what it costs, and the questions that save you a rebuild.",
+  "category": "Insights",
+  "readTimeMinutes": 8,
+  "lede": "Most format decisions get made backwards — a client picks \"VR\" or \"AR\" because it's the word that came up in the meeting, then briefs a vendor to make it work. Flip that order and the decision gets much easier: start from what the audience needs to walk away with, and the format usually picks itself.",
+  "bodyItems": [
+    {
+      "type": "section",
+      "heading": "Start with the outcome, not the tech",
+      "navLabel": "Start with the outcome",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "Before naming a format, answer one question: does this need to happen on a real, physical thing the audience is standing in front of, or does it need to happen somewhere that doesn't exist yet? That single split does most of the filtering. A product reveal happening on a real stage in front of a real crowd is a different brief than a training scenario that needs a space no one can safely build in real life."
+        },
+        {
+          "kind": "paragraph",
+          "richText": "Everything below assumes you've answered that question first. If you haven't, the comparison table further down won't help much — it'll just make three options sound equally plausible."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What AR is actually good for",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "Augmented reality earns its keep when the real environment is doing half the work. It's layering — information, characters, or effects placed on top of something that's already there: a product on a shelf, a building on a heritage trail, a mascot on an event floor. AR works best when you want the audience to keep their attention split between the real world and the layer you've added, not fully replace one with the other."
+        },
+        {
+          "kind": "bulletList",
+          "items": [
+            "Product try-on and visualisation, where seeing it on yourself or your own space is the point",
+            "Heritage and wayfinding trails, where the physical location carries meaning AR can't replace",
+            "Event activations with high foot traffic, since AR needs no headset queue to run"
+          ]
+        }
+      ],
+      "navLabel": null
+    },
+    {
+      "type": "section",
+      "heading": "What VR is actually good for",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "Virtual reality earns its keep when the real environment is the problem, not the asset. Training scenarios that are too dangerous, too expensive, or physically impossible to stage for real — an earthquake, a forklift accident, a factory floor that doesn't exist yet — are where VR stops being a novelty and starts being the only practical way to rehearse something."
+        },
+        {
+          "kind": "paragraph",
+          "richText": "It's also the strongest option when you want full control over pacing and attention: no ambient noise, no distractions, one person fully inside one experience at a time. That control is a feature for training and a limitation for large-crowd events, where a headset queue caps how many people you can move through in a day."
+        }
+      ],
+      "navLabel": null
+    },
+    {
+      "type": "section",
+      "heading": "What mixed reality adds",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "Mixed reality sits between the two — digital objects that don't just sit on top of the real world but respond to it, aware of the room's geometry and the people in it. It's the right call when the brief genuinely needs both halves at once: a real presenter interacting with a virtual object the whole room can see respond to touch, or a hybrid broadcast where a virtual set has to react to a live physical performer."
+        },
+        {
+          "kind": "paragraph",
+          "richText": "It's also the format most likely to be over-specified. If the brief doesn't actually need real and virtual elements to interact, mixed reality adds cost and complexity that AR or VR alone would have solved more simply."
+        }
+      ],
+      "navLabel": null
+    },
+    {
+      "type": "callout",
+      "label": "EDT's rule of thumb",
+      "body": "If you can describe the experience without using the word \"immersive,\" you probably know which format you need already. If the word \"immersive\" is doing all the work in your brief, that's usually a sign the outcome hasn't been defined yet — and no format fixes that on its own."
+    },
+    {
+      "type": "section",
+      "heading": "Side-by-side comparison",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "A rough guide — real numbers depend on scope, but this is the shape of the trade-off we walk clients through first."
+        },
+        {
+          "kind": "comparisonTable",
+          "columns": [
+            "Format",
+            "Best for",
+            "Hardware",
+            "Crowd throughput"
+          ],
+          "rows": [
+            [
+              "AR",
+              "Layering onto a real product, place, or person",
+              "Phone or tablet",
+              "High — no queue needed"
+            ],
+            [
+              "VR",
+              "Scenarios too costly or dangerous to stage for real",
+              "Headset, per person",
+              "Low — one person at a time"
+            ],
+            [
+              "Mixed reality",
+              "Real and virtual elements that must react to each other",
+              "Headset or tracked camera",
+              "Moderate — depends on setup"
+            ]
+          ]
+        }
+      ],
+      "navLabel": null
+    },
+    {
+      "type": "section",
+      "heading": "Budget and timeline reality",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "AR is almost always the fastest and cheapest of the three to deploy at scale, since it runs on a device most of your audience already has in their pocket. VR carries hardware cost on top of build cost — every headset is a line item, and a large activation means either owning a fleet of them or renting one. Mixed reality tends to sit at the top of both budget and timeline, because it's solving two problems (a real environment and a virtual one) that have to be built to work together, not separately."
+        },
+        {
+          "kind": "paragraph",
+          "richText": "None of that means \"pick the cheap one.\" It means the format should already be decided by the outcome before cost enters the conversation — otherwise budget ends up choosing the format for you, and the outcome quietly gets smaller to fit it."
+        }
+      ],
+      "navLabel": null
+    },
+    {
+      "type": "section",
+      "heading": "Questions to ask your vendor",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "richText": "A short list that tends to surface whether a vendor has actually thought through your brief, or is fitting your brief to whatever they already built last time:"
+        },
+        {
+          "kind": "bulletList",
+          "items": [
+            "What happens to this experience for the person who's third in line, not first?",
+            "What's the plan if the venue's wifi or lighting isn't what was promised?",
+            "Who owns the build after the event — can it be reused, or does it die with the activation?",
+            "What's the fallback if a headset or device fails mid-event?"
+          ]
+        },
+        {
+          "kind": "closingNote",
+          "body": "None of these questions are about the technology. They're about whether the studio has run something like this before, in a room like yours, for an audience like the one you're actually inviting. That's usually a better filter than the format name on the brief."
+        }
+      ],
+      "navLabel": null
+    }
+  ],
+  "cta": {
+    "heading": "Still not sure which format fits?",
+    "body": "Tell us the outcome you're actually after and we'll tell you straight whether that's an AR, VR, or mixed reality brief — before you commit to a build."
+  },
+  "galleryPlacement": null
+}
