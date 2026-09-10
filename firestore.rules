@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /articles/{articleId} {
+      allow read, update, delete: if request.auth != null
+          && resource.data.createdBy == request.auth.uid;
+
+      allow create: if request.auth != null
+          && request.resource.data.createdBy == request.auth.uid;
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

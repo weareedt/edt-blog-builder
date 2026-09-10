@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Uploaded source images. Path is uid-scoped so ownership is checkable
+    // directly from the path, with no Firestore lookup needed in the rule.
+    match /users/{uid}/uploads/{articleId}/{imageId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if request.auth != null && request.auth.uid == uid
+          && request.resource.size < 12 * 1024 * 1024
+          && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    // Generated article output. Written only by the Cloud Function via the
+    // Admin SDK (which bypasses these rules) — client writes are denied.
+    match /users/{uid}/articles/{articleId}/output.html {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

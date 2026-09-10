@@ -9,7 +9,6 @@ node_modules/
 npm-debug.log*
 
 # Build output
-src/dist/
 dist/
 functions/lib/
 
@@ -30,3 +29,6 @@ pubsub-debug.log
 # Editor
 .vscode/
 *.swp
+
+# Local Claude Code session settings (machine-specific, not project config)
+.claude/settings.local.json

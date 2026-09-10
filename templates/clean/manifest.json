@@ -1,0 +1,68 @@
+{
+  "template-01-case-study-roundup": {
+    "id": "template-01-case-study-roundup",
+    "category": "articles",
+    "sourcePath": "Blog Templates/template-01-case-study-roundup.html",
+    "cleanPath": "templates/clean/articles/template-01-case-study-roundup.clean.html",
+    "sourceSha256": "cd984a9ca7c0d193777c45c006c3683d1db361d0fe5f899fd10cf93e18963422",
+    "imageCount": 11,
+    "beforeBytes": 679953,
+    "afterBytes": 31883,
+    "cleanedAt": "2026-09-10T07:56:03.618Z"
+  },
+  "template-02-longform-numbered-steps": {
+    "id": "template-02-longform-numbered-steps",
+    "category": "articles",
+    "sourcePath": "Blog Templates/template-02-longform-numbered-steps.html",
+    "cleanPath": "templates/clean/articles/template-02-longform-numbered-steps.clean.html",
+    "sourceSha256": "78dad575a4961f6a5937a2253cbc6a94d9fb5a57d96484635efed4063578163d",
+    "imageCount": 1,
+    "beforeBytes": 221828,
+    "afterBytes": 24386,
+    "cleanedAt": "2026-09-10T07:56:03.624Z"
+  },
+  "template-03-standard-article-toc": {
+    "id": "template-03-standard-article-toc",
+    "category": "articles",
+    "sourcePath": "Blog Templates/template-03-standard-article-toc.html",
+    "cleanPath": "templates/clean/articles/template-03-standard-article-toc.clean.html",
+    "sourceSha256": "d38a590ca94afee1e20f5c4e8c9ed618cde829fddcc79d884e8afcc398caa0ca",
+    "imageCount": 0,
+    "beforeBytes": 24906,
+    "afterBytes": 24906,
+    "cleanedAt": "2026-09-10T07:56:03.625Z"
+  },
+  "template-04-basic-scroll": {
+    "id": "template-04-basic-scroll",
+    "category": "articles",
+    "sourcePath": "Blog Templates/template-04-basic-scroll.html",
+    "cleanPath": "templates/clean/articles/template-04-basic-scroll.clean.html",
+    "sourceSha256": "4bc55a039484bd4ab04e0bccabd263059ed9afe171141bacea00ab8b9d2792cd",
+    "imageCount": 1,
+    "beforeBytes": 220055,
+    "afterBytes": 22613,
+    "cleanedAt": "2026-09-10T07:56:03.629Z"
+  },
+  "gallery-accordion": {
+    "id": "gallery-accordion",
+    "category": "galleries",
+    "sourcePath": "Blog Templates/photo gallery components/gallery-accordion.html",
+    "cleanPath": "templates/clean/galleries/gallery-accordion.clean.html",
+    "sourceSha256": "08ad06eb5e276aaae90f04e4670ef2756d24a4584532618bb85cac6bece4ae04",
+    "imageCount": 6,
+    "beforeBytes": 376692,
+    "afterBytes": 4971,
+    "cleanedAt": "2026-09-10T07:56:03.633Z"
+  },
+  "gallery-flipcards-alternating": {
+    "id": "gallery-flipcards-alternating",
+    "category": "galleries",
+    "sourcePath": "Blog Templates/photo gallery components/gallery-flipcards-alternating.html",
+    "cleanPath": "templates/clean/galleries/gallery-flipcards-alternating.clean.html",
+    "sourceSha256": "d216d784ae97b79c336c9b13d86fbf1a03b994b14f1accf91faa4206aaf007a6",
+    "imageCount": 6,
+    "beforeBytes": 371491,
+    "afterBytes": 7104,
+    "cleanedAt": "2026-09-10T07:56:03.637Z"
+  }
+}

@@ -1,0 +1,356 @@
+<title>Basic Scroll Article Template</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --blue:#2D2DFF;
+    --blue-hover:#0000CC;
+    --black:#0A0A0A;
+    --surface:#111111;
+    --grey:#8C8C8C;
+    --white:#FFFFFF;
+    --border:#FFFFFF;
+    --hairline:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--blue);color:var(--white);}
+  h1,h2,h3{margin:0;text-wrap:balance;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:24px;}
+  @media(min-width:900px){.wrap{padding-inline:80px;}}
+  @media(min-width:1440px){.wrap{padding-inline:96px;}}
+  .col{max-width:680px;margin:0 auto;}
+  @media(min-width:1440px){.col{max-width:840px;}}
+
+  .grid-tex{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:32px 32px;
+    pointer-events:none;
+  }
+
+  /* ================= READING PROGRESS ================= */
+  .progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:var(--surface);z-index:40;}
+  .progress-bar{height:100%;width:0%;background:var(--blue);transition:width 80ms linear;}
+
+  /* ================= SITE HEADER ================= */
+  .site-header{position:sticky;top:3px;z-index:30;background:var(--black);border-bottom:1px solid var(--hairline);}
+  .header-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0;}
+  .logo-unit{display:flex;align-items:center;}
+  .logo-unit svg{height:28px;width:auto;}
+  .primary-nav{display:none;align-items:center;gap:32px;}
+  @media(min-width:960px){.primary-nav{display:flex;}}
+  .primary-nav a{font-size:12px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);}
+  .primary-nav a:hover{color:var(--blue);}
+  .primary-nav a.active{color:var(--blue);}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:13px 22px;border:1px solid var(--blue);
+    transition:background 120ms ease,color 120ms ease,transform 120ms ease;
+  }
+  .btn-primary{background:var(--blue);color:var(--white);}
+  .btn-primary:hover{background:var(--blue-hover);transform:scale(1.02);}
+  .btn-ghost{background:transparent;border-color:var(--white);}
+  .btn-ghost:hover{background:var(--white);color:var(--black);}
+  .arrow{transition:transform 120ms ease;display:inline-block;}
+  .btn:hover .arrow{transform:translateX(3px);}
+
+  /* ================= CRUMB ================= */
+  .crumb-bar{border-bottom:1px solid var(--hairline);}
+  .crumb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+  .crumb-row .sep{color:var(--blue);margin:0 8px;}
+  .template-tag{border:1px solid var(--blue);color:var(--blue);padding:3px 9px;font-weight:600;}
+
+  /* ================= ARTICLE HERO ================= */
+  .article-hero{position:relative;overflow:hidden;padding:56px 0 40px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;}
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--blue);}
+  h1.title{
+    font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;letter-spacing:-0.02em;
+    font-size:clamp(36px,7vw,76px);line-height:1.0;max-width:16ch;
+  }
+  .dek{margin-top:24px;max-width:56ch;font-size:clamp(17px,1.9vw,20px);color:#cfcfcf;font-weight:300;}
+  .byline-row{margin-top:36px;display:flex;flex-wrap:wrap;border-top:1px solid var(--hairline);}
+  .byline-item{flex:1 1 140px;padding:16px 20px;border-right:1px solid var(--hairline);}
+  .byline-item:first-child{padding-left:0;}
+  .byline-item:last-child{border-right:none;}
+  .byline-item .k{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:5px;}
+  .byline-item .v{font-size:13px;font-weight:500;}
+
+  /* ================= FEATURE IMAGE ================= */
+  .feature-media{padding:8px 0 64px;}
+  .os-window{border:1px solid var(--border);background:var(--surface);}
+  .os-titlebar{display:flex;align-items:center;justify-content:space-between;background:var(--blue);padding:11px 16px;border-bottom:1px solid var(--border);}
+  .os-titlebar .name{font-size:11px;font-weight:600;letter-spacing:0.05em;}
+  .os-btns{display:flex;gap:5px;}
+  .os-btns i{width:10px;height:10px;border:1px solid var(--white);display:block;}
+  .feature-stage{position:relative;aspect-ratio:16/9;overflow:hidden;}
+  .feature-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.25) contrast(1.12) brightness(.85) saturate(.9);}
+  .feature-stage .tint{position:absolute;inset:0;background:var(--blue);opacity:.2;mix-blend-mode:multiply;}
+  .feature-stage .grid-tex{opacity:.35;}
+  .feature-caption{padding:14px 4px 0;font-size:12px;color:var(--grey);}
+
+  /* ================= ARTICLE BODY (flat, no numbered steps) ================= */
+  .article-body{padding:0 0 32px;}
+  .lede{font-size:19px;font-weight:400;color:#e8e8e8;margin-bottom:36px;line-height:1.7;}
+  .section-label{
+    display:block;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--blue);margin:52px 0 18px;
+  }
+  .section-label:first-child{margin-top:0;}
+  .body-copy p{font-size:17px;color:#d6d6d6;font-weight:300;line-height:1.8;margin-bottom:22px;}
+  .body-copy p:last-child{margin-bottom:0;}
+  .drop p:first-of-type::first-letter{
+    font-family:'Dela Gothic One',sans-serif;color:var(--blue);
+    font-size:4.4em;line-height:.72;float:left;padding:5px 10px 0 0;
+  }
+
+  [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease;}
+  [data-reveal].revealed{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){[data-reveal]{opacity:1;transform:none;transition:none;}}
+
+  .pull-quote{margin:56px 0;padding-left:28px;border-left:3px solid var(--blue);}
+  .pull-quote p{
+    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:clamp(22px,3vw,30px);
+    color:var(--white);line-height:1.4;text-wrap:balance;
+  }
+  .pull-quote .src{margin-top:14px;font-size:13px;color:var(--grey);}
+
+  .stat-card{margin:56px 0;}
+  .stat-card .os-titlebar{background:var(--blue);}
+  .stat-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--hairline);}
+  @media(min-width:560px){.stat-grid{grid-template-columns:1fr 1fr;}}
+  .stat-cell{background:var(--surface);padding:28px 24px;}
+  .stat-num{font-family:'Dela Gothic One',sans-serif;font-size:clamp(32px,5vw,44px);color:var(--white);}
+  .stat-label{margin-top:8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+
+  .inline-tags{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 40px;}
+  .tag{border:1px solid var(--border);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;color:var(--grey);}
+  .tag.blue{border-color:var(--blue);color:var(--blue);}
+
+  .closing{padding:8px 0 24px;}
+  .closing p{font-size:17px;color:#d6d6d6;font-weight:300;line-height:1.8;margin-bottom:22px;}
+
+  /* ================= CTA ================= */
+  .cta{padding:88px 0;border-top:1px solid var(--hairline);margin-top:32px;}
+  .cta h2{font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;font-size:clamp(28px,5vw,48px);letter-spacing:-0.02em;max-width:16ch;margin-bottom:18px;}
+  .cta p{color:var(--grey);font-size:16px;max-width:52ch;margin-bottom:32px;font-weight:300;}
+  .cta-btns{display:flex;flex-wrap:wrap;gap:16px;}
+
+  /* ================= FOOTER ================= */
+  footer{border-top:1px solid var(--hairline);padding:28px 0;}
+  .foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;font-size:12px;color:var(--grey);}
+  .foot-tags{display:flex;flex-wrap:wrap;gap:14px;}
+  .foot-tags span{color:var(--blue);}
+</style>
+
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="logo-unit" href="#" aria-label="EDT home">
+      <svg viewBox="0 0 427.37 97.56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="#fff">
+        <path d="M71.05,0h-17.74v22.29H.09v17.74h53.21v17.28l-53.31.22.07,17.74,53.23-.22v22.51h17.74c26.94,0,48.78-21.84,48.78-48.78S97.99,0,71.05,0Z" fill="#fff"/>
+        <polygon points="164.55 36.07 164.55 22.29 142.26 22.29 142.26 36.07 142.26 58.36 142.26 72.15 164.55 72.15 164.55 58.36 195.48 58.36 195.48 36.07 164.55 36.07" fill="#fff"/>
+        <rect x="233.24" y="2.17" width="194.13" height="28.53" fill="#fff"/>
+        <rect x="233.24" y="34.56" width="194.13" height="28.53" fill="#fff"/>
+        <rect x="233.24" y="66.86" width="194.13" height="28.53" fill="#fff"/>
+        <path d="M246.92,7.74v3.1h-6.31v4.21h5.75v3.1h-5.75v5.04h6.49v3.1h-9.65V7.74h9.46Z"/>
+        <path d="M258.19,13.2l2.33-5.46h3.53l-4.11,8.88,4.48,9.68h-3.55l-2.68-6.12-2.7,6.12h-3.55l4.48-9.68-4.08-8.88h3.53l2.33,5.46Z"/>
+        <path d="M269.11,7.74h5.46c.62,0,1.2.12,1.75.34.55.23,1.02.55,1.43.95.41.41.72.88.95,1.43.23.55.34,1.13.34,1.75v3.55c0,.64-.12,1.23-.34,1.78-.23.55-.55,1.03-.95,1.43-.41.41-.88.72-1.43.95-.55.23-1.13.34-1.75.34h-2.25v6.02h-3.21V7.74ZM275.79,12.08c0-.35-.13-.65-.38-.89-.26-.24-.57-.36-.94-.36h-2.15v6.36h2.15c.37,0,.68-.12.94-.36.26-.24.38-.53.38-.86v-3.9Z"/>
+        <path d="M294.64,7.74v3.1h-6.31v4.21h5.75v3.1h-5.75v5.04h6.49v3.1h-9.65V7.74h9.46Z"/>
+        <path d="M305.27,19.98h-1.59v6.31h-3.18V7.74h5.49c.62,0,1.2.12,1.75.34.55.23,1.02.55,1.43.95.41.41.72.88.95,1.43.23.55.34,1.13.34,1.75v3.31c0,.78-.19,1.5-.57,2.17-.38.67-.88,1.21-1.5,1.62l2.92,6.97h-3.5l-2.54-6.31ZM307.23,12.08c0-.35-.13-.65-.38-.89-.26-.24-.56-.36-.91-.36h-2.25v6.04h2.25c.35,0,.66-.12.91-.36.26-.24.38-.53.38-.89v-3.55Z"/>
+        <path d="M316.59,7.74h10.42v2.97h-3.58v12.62h3.58v2.97h-10.42v-2.97h3.61v-12.62h-3.61v-2.97Z"/>
+        <path d="M342.35,7.74v3.1h-6.31v4.21h5.75v3.1h-5.75v5.04h6.49v3.1h-9.65V7.74h9.46Z"/>
+        <path d="M358.89,7.74v18.56h-3.31l-3.26-8.88-.93-3.15h-.11l.19,3.26v8.77h-3.13V7.74h3.31l3.23,8.77.98,3.23h.11l-.21-3.26V7.74h3.13Z"/>
+        <path d="M364.04,7.74h10.95v3.1h-3.87v15.46h-3.23v-15.46h-3.84v-3.1Z"/>
+        <path d="M380.21,7.74h10.42v2.97h-3.58v12.62h3.58v2.97h-10.42v-2.97h3.61v-12.62h-3.61v-2.97Z"/>
+        <path d="M403.85,7.74l2.76,10.44v8.11h-3.13v-5.51h-4.29v5.51h-3.13v-8.11l2.76-10.44h5.04ZM401.6,10.84h-.53l-1.59,6.84h3.71l-1.59-6.84Z"/>
+        <path d="M415.25,7.74v15.46h7.13v3.1h-10.31V7.74h3.18Z"/>
+        <path d="M247.4,52.94c0,.72-.14,1.4-.41,2.03-.27.63-.64,1.17-1.1,1.63s-1.01.83-1.64,1.1c-.64.27-1.31.41-2.01.41h-5.09v-18.56h5.09c.71,0,1.38.14,2.01.41.64.27,1.18.64,1.64,1.1s.83,1.01,1.1,1.64c.27.64.41,1.31.41,2.01v8.22ZM244.11,44.61c0-.55-.19-1.01-.56-1.39-.37-.38-.84-.57-1.41-.57h-1.83v12.35h1.83c.57,0,1.03-.19,1.41-.56.37-.37.56-.83.56-1.38v-8.46Z"/>
+        <path d="M262.83,39.55v3.1h-6.31v4.21h5.75v3.1h-5.75v5.04h6.49v3.1h-9.65v-18.56h9.46Z"/>
+        <path d="M276.08,44.77c0-.67-.19-1.24-.56-1.7-.37-.46-.84-.69-1.41-.69s-1.01.18-1.39.53c-.38.35-.57.79-.57,1.3s.18.95.54,1.3c.36.35.81.69,1.35,1.02.54.33,1.13.67,1.76,1.02.64.35,1.22.78,1.76,1.27.54.5.99,1.09,1.35,1.79.36.7.54,1.55.54,2.56,0,.71-.13,1.37-.4,2-.27.63-.63,1.18-1.1,1.66-.47.48-1.02.85-1.64,1.13-.63.27-1.3.41-2.03.41h-.42c-.72,0-1.4-.14-2.03-.41-.63-.27-1.18-.65-1.64-1.13-.47-.48-.84-1.03-1.11-1.66-.27-.63-.41-1.29-.41-2v-.85h3.18v.85c0,.57.2,1.06.61,1.47.41.42.89.62,1.46.62h.29c.57,0,1.05-.19,1.44-.58.4-.39.6-.83.6-1.33,0-.64-.18-1.16-.54-1.58-.36-.42-.81-.79-1.35-1.13-.54-.34-1.13-.67-1.76-.99-.64-.33-1.22-.71-1.76-1.15-.54-.44-.99-.99-1.35-1.63-.36-.64-.54-1.45-.54-2.43,0-.74.14-1.43.41-2.05.27-.63.64-1.17,1.1-1.63.46-.46,1-.82,1.63-1.09.63-.26,1.3-.4,2.03-.4s1.37.13,2,.4c.63.27,1.18.64,1.64,1.11.47.48.84,1.05,1.1,1.72.27.67.4,1.42.4,2.25h-3.18Z"/>
+        <path d="M284.78,39.55h10.42v2.97h-3.58v12.62h3.58v2.97h-10.42v-2.97h3.61v-12.62h-3.61v-2.97Z"/>
+        <path d="M311.28,53.17c0,.71-.13,1.37-.4,2-.27.63-.63,1.18-1.09,1.66-.46.48-1,.85-1.63,1.13-.63.27-1.3.41-2.03.41h-.42c-.72,0-1.4-.14-2.03-.41-.63-.27-1.18-.65-1.64-1.13-.47-.48-.84-1.03-1.11-1.67-.27-.64-.41-1.31-.41-2.01v-8.67c0-.71.14-1.37.41-2,.27-.63.64-1.18,1.11-1.66.47-.48,1.02-.85,1.64-1.13.63-.27,1.3-.41,2.03-.41h.42c.72,0,1.4.13,2.03.4.63.27,1.17.64,1.63,1.13.46.49.82,1.07,1.09,1.74.27.67.4,1.41.4,2.23h-3.18c0-.72-.2-1.3-.61-1.72-.41-.42-.89-.64-1.46-.64h-.27c-.57,0-1.05.19-1.46.56-.41.37-.61.83-.61,1.38v8.96c0,.55.2,1.01.61,1.39.41.38.89.57,1.46.57h.27c.57,0,1.05-.19,1.46-.56.41-.37.61-.83.61-1.38v-2.17h-2.2v-3.08h5.38v5.09Z"/>
+        <path d="M327.08,39.55v18.56h-3.31l-3.26-8.88-.93-3.15h-.11l.19,3.26v8.77h-3.13v-18.56h3.31l3.23,8.77.98,3.23h.11l-.21-3.26v-8.75h3.13Z"/>
+        <path d="M236.79,71.36h10.95v3.1h-3.87v15.46h-3.23v-15.46h-3.84v-3.1Z"/>
+        <path d="M262.83,71.36v3.1h-6.31v4.21h5.75v3.1h-5.75v5.04h6.49v3.1h-9.65v-18.56h9.46Z"/>
+        <path d="M276.61,71.36l2.76,10.44v8.11h-3.13v-5.51h-4.29v5.51h-3.13v-8.11l2.76-10.44h5.04ZM274.36,74.46h-.53l-1.59,6.84h3.71l-1.59-6.84Z"/>
+        <path d="M296.2,71.36v18.56h-3.13v-11.03l.19-2.39h-.11l-1.91,4.64h-2.52l-1.88-4.64h-.11l.19,2.39v11.03h-3.13v-18.56h3.55l2.6,6.26h.11l2.6-6.26h3.55Z"/>
+      </svg>
+    </a>
+    <nav class="primary-nav">
+      <a href="#">Services</a>
+      <a href="#">Products</a>
+      <a href="#">Work</a>
+      <a href="#">Industries</a>
+      <a href="#" class="active">Blog</a>
+      <a href="#">About</a>
+      <a href="#">Careers</a>
+    </nav>
+    <a class="btn btn-primary" href="#">Get a quote<span class="arrow">→</span></a>
+  </div>
+</header>
+
+<div class="crumb-bar">
+  <div class="wrap crumb-row">
+    <div><a href="#">Blog</a><span class="sep">/</span><a href="#">Long Read</a></div>
+    <div class="template-tag">Template 04 — Basic scroll</div>
+  </div>
+</div>
+
+<section class="article-hero">
+  <div class="grid-tex" style="opacity:.5"></div>
+  <div class="wrap" style="position:relative;">
+    <div class="eyebrow">EDT Blog — Inside the build</div>
+    <h1 class="title">INSIDE METAHRISE</h1>
+    <p class="dek">How a corporate induction became a VR game 145 employees actually wanted to finish — and how that game ended up in the Malaysia Book of Records.</p>
+    <div class="byline-row">
+      <div class="byline-item"><div class="k">Client</div><div class="v">MCMC</div></div>
+      <div class="byline-item"><div class="k">Category</div><div class="v">VR Training</div></div>
+      <div class="byline-item"><div class="k">Read time</div><div class="v">9 min</div></div>
+      <div class="byline-item"><div class="k">Format</div><div class="v">Long read</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-media">
+  <div class="wrap">
+    <div class="os-window" data-reveal>
+      <div class="os-titlebar"><span class="name">METAHRISE.EXE — FIELD_CAPTURE.JPG</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+      <div class="feature-stage">
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="placeholder">
+        <div class="tint"></div>
+        <div class="grid-tex"></div>
+      </div>
+    </div>
+    <p class="feature-caption">MetaHRise on-site at MCMC — new hires moving through the induction as a playable VR environment.</p>
+  </div>
+</section>
+
+<section class="article-body">
+  <div class="wrap col">
+    <p class="lede">Most inductions are a room, a slide deck, and a printed handbook nobody re-reads after week one. MCMC wanted something that would actually stick — so we didn't design a better slideshow. We built a game.</p>
+
+    <span class="section-label">The brief</span>
+    <div class="body-copy drop" data-reveal>
+      <p>MCMC's induction was doing what most inductions do: covering the material and losing the room by slide four. New hires walked away with a folder and a vague sense of the org chart, not a feel for the organisation they'd just joined. The ask wasn't "make the deck nicer." It was harder to say out loud and harder to brief: make people want to sit through this.</p>
+      <p>That's a design problem before it's a technology problem. You can't VR your way out of boring content — you have to change what the person is actually doing while they learn it. Sitting and listening was the thing that had to go.</p>
+    </div>
+
+    <div class="pull-quote" data-reveal>
+      <p>"You can't VR your way out of boring content. You have to change what the person is doing while they learn it."</p>
+      <div class="src">— EDT, on the MetaHRise brief</div>
+    </div>
+
+    <span class="section-label">Why a game, specifically</span>
+    <div class="body-copy" data-reveal>
+      <p>Games teach through consequence, not through delivery. Walk the wrong way in a game and you find out immediately — nobody has to tell you. We built MetaHRise on that principle: new hires move through a VR environment structured around MCMC itself, and the organisation's structure, values and history surface as things you discover by playing, not slides you're told to remember.</p>
+      <p>The headset was the easy part. The harder design problem was pacing — an induction has to hold someone's attention for long enough to cover real material, without ever feeling like a chore wearing a headset. Every beat in MetaHRise earns the next one; nothing plays just to look impressive in a demo reel.</p>
+    </div>
+
+    <span class="section-label">What we built</span>
+    <div class="body-copy" data-reveal>
+      <p>MetaHRise plays as a sequence of environments rather than a single space — each one built around a specific part of the induction, so the content changes the room instead of a narrator changing the topic. Progress is visible and immediate: new hires can see how far they are through the experience the same way they'd see progress in any game, which turned out to matter more than we expected. People finish things they can see the end of.</p>
+    </div>
+
+    <div class="stat-card" data-reveal>
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">RESULTS.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stat-grid">
+          <div class="stat-cell">
+            <div class="stat-num">93%</div>
+            <div class="stat-label">New-hire satisfaction, post-induction survey</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">2024</div>
+            <div class="stat-label">Malaysia Book of Records entry</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span class="section-label">The record</span>
+    <div class="body-copy" data-reveal>
+      <p>The Malaysia Book of Records entry wasn't the brief — it was a consequence of taking the brief seriously. Once MetaHRise existed as a genuinely playable induction, rather than a VR-flavoured slideshow, it qualified as something worth recognising on its own terms. We'd rather ship the record as a side effect than chase it as the headline.</p>
+    </div>
+
+    <div class="pull-quote" data-reveal>
+      <p>"We build the technical layer other studios say is too complex, then we ship it. The record was proof, not the point."</p>
+      <div class="src">— EDT, on shipping MetaHRise</div>
+    </div>
+
+    <span class="section-label">What we'd do differently</span>
+    <div class="body-copy" data-reveal>
+      <p>Every project teaches you where you over-built. With MetaHRise, the lesson was about scope discipline inside VR specifically — it's easy to keep adding environments because the medium makes everything feel like it deserves one. The strongest sections were the ones we cut hardest, not the ones we added the most detail to. That's the note we carry into every VR training build since.</p>
+    </div>
+
+    <div class="inline-tags">
+      <span class="tag blue">VR Training</span>
+      <span class="tag">Corporate Onboarding</span>
+      <span class="tag">Malaysia Book of Records</span>
+    </div>
+
+    <div class="closing" data-reveal>
+      <p>MetaHRise is still running inductions at MCMC. The record is framed somewhere in an office we don't visit often enough — the 93% satisfaction number is the one we actually check.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Got an induction nobody finishes?</h2>
+    <p>Tell us what the content actually is and we'll tell you what it should feel like to go through — VR, AR, or otherwise.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="#">Get a quote<span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#">Read more case studies<span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div>weareedt.com — Experiential Design Team (Adticles Sdn Bhd)</div>
+    <div class="foot-tags"><span>#weareedt</span><span>#EDT</span><span>#VRTraining</span></div>
+  </div>
+</footer>
+
+<script>
+  var bar = document.getElementById('progressBar');
+  function updateProgress(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (scrolled / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var targets = document.querySelectorAll('[data-reveal]');
+    var io = new IntersectionObserver(function(items){
+      items.forEach(function(item){
+        if (item.isIntersecting) {
+          item.target.classList.add('revealed');
+          io.unobserve(item.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('revealed'); });
+  }
+</script>
