@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "demo-edt-blog-builder"
+    "default": "demo-edt-blog-builder",
+    "production": "edt-blog-builder"
   }
 }

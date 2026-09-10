@@ -3,11 +3,31 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /articles/{articleId} {
-      allow read, update, delete: if request.auth != null
+      allow read, delete: if request.auth != null
           && resource.data.createdBy == request.auth.uid;
 
       allow create: if request.auth != null
-          && request.resource.data.createdBy == request.auth.uid;
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.status == 'draft';
+
+      // The client may edit its own draft/failed docs (brief, template,
+      // images, etc.) but may never flip status itself or write any of the
+      // fields only the Cloud Function is meant to produce — the Admin SDK
+      // inside generateArticle bypasses these rules entirely (that's the
+      // privileged path); this is what protects the direct-client path,
+      // e.g. against a buggy or malicious client claiming success without
+      // ever having called the function.
+      allow update: if request.auth != null
+          && resource.data.createdBy == request.auth.uid
+          && resource.data.status in ['draft', 'failed']
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.rootArticleId == resource.data.rootArticleId
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+               'status', 'errorCode', 'errorMessage',
+               'outputHtmlStoragePath', 'outputSizeBytes',
+               'promptVersion', 'templateVersion',
+               'title', 'dek', 'slug', 'resolvedGalleryPlacement'
+             ]);
     }
 
     // Deny everything else by default.
