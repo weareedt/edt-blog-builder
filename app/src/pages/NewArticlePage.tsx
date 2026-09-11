@@ -6,6 +6,7 @@ import { db } from '../lib/firebase';
 import { createArticleDoc } from '../lib/createArticleDoc';
 import { UnsupportedImageError } from '../lib/downscaleImage';
 import { uploadPendingImages, type PendingImage } from '../lib/uploadImages';
+import { TemplatePreviewFrame } from '../components/TemplatePreviewFrame';
 import {
   CATEGORY_IDS,
   GALLERY_CATALOG,
@@ -177,7 +178,8 @@ export function NewArticlePage() {
                   checked={templateId === t.id}
                   onChange={() => onTemplateChange(t.id)}
                 />
-                <div>
+                <TemplatePreviewFrame previewUrl={`/template-previews/${t.id}.html`} label={t.label} />
+                <div className="template-card__copy">
                   <div className="template-card__label">{t.label}</div>
                   <div className="template-card__blurb">{t.blurb}</div>
                   <div className="template-card__range">{t.structureRangeLabel}</div>
@@ -189,25 +191,50 @@ export function NewArticlePage() {
 
         <fieldset className="field">
           <legend>Gallery component</legend>
-          <div className="radio-row">
-            <label>
+          <div className="template-card-list template-card-list--galleries">
+            <label className={`template-card${galleryId === NONE ? ' template-card--selected' : ''}`}>
               <input
                 type="radio"
                 name="gallery"
                 checked={galleryId === NONE}
                 onChange={() => setGalleryId(NONE)}
               />
-              None
+              <div className="preview-frame-shell preview-frame-shell--empty">
+                <div className="preview-frame-shell__bar">
+                  <span className="preview-frame-shell__bar-label">None</span>
+                  <span className="preview-frame-shell__dots">
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                </div>
+                <div className="preview-frame-shell__empty">No gallery</div>
+              </div>
+              <div className="template-card__copy">
+                <div className="template-card__label">None</div>
+                <div className="template-card__blurb">Photos appear inline in the article body only.</div>
+              </div>
             </label>
             {GALLERY_CATALOG.map((g) => (
-              <label key={g.id}>
+              <label
+                key={g.id}
+                className={`template-card${galleryId === g.id ? ' template-card--selected' : ''}`}
+              >
                 <input
                   type="radio"
                   name="gallery"
                   checked={galleryId === g.id}
                   onChange={() => setGalleryId(g.id)}
                 />
-                {g.label}
+                <TemplatePreviewFrame
+                  previewUrl={`/template-previews/${g.id}.html`}
+                  label={g.label}
+                  frameWidth={220}
+                />
+                <div className="template-card__copy">
+                  <div className="template-card__label">{g.label}</div>
+                  <div className="template-card__blurb">{g.blurb}</div>
+                </div>
               </label>
             ))}
           </div>
@@ -288,6 +315,7 @@ export function NewArticlePage() {
 
         <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
           {submitting ? 'Creating…' : 'Create article'}
+          {!submitting && <span className="arrow">→</span>}
         </button>
       </form>
     </div>

@@ -8,6 +8,34 @@
   --hairline: rgba(255, 255, 255, 0.14);
   --red: #ff4d4d;
   --green: #34d399;
+  --font-display: 'Dela Gothic One', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+}
+
+/* A faint fixed pixel-grid, the same atmosphere texture every generated
+   article's hero uses (.grid-tex) — applied once, globally, rather than
+   per-page, and kept subtle per the brand system's "atmosphere, not
+   content" rule. */
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.app-shell > * {
+  position: relative;
+  z-index: 1;
 }
 
 .auth-gate-splash {
@@ -55,51 +83,103 @@
 }
 
 .page {
-  max-width: 760px;
+  max-width: 920px;
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 48px 24px 96px;
 }
 
 .page-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
 }
 
 .page-header h1 {
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 32px);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
   margin: 0;
+  max-width: 22ch;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 13px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 11px 20px;
-  border: 1px solid var(--blue);
+  padding: 13px 22px;
+  border: 1px solid var(--white);
   background: transparent;
+  color: var(--white);
   cursor: pointer;
   text-decoration: none;
+  transition: background 120ms ease, color 120ms ease, transform 120ms ease, border-color 120ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--white);
+  color: var(--black);
 }
 
 .btn-primary {
   background: var(--blue);
   color: var(--white);
+  border-color: var(--blue);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--blue-hover);
+  border-color: var(--blue-hover);
+  color: var(--white);
+  transform: scale(1.02);
+}
+
+.btn-ghost {
+  border: none;
+  background: transparent;
+  color: var(--blue);
+  padding: 4px 0;
+  text-decoration: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: transparent;
+  color: var(--blue-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn .arrow {
+  display: inline-block;
+  transition: transform 120ms ease;
+}
+
+.btn:hover:not(:disabled) .arrow {
+  transform: translateX(3px);
 }
 
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 
 .muted {
@@ -240,42 +320,144 @@ fieldset.field {
   gap: 6px;
 }
 
+/* A row of frames (per the picker request) — wraps to 2-up / 1-up on
+   narrower widths rather than a fixed 4-across grid, since the frames
+   have a fixed pixel width (see TemplatePreviewFrame). */
 .template-card-list {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .template-card {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  flex-direction: column;
+  gap: 0;
+  width: 260px;
   border: 1px solid var(--hairline);
-  padding: 14px 16px;
   cursor: pointer;
+  background: var(--surface);
+}
+
+.template-card-list--galleries .template-card {
+  width: 220px;
+}
+
+.template-card:hover {
+  border-color: var(--grey);
 }
 
 .template-card--selected {
   border-color: var(--blue);
 }
 
+.template-card input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.template-card__copy {
+  padding: 12px 14px 16px;
+}
+
 .template-card__label {
   font-weight: 700;
+  font-size: 14px;
+}
+
+.template-card--selected .template-card__label {
+  color: var(--blue);
 }
 
 .template-card__blurb {
   color: var(--grey);
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin-top: 6px;
 }
 
 .template-card__range {
   color: var(--blue);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-top: 8px;
+  margin-top: 10px;
+}
+
+.preview-frame-shell {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.preview-frame-shell__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.preview-frame-shell__bar-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--grey);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-frame-shell__dots {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.preview-frame-shell__dots span {
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--grey);
+  display: block;
+}
+
+.preview-frame-shell__viewport {
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+}
+
+.preview-frame-shell__viewport iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.preview-frame-shell--empty .preview-frame-shell__empty {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--grey);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--black),
+    var(--black) 8px,
+    var(--surface) 8px,
+    var(--surface) 16px
+  );
+}
+
+.template-card-list--galleries .preview-frame-shell--empty .preview-frame-shell__empty {
+  height: 152px;
 }
 
 .pending-image-list {
@@ -319,17 +501,58 @@ fieldset.field {
   padding: 4px 8px;
 }
 
+/* Styled as an OS window — the same title-bar + square-button chrome every
+   generated article uses for its own stat cards and media panels (see
+   .os-window in the annotated templates). */
 .panel {
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--white);
+  background: var(--surface);
+}
+
+.panel--error {
+  border-color: var(--red);
+}
+
+.panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--white);
+}
+
+.panel--error .panel__bar {
+  border-bottom-color: var(--red);
+}
+
+.panel__bar-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.panel__dots {
+  display: flex;
+  gap: 5px;
+}
+
+.panel__dots span {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--white);
+  display: block;
+}
+
+.panel__body {
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: flex-start;
-}
-
-.panel--error {
-  border-color: var(--red);
 }
 
 .btn-row {

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+  :root{
+    --blue:#2D2DFF; --blue-hover:#0000CC; --black:#0A0A0A; --surface:#111111;
+    --grey:#8C8C8C; --white:#FFFFFF; --border:#FFFFFF; --hairline:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--black);color:var(--white);font-family:'Space Grotesk',sans-serif;}
+  img,svg{display:block;max-width:100%;}
+</style>
+</head>
+<body>
+<style>
+  .gallery-wrap{max-width:1180px;margin:0 auto;padding:40px 24px;}
+  @media(min-width:900px){.gallery-wrap{padding:56px 80px;}}
+
+  /* ============ FLIP-CARD GALLERY — drop this block into any article ============ */
+  .flip-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media(min-width:640px){.flip-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:980px){.flip-grid{grid-template-columns:repeat(3,1fr);}}
+
+  .flip-card{position:relative;aspect-ratio:16/10;perspective:1200px;cursor:pointer;}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.19,1,.22,1);transform-style:preserve-3d;}
+  .flip-card:hover .flip-inner,
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--hairline);overflow:hidden;}
+  .flip-front img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.2) contrast(1.1) brightness(.82) saturate(.95);}
+  .flip-front .tint{position:absolute;inset:0;background:var(--blue);opacity:.2;mix-blend-mode:multiply;}
+  .flip-front .scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.8) 100%);}
+  .flip-front .label{position:absolute;left:14px;bottom:14px;right:14px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--white);}
+  .flip-front .hint{position:absolute;top:12px;right:12px;width:26px;height:26px;border:1px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--white);}
+  .flip-back{transform:rotateY(180deg);background:var(--blue);padding:20px;display:flex;flex-direction:column;justify-content:space-between;}
+  .flip-back .tag{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.8);}
+  .flip-back p{font-size:14px;color:var(--white);font-weight:400;line-height:1.55;margin-top:10px;}
+  .flip-back .stack{font-size:11px;color:rgba(255,255,255,0.75);margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.25);}
+  @media (prefers-reduced-motion: reduce){.flip-inner{transition:none;}}
+</style>
+
+<div class="gallery-wrap">
+  <div class="flip-grid">
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">VR Training</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">01 — VR Training</span>
+          <p>Multiplayer VR onboarding and training, built from brief to Meta Quest 3.</p>
+          <div class="stack">MetaHRise — MCMC</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">AR Activations</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">02 — AR Activations</span>
+          <p>WebAR and native AR experiences built for high foot-traffic events.</p>
+          <div class="stack">ARFestKL</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">AI Holograms</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">03 — AI Holograms</span>
+          <p>Holographic AI personas that hold a real conversation, live, on the floor.</p>
+          <div class="stack">Hologram Stewardess — Malaysia Airlines</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">Virtual Production</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">04 — Virtual Production</span>
+          <p>Broadcast-grade sets built entirely in-engine through ARVENA.</p>
+          <div class="stack">AirAsia Supersale</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">AI Virtual Influencers</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">05 — AI Virtual Influencers</span>
+          <p>A fully virtual persona — face, voice, and posting schedule — built for one campaign.</p>
+          <div class="stack">Shayla Sis Shayla — Safi</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-card" tabindex="0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <span class="hint">↻</span><div class="label">VR Simulation</div>
+        </div>
+        <div class="flip-face flip-back">
+          <span class="tag">06 — VR Simulation</span>
+          <p>High-stakes scenarios rehearsed safely, before the real thing happens.</p>
+          <div class="stack">VR Earthquake Simulation — Tokyo FD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.flip-card').forEach(function(card){
+    card.addEventListener('click', function(){ card.classList.toggle('flipped'); });
+    card.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); }
+    });
+  });
+</script>
+
+</body>
+</html>

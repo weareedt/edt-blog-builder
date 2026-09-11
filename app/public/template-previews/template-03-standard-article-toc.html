@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta property="og:title" content="AR, VR OR MIXED REALITY: WHICH ONE ACTUALLY FITS YOUR EVENT?">
+<meta property="og:description" content="">
+</head>
+<body>
+<title>Standard Article Template</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --blue:#2D2DFF;
+    --blue-hover:#0000CC;
+    --black:#0A0A0A;
+    --surface:#111111;
+    --grey:#8C8C8C;
+    --white:#FFFFFF;
+    --border:#FFFFFF;
+    --hairline:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--blue);color:var(--white);}
+  h1,h2,h3{margin:0;text-wrap:balance;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:24px;}
+  @media(min-width:900px){.wrap{padding-inline:80px;}}
+  @media(min-width:1440px){.wrap{padding-inline:96px;}}
+
+  .grid-tex{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:32px 32px;
+    pointer-events:none;
+  }
+
+  /* Header/footer are intentionally not part of this output — the article
+     is meant to be embedded into the real EDT site/CMS, which supplies its
+     own. .btn/.btn-primary/.btn-ghost/.arrow are kept: the dynamic CTA
+     section at the bottom still uses them. */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:13px 22px;border:1px solid var(--blue);
+    transition:background 120ms ease,color 120ms ease,transform 120ms ease;
+  }
+  .btn-primary{background:var(--blue);color:var(--white);}
+  .btn-primary:hover{background:var(--blue-hover);transform:scale(1.02);}
+  .btn-ghost{background:transparent;border-color:var(--white);}
+  .btn-ghost:hover{background:var(--white);color:var(--black);}
+  .arrow{transition:transform 120ms ease;display:inline-block;}
+  .btn:hover .arrow{transform:translateX(3px);}
+
+  /* ================= CRUMB ================= */
+  .crumb-bar{border-bottom:1px solid var(--hairline);}
+  .crumb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+  .crumb-row .sep{color:var(--blue);margin:0 8px;}
+
+  /* ================= ARTICLE HERO ================= */
+  .article-hero{position:relative;overflow:hidden;padding:56px 0 40px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;}
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--blue);}
+  h1.title{
+    font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;letter-spacing:-0.02em;
+    font-size:clamp(32px,6vw,60px);line-height:1.05;max-width:22ch;
+  }
+  .dek{margin-top:22px;max-width:62ch;font-size:clamp(16px,1.8vw,19px);color:#cfcfcf;font-weight:300;}
+  .byline-row{margin-top:32px;display:flex;flex-wrap:wrap;border-top:1px solid var(--hairline);}
+  .byline-item{flex:1 1 130px;padding:14px 20px;border-right:1px solid var(--hairline);}
+  .byline-item:first-child{padding-left:0;}
+  .byline-item:last-child{border-right:none;}
+  .byline-item .k{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:5px;}
+  .byline-item .v{font-size:13px;font-weight:500;}
+
+  /* ================= LAYOUT: BODY + TOC ================= */
+  .article-layout{padding:8px 0 32px;}
+  .layout-grid{display:grid;grid-template-columns:1fr;gap:48px;}
+  @media(min-width:980px){
+    .layout-grid{grid-template-columns:190px 1fr;gap:56px;align-items:start;}
+  }
+
+  /* ---- TOC ---- */
+  .toc-wrap{border:1px solid var(--hairline);background:var(--surface);order:-1;}
+  @media(min-width:980px){
+    .toc-wrap{position:sticky;top:24px;order:0;}
+  }
+  .toc-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-bottom:1px solid var(--hairline);
+  }
+  .toc-head span{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);}
+  .toc-list{list-style:none;margin:0;padding:8px 0;}
+  .toc-list li{margin:0;}
+  .toc-list a{
+    display:flex;gap:8px;align-items:baseline;
+    padding:9px 14px;font-size:12.5px;line-height:1.4;color:var(--grey);
+    border-left:2px solid transparent;transition:color .2s ease, border-color .2s ease;
+  }
+  .toc-list a .n{font-size:10px;color:var(--grey);flex-shrink:0;}
+  .toc-list a:hover{color:var(--white);}
+  .toc-list a.active{color:var(--white);border-left-color:var(--blue);background:rgba(45,45,255,0.08);}
+  .toc-list a.active .n{color:var(--blue);}
+  .toc-progress{height:2px;background:var(--hairline);}
+  .toc-progress-bar{height:100%;width:0%;background:var(--blue);transition:width 120ms linear;}
+
+  /* ---- Article body ---- */
+  .article-main{min-width:0;}
+  .lede{font-size:18px;font-weight:400;color:#e8e8e8;margin-bottom:40px;line-height:1.7;max-width:70ch;}
+  .article-section{padding:40px 0;border-top:1px solid var(--hairline);scroll-margin-top:24px;}
+  .article-section:first-child{border-top:none;padding-top:0;}
+  .article-section h2{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(22px,2.6vw,28px);margin-bottom:18px;
+  }
+  .article-section p{font-size:16px;color:#d6d6d6;font-weight:300;line-height:1.8;margin-bottom:20px;max-width:70ch;}
+  .article-section p:last-child{margin-bottom:0;}
+  .article-section ul{margin:0 0 20px;padding-left:0;list-style:none;max-width:70ch;}
+  .article-section ul li{
+    position:relative;padding-left:22px;margin-bottom:12px;font-size:16px;color:#d6d6d6;font-weight:300;line-height:1.7;
+  }
+  .article-section ul li::before{content:"→";position:absolute;left:0;color:var(--blue);font-weight:700;}
+
+  /* ---- comparison table ---- */
+  .table-scroll{overflow-x:auto;margin:8px 0 28px;border:1px solid var(--hairline);}
+  table{width:100%;border-collapse:collapse;min-width:520px;font-size:14px;}
+  th,td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--hairline);}
+  thead th{
+    background:var(--surface);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);
+    font-weight:700;border-bottom:1px solid var(--border);
+  }
+  tbody td{color:#d6d6d6;font-weight:300;}
+  tbody td:first-child{color:var(--white);font-weight:500;}
+  tbody tr:last-child td{border-bottom:none;}
+
+  .callout{
+    margin:32px 0;padding:20px 24px;border:1px solid var(--blue);background:rgba(45,45,255,0.06);max-width:70ch;
+  }
+  .callout .label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;display:block;}
+  .callout p{margin-bottom:0;color:#e8e8e8;}
+
+  .closing{padding-top:8px;}
+  .closing p{font-size:16px;color:#d6d6d6;font-weight:300;line-height:1.8;max-width:70ch;}
+
+  /* ================= CTA ================= */
+  .cta{padding:88px 0;border-top:1px solid var(--hairline);margin-top:32px;}
+  .cta h2{font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;font-size:clamp(28px,5vw,48px);letter-spacing:-0.02em;max-width:16ch;margin-bottom:18px;}
+  .cta p{color:var(--grey);font-size:16px;max-width:52ch;margin-bottom:32px;font-weight:300;}
+  .cta-btns{display:flex;flex-wrap:wrap;gap:16px;}
+</style>
+
+<div class="crumb-bar">
+  <div class="wrap crumb-row">
+    <div><a href="#">Blog</a><span class="sep">/</span><a href="#">Insights</a></div>
+  </div>
+</div>
+
+<section class="article-hero">
+  <div class="grid-tex" style="opacity:.5"></div>
+  <div class="wrap" style="position:relative;">
+    <div class="eyebrow">EDT Blog — Insights</div>
+    <h1 class="title">AR, VR OR MIXED REALITY: WHICH ONE ACTUALLY FITS YOUR EVENT?</h1>
+    <p class="dek">A practical guide to picking the right immersive format before you brief a vendor — what each one is good at, what it costs, and the questions that save you a rebuild.</p>
+    <div class="byline-row">
+      <div class="byline-item"><div class="k">Author</div><div class="v">The EDT Team</div></div>
+      <div class="byline-item"><div class="k">Category</div><div class="v">Insights</div></div>
+      <div class="byline-item"><div class="k">Read time</div><div class="v">8 min</div></div>
+      <div class="byline-item"><div class="k">Published</div><div class="v">EDT Blog</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="article-layout">
+  <div class="wrap layout-grid">
+
+    <aside class="toc-wrap">
+      <div class="toc-head"><span>On this page</span></div>
+      <div class="toc-progress"><div class="toc-progress-bar" id="tocProgress"></div></div>
+      <ul class="toc-list" id="tocList">
+        <li><a href="#start-with-the-outcome-not-the-tech"><span class="n">01</span>Start with the outcome</a></li>
+        <li><a href="#what-ar-is-actually-good-for"><span class="n">02</span>What AR is actually good for</a></li>
+        <li><a href="#what-vr-is-actually-good-for"><span class="n">03</span>What VR is actually good for</a></li>
+        <li><a href="#what-mixed-reality-adds"><span class="n">04</span>What mixed reality adds</a></li>
+        <li><a href="#side-by-side-comparison"><span class="n">05</span>Side-by-side comparison</a></li>
+        <li><a href="#budget-and-timeline-reality"><span class="n">06</span>Budget and timeline reality</a></li>
+        <li><a href="#questions-to-ask-your-vendor"><span class="n">07</span>Questions to ask your vendor</a></li>
+      </ul>
+    </aside>
+
+    <div class="article-main">
+      <p class="lede">Most format decisions get made backwards — a client picks &quot;VR&quot; or &quot;AR&quot; because it&#x27;s the word that came up in the meeting, then briefs a vendor to make it work. Flip that order and the decision gets much easier: start from what the audience needs to walk away with, and the format usually picks itself.</p>
+
+      <div class="article-section" id="start-with-the-outcome-not-the-tech">
+        <h2>Start with the outcome, not the tech</h2>
+        <p>Before naming a format, answer one question: does this need to happen on a real, physical thing the audience is standing in front of, or does it need to happen somewhere that doesn't exist yet? That single split does most of the filtering. A product reveal happening on a real stage in front of a real crowd is a different brief than a training scenario that needs a space no one can safely build in real life.</p>
+        <p>Everything below assumes you've answered that question first. If you haven't, the comparison table further down won't help much — it'll just make three options sound equally plausible.</p>
+      </div>
+      <div class="article-section" id="what-ar-is-actually-good-for">
+        <h2>What AR is actually good for</h2>
+        <p>Augmented reality earns its keep when the real environment is doing half the work. It's layering — information, characters, or effects placed on top of something that's already there: a product on a shelf, a building on a heritage trail, a mascot on an event floor. AR works best when you want the audience to keep their attention split between the real world and the layer you've added, not fully replace one with the other.</p>
+        <ul>
+  <li>Product try-on and visualisation, where seeing it on yourself or your own space is the point</li>
+  <li>Heritage and wayfinding trails, where the physical location carries meaning AR can&#39;t replace</li>
+  <li>Event activations with high foot traffic, since AR needs no headset queue to run</li>
+</ul>
+      </div>
+      <div class="article-section" id="what-vr-is-actually-good-for">
+        <h2>What VR is actually good for</h2>
+        <p>Virtual reality earns its keep when the real environment is the problem, not the asset. Training scenarios that are too dangerous, too expensive, or physically impossible to stage for real — an earthquake, a forklift accident, a factory floor that doesn't exist yet — are where VR stops being a novelty and starts being the only practical way to rehearse something.</p>
+        <p>It's also the strongest option when you want full control over pacing and attention: no ambient noise, no distractions, one person fully inside one experience at a time. That control is a feature for training and a limitation for large-crowd events, where a headset queue caps how many people you can move through in a day.</p>
+      </div>
+      <div class="article-section" id="what-mixed-reality-adds">
+        <h2>What mixed reality adds</h2>
+        <p>Mixed reality sits between the two — digital objects that don't just sit on top of the real world but respond to it, aware of the room's geometry and the people in it. It's the right call when the brief genuinely needs both halves at once: a real presenter interacting with a virtual object the whole room can see respond to touch, or a hybrid broadcast where a virtual set has to react to a live physical performer.</p>
+        <p>It's also the format most likely to be over-specified. If the brief doesn't actually need real and virtual elements to interact, mixed reality adds cost and complexity that AR or VR alone would have solved more simply.</p>
+      </div>
+      <div class="callout">
+  <span class="label">EDT&#39;s rule of thumb</span>
+  <p>If you can describe the experience without using the word "immersive," you probably know which format you need already. If the word "immersive" is doing all the work in your brief, that's usually a sign the outcome hasn't been defined yet — and no format fixes that on its own.</p>
+</div>
+      <div class="article-section" id="side-by-side-comparison">
+        <h2>Side-by-side comparison</h2>
+        <p>A rough guide — real numbers depend on scope, but this is the shape of the trade-off we walk clients through first.</p>
+        <div class="table-scroll">
+  <table>
+    <thead>
+              <tr><th>Format</th><th>Best for</th><th>Hardware</th><th>Crowd throughput</th></tr>
+            </thead>
+    <tbody>
+              <tr><td>AR</td><td>Layering onto a real product, place, or person</td><td>Phone or tablet</td><td>High — no queue needed</td></tr>
+              <tr><td>VR</td><td>Scenarios too costly or dangerous to stage for real</td><td>Headset, per person</td><td>Low — one person at a time</td></tr>
+              <tr><td>Mixed reality</td><td>Real and virtual elements that must react to each other</td><td>Headset or tracked camera</td><td>Moderate — depends on setup</td></tr>
+            </tbody>
+  </table>
+</div>
+      </div>
+      <div class="article-section" id="budget-and-timeline-reality">
+        <h2>Budget and timeline reality</h2>
+        <p>AR is almost always the fastest and cheapest of the three to deploy at scale, since it runs on a device most of your audience already has in their pocket. VR carries hardware cost on top of build cost — every headset is a line item, and a large activation means either owning a fleet of them or renting one. Mixed reality tends to sit at the top of both budget and timeline, because it's solving two problems (a real environment and a virtual one) that have to be built to work together, not separately.</p>
+        <p>None of that means "pick the cheap one." It means the format should already be decided by the outcome before cost enters the conversation — otherwise budget ends up choosing the format for you, and the outcome quietly gets smaller to fit it.</p>
+      </div>
+      <div class="article-section" id="questions-to-ask-your-vendor">
+        <h2>Questions to ask your vendor</h2>
+        <p>A short list that tends to surface whether a vendor has actually thought through your brief, or is fitting your brief to whatever they already built last time:</p>
+        <ul>
+  <li>What happens to this experience for the person who&#39;s third in line, not first?</li>
+  <li>What&#39;s the plan if the venue&#39;s wifi or lighting isn&#39;t what was promised?</li>
+  <li>Who owns the build after the event — can it be reused, or does it die with the activation?</li>
+  <li>What&#39;s the fallback if a headset or device fails mid-event?</li>
+</ul>
+        <div class="closing">
+  <p>None of these questions are about the technology. They're about whether the studio has run something like this before, in a room like yours, for an audience like the one you're actually inviting. That's usually a better filter than the format name on the brief.</p>
+</div>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Still not sure which format fits?</h2>
+    <p>Tell us the outcome you&#x27;re actually after and we&#x27;ll tell you straight whether that&#x27;s an AR, VR, or mixed reality brief — before you commit to a build.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="#">Get a quote<span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#">See our work<span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  var links = Array.prototype.slice.call(document.querySelectorAll('#tocList a'));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var progressBar = document.getElementById('tocProgress');
+
+  function setActive(id){
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  // Scroll via scrollIntoView rather than relying on the browser's native
+  // same-page anchor navigation: when this article is shown inside a
+  // sandboxed preview iframe with only allow-scripts (no allow-same-origin
+  // — deliberately, so the frame can't reach into the host page), native
+  // fragment navigation is unreliable — it can silently no-op, or in some
+  // configurations blank the frame entirely. A direct DOM scroll sidesteps
+  // that altogether and works the same standalone or embedded.
+  links.forEach(function(a){
+    a.addEventListener('click', function(event){
+      var target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActive(target.id);
+    });
+  });
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    sections.forEach(function(s){ if (s) io.observe(s); });
+  }
+
+  function updateProgress(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    progressBar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+</script>
+
+</body>
+</html>

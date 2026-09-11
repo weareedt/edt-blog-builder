@@ -12,7 +12,7 @@ export function DashboardPage() {
       <div className="page-header">
         <h1>EDT Blog Builder</h1>
         <Link to="/new" className="btn btn-primary">
-          New article
+          New article<span className="arrow">→</span>
         </Link>
       </div>
 
@@ -22,7 +22,7 @@ export function DashboardPage() {
         <div className="empty-state">
           <p>No articles yet.</p>
           <Link to="/new" className="btn btn-primary">
-            Create your first article
+            Create your first article<span className="arrow">→</span>
           </Link>
         </div>
       )}

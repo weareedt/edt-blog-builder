@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta property="og:title" content="12 PROJECTS THAT SHOW WHAT EDT ACTUALLY BUILDS">
+<meta property="og:description" content="">
+</head>
+<body>
+<title>Case Study Roundup Template</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --blue:#2D2DFF;
+    --blue-hover:#0000CC;
+    --black:#0A0A0A;
+    --surface:#111111;
+    --grey:#8C8C8C;
+    --white:#FFFFFF;
+    --border:#FFFFFF;
+    --hairline:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--blue);color:var(--white);}
+  h1,h2,h3{margin:0;text-wrap:balance;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:24px;}
+  @media(min-width:900px){.wrap{padding-inline:80px;}}
+
+  .grid-tex{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:32px 32px;
+    pointer-events:none;
+  }
+
+  /* Header/footer/template-tag are intentionally not part of this output —
+     the article is meant to be embedded into the real EDT site/CMS, which
+     supplies its own. .btn/.btn-primary/.btn-ghost/.arrow are kept: the
+     dynamic CTA section at the bottom still uses them. */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:13px 22px;border:1px solid var(--blue);
+    transition:background 120ms ease,color 120ms ease,transform 120ms ease;
+  }
+  .btn-primary{background:var(--blue);color:var(--white);}
+  .btn-primary:hover{background:var(--blue-hover);transform:scale(1.02);}
+  .btn-ghost{background:transparent;border-color:var(--white);}
+  .btn-ghost:hover{background:var(--white);color:var(--black);}
+  .arrow{transition:transform 120ms ease;display:inline-block;}
+  .btn:hover .arrow{transform:translateX(3px);}
+
+  /* ================= BREADCRUMB ================= */
+  .crumb-bar{border-bottom:1px solid var(--hairline);}
+  .crumb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+  .crumb-row a:hover{color:var(--blue);}
+  .crumb-row .sep{color:var(--blue);margin:0 8px;}
+
+  /* ================= ARTICLE HERO ================= */
+  .article-hero{position:relative;overflow:hidden;padding:56px 0 40px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--blue);}
+  h1.title{
+    font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;letter-spacing:-0.02em;
+    font-size:clamp(34px,6vw,68px);line-height:1.02;max-width:18ch;
+  }
+  .dek{margin-top:24px;max-width:60ch;font-size:clamp(16px,1.8vw,18px);color:#cfcfcf;font-weight:300;}
+  .article-meta{
+    margin-top:36px;display:flex;flex-wrap:wrap;border-top:1px solid var(--hairline);
+  }
+  .meta-item{flex:1 1 150px;padding:16px 20px;border-right:1px solid var(--hairline);}
+  .meta-item:first-child{padding-left:0;}
+  .meta-item:last-child{border-right:none;}
+  .meta-item .k{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:5px;}
+  .meta-item .v{font-size:13px;font-weight:500;}
+
+  .intro{padding:0 0 56px;border-bottom:1px solid var(--hairline);}
+  .intro p{max-width:70ch;font-size:17px;color:#dcdcdc;font-weight:300;margin-bottom:18px;}
+  .intro p:last-child{margin-bottom:0;}
+  .intro a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;}
+
+  /* ================= ROUNDUP LIST ================= */
+  .roundup{padding:8px 0 40px;}
+  .entry{
+    display:grid;grid-template-columns:1fr;gap:32px;
+    padding:64px 0;border-bottom:1px solid var(--hairline);
+  }
+  @media(min-width:860px){
+    .entry{grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+    .entry.flip .media{order:2;}
+    .entry.flip .copy{order:1;}
+  }
+  .index{
+    font-family:'Dela Gothic One',sans-serif;font-size:13px;color:var(--blue);
+    letter-spacing:0.06em;margin-bottom:20px;display:block;
+  }
+  .copy h2{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(22px,2.6vw,30px);margin-bottom:18px;
+  }
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+  .tag{border:1px solid var(--border);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;color:var(--grey);}
+  .tag.blue{border-color:var(--blue);color:var(--blue);}
+  .copy p.blurb{font-size:15px;color:#c9c9c9;font-weight:300;max-width:58ch;margin-bottom:22px;}
+  .stat-line{
+    display:flex;align-items:baseline;gap:8px;font-family:'Space Grotesk',sans-serif;
+    font-size:13px;color:var(--white);font-weight:600;
+  }
+  .stat-line::before{content:"→";color:var(--blue);font-weight:700;}
+
+  /* ---- media / autoplay-on-scroll slot ---- */
+  .media{position:relative;}
+  .os-window{border:1px solid var(--border);background:var(--surface);}
+  .os-titlebar{
+    display:flex;align-items:center;justify-content:space-between;background:var(--blue);
+    padding:11px 16px;border-bottom:1px solid var(--border);
+  }
+  .os-titlebar .name{font-size:11px;font-weight:600;letter-spacing:0.05em;}
+  .os-btns{display:flex;gap:5px;}
+  .os-btns i{width:10px;height:10px;border:1px solid var(--white);display:block;}
+  .stage{
+    position:relative;aspect-ratio:4/3;overflow:hidden;
+    background:radial-gradient(circle at 25% 20%, rgba(45,45,255,0.28), transparent 55%), #0d0d0d;
+  }
+  .stage .thumb{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:grayscale(.3) contrast(1.15) brightness(.82) saturate(.9);
+    transform:scale(1);transition:transform 6s cubic-bezier(.19,1,.22,1);
+  }
+  .entry.is-playing .stage .thumb{transform:scale(1.08);}
+  .stage .tint{position:absolute;inset:0;background:var(--blue);opacity:.24;mix-blend-mode:multiply;}
+  .stage .vignette{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.8) 100%);}
+  .stage .scan{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:24px 24px;
+  }
+  .glyph{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;opacity:.9;}
+  @media (prefers-reduced-motion: reduce){.stage .thumb{transition:none;}}
+  .media-slot-label{
+    position:absolute;bottom:16px;left:16px;right:16px;background:var(--black);border:1px solid var(--blue);
+    font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 10px;color:var(--blue);
+    width:fit-content;
+  }
+
+  /* ================= CTA ================= */
+  .cta{padding:88px 0;border-top:1px solid var(--hairline);}
+  .cta h2{font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;font-size:clamp(28px,5vw,48px);letter-spacing:-0.02em;max-width:16ch;margin-bottom:18px;}
+  .cta p{color:var(--grey);font-size:16px;max-width:52ch;margin-bottom:32px;font-weight:300;}
+  .cta-btns{display:flex;flex-wrap:wrap;gap:16px;}
+</style>
+
+<div class="crumb-bar">
+  <div class="wrap crumb-row">
+    <div><a href="#">Blog</a><span class="sep">/</span><a href="#">Case Studies</a></div>
+  </div>
+</div>
+
+<section class="article-hero">
+  <div class="grid-tex" style="opacity:.5"></div>
+  <div class="wrap" style="position:relative;">
+    <div class="eyebrow">EDT Blog — Case study roundup</div>
+    <h1 class="title">12 PROJECTS THAT SHOW WHAT EDT ACTUALLY BUILDS</h1>
+    <p class="dek">No pitch-deck language, just the work — twelve activations, installations and realtime characters we&#x27;ve shipped across Malaysia and the region, with the numbers each one actually posted.</p>
+    <div class="article-meta">
+      <div class="meta-item"><div class="k">Category</div><div class="v">Case Studies</div></div>
+      <div class="meta-item"><div class="k">Read time</div><div class="v">7 min</div></div>
+      <div class="meta-item"><div class="k">Format</div><div class="v">Roundup — 12 entries</div></div>
+      <div class="meta-item"><div class="k">Published</div><div class="v">EDT Blog</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="intro">
+  <div class="wrap">
+    <p>Every one of these started as a brief that sounded slightly too ambitious — a hologram that had to hold a real conversation, a projection that had to win against a live jury, an AI persona that had to talk back on a golf course. We build the technical layer other studios say is too complex, then we ship it.</p>
+  </div>
+</section>
+
+
+<section class="roundup" id="roundup-list">
+  <div class="wrap">
+
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">METAHRISE.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="MetaHRise VR training scene">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">01 / 12</span>
+      <h2>MetaHRise</h2>
+      <div class="tag-row">
+        <span class="tag blue">VR Training</span>
+        <span class="tag">Client — MCMC</span>
+      </div>
+      <p class="blurb">MCMC&#x27;s induction used to be a slide deck and a printed handbook — forgettable by the second slide. We rebuilt it as a VR game new hires actually finish, learning the organisation by moving through it instead of sitting through it. It&#x27;s the reason MetaHRise now holds a Malaysia Book of Records entry, not the other way around.</p>
+      <div class="stat-line">93% satisfaction · Malaysia Book of Records 2024</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">TIGER.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <div class="scan"></div>
+          <div class="media-slot-label">No photo provided for this entry</div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">02 / 12</span>
+      <h2>Say Hello, Tiger</h2>
+      <div class="tag-row">
+        <span class="tag blue">Realtime AI Persona</span>
+        <span class="tag">Client — Maybank Championship</span>
+      </div>
+      <p class="blurb">Mascots are usually a photo op — wave, pose, move on. The brief asked for one that could actually talk, so we gave Tiger a realtime voice and a face that performs in sync with it. What&#x27;s in the recap isn&#x27;t a demo-reel moment; it&#x27;s an unscripted exchange, captured live on the course.</p>
+      <div class="stat-line">Live voice + facial performance, on-ground</div>
+    </div>
+  </article>
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">CHERITAR.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="CheritAR heritage trail experience">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">03 / 12</span>
+      <h2>CheritAR</h2>
+      <div class="tag-row">
+        <span class="tag blue">AR Heritage</span>
+        <span class="tag">Client — Think City</span>
+      </div>
+      <p class="blurb">Think City wanted heritage buildings to speak for themselves without another plaque nobody reads. We layered the stories into AR instead — point a phone at a building and the history behind it surfaces on the spot. It&#x27;s since travelled further than the brief asked for: the same trail has been picked up in twelve countries.</p>
+      <div class="stat-line">12 countries reached · 1,442 AR impressions</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">ARFESTKL.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="ARFestKL festival AR trail">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">04 / 12</span>
+      <h2>ARFestKL</h2>
+      <div class="tag-row">
+        <span class="tag blue">AR Event</span>
+        <span class="tag">Client — ARFestKL</span>
+      </div>
+      <p class="blurb">A festival footprint only means something if people actually walk it. ARFestKL needed Downtown KL turned into a trail dense enough to survive a full weekend of foot traffic, so we built a QR-to-AR funnel engineered to take the volume without breaking. It held — over fifty thousand impressions and twelve thousand scans in two days.</p>
+      <div class="stat-line">52,417 AR impressions · 12,040 QR scans</div>
+    </div>
+  </article>
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">IKAT.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="IKAT Malaysia immersive exhibition">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">05 / 12</span>
+      <h2>IKAT Malaysia</h2>
+      <div class="tag-row">
+        <span class="tag blue">Immersive Exhibition</span>
+        <span class="tag">Client — Ministry of Textile</span>
+      </div>
+      <p class="blurb">Ikat weaving is generations of technique that doesn&#x27;t survive well behind glass. The Ministry of Textile wanted people to feel the craft, not just read a wall label about it, so we staged the history as a full immersive environment instead of a static display. It pulled RM3.2 million in media value and over 5,800 visitors through the doors.</p>
+      <div class="stat-line">RM3.2M media value · 5,822 visitors</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">FOUNDERS.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="AirAsia Founders&#x27; Gallery interactive wall">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">06 / 12</span>
+      <h2>AirAsia Founders&#x27; Gallery</h2>
+      <div class="tag-row">
+        <span class="tag blue">Interactive Installation</span>
+        <span class="tag">Client — AirAsia</span>
+      </div>
+      <p class="blurb">A founders&#x27; story told as wall text gets skimmed once and forgotten. AirAsia wanted theirs to be a place people actually walk through, so we combined interactive walls, AR overlays and an AI layer into one permanent gallery — the story you touch, not just read.</p>
+      <div class="stat-line">Interactive walls + AR + AI, permanent install</div>
+    </div>
+  </article>
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">GREYDAY.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="New Balance Grey Day AR try-on room">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">07 / 12</span>
+      <h2>New Balance Grey Day</h2>
+      <div class="tag-row">
+        <span class="tag blue">AR + Immersive Room</span>
+        <span class="tag">Client — New Balance</span>
+      </div>
+      <p class="blurb">Sneaker drops live and die on how they photograph. For Grey Day, New Balance needed an experience people would actually queue for and post, so we put a realtime AR try-on inside a fully immersive room built to look good from every angle a phone camera finds.</p>
+      <div class="stat-line">Realtime AR try-on experience</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">HOLOGRAM.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="Malaysia Airlines hologram stewardess">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">08 / 12</span>
+      <h2>Hologram Stewardess</h2>
+      <div class="tag-row">
+        <span class="tag blue">AI Hologram</span>
+        <span class="tag">Client — Malaysia Airlines</span>
+      </div>
+      <p class="blurb">A counter needs staffing; a hologram doesn&#x27;t. Malaysia Airlines needed a first point of contact at MATIC KL that could answer real questions, so we deployed an AI stewardess as a hologram — live, responsive, and on duty for every visitor who walks up.</p>
+      <div class="stat-line">Deployed live at MATIC KL</div>
+    </div>
+  </article>
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">PNB118.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="PNB 118 lobby interactive wall">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">09 / 12</span>
+      <h2>PNB 118 Stories</h2>
+      <div class="tag-row">
+        <span class="tag blue">Interactive Wall</span>
+        <span class="tag">Client — PNB</span>
+      </div>
+      <p class="blurb">A tower this size needed a lobby that didn&#x27;t feel like an afterthought. PNB wanted the building&#x27;s own story told at its base, so we built the largest interactive wall EDT has shipped for a single structure — the tower&#x27;s history, made touchable by anyone walking in.</p>
+      <div class="stat-line">Largest interactive install built for the tower</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">ARVENA.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="AirAsia Supersale virtual production set">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">10 / 12</span>
+      <h2>AirAsia Supersale</h2>
+      <div class="tag-row">
+        <span class="tag blue">Virtual Production</span>
+        <span class="tag">Client — AirAsia</span>
+      </div>
+      <p class="blurb">Supersale needed broadcast-grade sets on a campaign timeline, not a construction schedule. We ran the whole shoot through ARVENA, EDT&#x27;s virtual production platform, building every set in-engine instead of on a soundstage — same polish, none of the build time.</p>
+      <div class="stat-line">ARVENA platform, full deployment</div>
+    </div>
+  </article>
+  <article class="entry" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">SHAYLA.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="Shayla virtual influencer campaign">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">11 / 12</span>
+      <h2>Shayla Sis Shayla</h2>
+      <div class="tag-row">
+        <span class="tag blue">AI Virtual Influencer</span>
+        <span class="tag">Client — Safi</span>
+      </div>
+      <p class="blurb">Safi didn&#x27;t want a spokesperson who ages out of a campaign — they wanted a persona that&#x27;s entirely theirs. We built Shayla from scratch: a face, a voice, and a posting schedule, deployed as a fully virtual influencer for the national campaign.</p>
+      <div class="stat-line">National campaign deployment</div>
+    </div>
+  </article>
+  <article class="entry flip" data-entry>
+    <div class="media">
+      <div class="os-window">
+        <div class="os-titlebar"><span class="name">EARTHQUAKE.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+        <div class="stage">
+          <img class="thumb" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="Tokyo Fire Department VR earthquake simulation">
+          <div class="scan"></div><div class="tint"></div><div class="vignette"></div>
+        </div>
+      </div>
+    </div>
+    <div class="copy">
+      <span class="index">12 / 12</span>
+      <h2>VR Earthquake Simulation</h2>
+      <div class="tag-row">
+        <span class="tag blue">VR Training</span>
+        <span class="tag">Client — Tokyo Fire Department</span>
+      </div>
+      <p class="blurb">You can&#x27;t schedule an earthquake to train for it. Tokyo Fire Department needed responders to feel the disorientation before the real event does, so we built a VR simulation that puts them through the shake — training that rehearses a moment training usually can&#x27;t reach.</p>
+      <div class="stat-line">Deployed for disaster-preparedness training, Japan</div>
+    </div>
+  </article>
+
+  </div>
+</section>
+
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Got a brief that sounds too ambitious?</h2>
+    <p>That&#x27;s usually the one we want. Tell us what you&#x27;re trying to build and we&#x27;ll tell you exactly how EDT would ship it.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="#">Get a quote<span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#">See all work<span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var entries = document.querySelectorAll('[data-entry]');
+    var io = new IntersectionObserver(function(items){
+      items.forEach(function(item){
+        item.target.classList.toggle('is-playing', item.isIntersecting);
+      });
+    }, { threshold: 0.4 });
+    entries.forEach(function(el){ io.observe(el); });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta property="og:title" content="INSIDE METAHRISE">
+<meta property="og:description" content="">
+</head>
+<body>
+<title>Long-Form Article Template</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  :root{
+    --blue:#2D2DFF;
+    --blue-hover:#0000CC;
+    --black:#0A0A0A;
+    --surface:#111111;
+    --grey:#8C8C8C;
+    --white:#FFFFFF;
+    --border:#FFFFFF;
+    --hairline:rgba(255,255,255,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--blue);color:var(--white);}
+  h1,h2,h3{margin:0;text-wrap:balance;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:24px;}
+  @media(min-width:900px){.wrap{padding-inline:80px;}}
+  .col{max-width:680px;margin:0 auto;}
+  @media(min-width:1440px){.col{max-width:840px;}}
+
+  .grid-tex{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:32px 32px;
+    pointer-events:none;
+  }
+
+  /* ================= READING PROGRESS ================= */
+  .progress-track{position:fixed;top:0;left:0;right:0;height:3px;background:var(--surface);z-index:40;}
+  .progress-bar{height:100%;width:0%;background:var(--blue);transition:width 80ms linear;}
+
+  /* Header/footer/template-tag are intentionally not part of this output —
+     the article is meant to be embedded into the real EDT site/CMS, which
+     supplies its own. .btn/.btn-primary/.btn-ghost/.arrow are kept: the
+     dynamic CTA section at the bottom still uses them. */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:13px 22px;border:1px solid var(--blue);
+    transition:background 120ms ease,color 120ms ease,transform 120ms ease;
+  }
+  .btn-primary{background:var(--blue);color:var(--white);}
+  .btn-primary:hover{background:var(--blue-hover);transform:scale(1.02);}
+  .btn-ghost{background:transparent;border-color:var(--white);}
+  .btn-ghost:hover{background:var(--white);color:var(--black);}
+  .arrow{transition:transform 120ms ease;display:inline-block;}
+  .btn:hover .arrow{transform:translateX(3px);}
+
+  /* ================= CRUMB ================= */
+  .crumb-bar{border-bottom:1px solid var(--hairline);}
+  .crumb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+  .crumb-row .sep{color:var(--blue);margin:0 8px;}
+
+  /* ================= ARTICLE HERO ================= */
+  .article-hero{position:relative;overflow:hidden;padding:56px 0 40px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--blue);}
+  h1.title{
+    font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;letter-spacing:-0.02em;
+    font-size:clamp(36px,7vw,76px);line-height:1.0;max-width:16ch;
+  }
+  .dek{margin-top:24px;max-width:56ch;font-size:clamp(17px,1.9vw,20px);color:#cfcfcf;font-weight:300;}
+  .byline-row{
+    margin-top:36px;display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--hairline);
+  }
+  .byline-item{flex:1 1 140px;padding:16px 20px;border-right:1px solid var(--hairline);}
+  .byline-item:first-child{padding-left:0;}
+  .byline-item:last-child{border-right:none;}
+  .byline-item .k{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:5px;}
+  .byline-item .v{font-size:13px;font-weight:500;}
+
+  /* ================= FEATURE IMAGE ================= */
+  .feature-media{padding:8px 0 64px;}
+  .os-window{border:1px solid var(--border);background:var(--surface);}
+  .os-titlebar{
+    display:flex;align-items:center;justify-content:space-between;background:var(--blue);
+    padding:11px 16px;border-bottom:1px solid var(--border);
+  }
+  .os-titlebar .name{font-size:11px;font-weight:600;letter-spacing:0.05em;}
+  .os-btns{display:flex;gap:5px;}
+  .os-btns i{width:10px;height:10px;border:1px solid var(--white);display:block;}
+  .feature-stage{position:relative;aspect-ratio:16/9;overflow:hidden;}
+  .feature-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:grayscale(.25) contrast(1.12) brightness(.85) saturate(.9);}
+  .feature-stage .tint{position:absolute;inset:0;background:var(--blue);opacity:.2;mix-blend-mode:multiply;}
+  .feature-stage .grid-tex{opacity:.35;}
+  .feature-stage .media-slot-label{
+    position:absolute;bottom:16px;left:16px;right:16px;background:var(--black);border:1px solid var(--blue);
+    font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 10px;color:var(--blue);
+    width:fit-content;
+  }
+  .feature-caption{padding:14px 4px 0;font-size:12px;color:var(--grey);}
+
+  /* ================= ARTICLE BODY ================= */
+  .article-body{padding:0 0 32px;}
+  .lede{font-size:19px;font-weight:400;color:#e8e8e8;margin-bottom:36px;line-height:1.7;}
+  .section-label{
+    display:block;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 18px;
+  }
+
+  /* ---- numbered scroll steps ---- */
+  .steps{margin-top:8px;}
+  .step{
+    position:relative;display:grid;grid-template-columns:1fr;gap:20px;
+    padding:56px 0;border-top:1px solid var(--hairline);
+  }
+  .step:first-child{border-top:none;padding-top:0;}
+  @media(min-width:760px){
+    .step{grid-template-columns:140px 1fr;gap:40px;}
+  }
+  .step-num-col{line-height:1;}
+  @media(min-width:760px){
+    .step-num-col{position:sticky;top:24px;align-self:start;}
+  }
+  .step-num{
+    font-family:'Dela Gothic One',sans-serif;
+    font-size:clamp(48px,6.5vw,88px);line-height:1;
+    color:var(--white);
+  }
+  .body-copy p{font-size:17px;color:#d6d6d6;font-weight:300;line-height:1.8;margin-bottom:22px;}
+  .body-copy p:last-child{margin-bottom:0;}
+  .drop p:first-of-type::first-letter{
+    font-family:'Dela Gothic One',sans-serif;color:var(--blue);
+    font-size:4.4em;line-height:.72;float:left;padding:5px 10px 0 0;
+  }
+
+  [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease;}
+  [data-reveal].revealed{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){[data-reveal]{opacity:1;transform:none;transition:none;}}
+
+  .pull-quote{
+    margin:56px 0;padding-left:28px;border-left:3px solid var(--blue);
+  }
+  .pull-quote p{
+    font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:clamp(22px,3vw,30px);
+    color:var(--white);line-height:1.4;text-wrap:balance;
+  }
+  .pull-quote .src{margin-top:14px;font-size:13px;color:var(--grey);}
+
+  .stat-card{margin:56px 0;}
+  .stat-card .os-titlebar{background:var(--blue);}
+  .stat-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--hairline);}
+  @media(min-width:560px){.stat-grid{grid-template-columns:1fr 1fr;}}
+  .stat-cell{background:var(--surface);padding:28px 24px;}
+  .stat-num{font-family:'Dela Gothic One',sans-serif;font-size:clamp(32px,5vw,44px);color:var(--white);}
+  .stat-label{margin-top:8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);}
+
+  .inline-tags{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 40px;}
+  .tag{border:1px solid var(--border);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 9px;color:var(--grey);}
+  .tag.blue{border-color:var(--blue);color:var(--blue);}
+
+  .closing{padding:8px 0 24px;}
+  .closing p{font-size:17px;color:#d6d6d6;font-weight:300;line-height:1.8;margin-bottom:22px;}
+
+  /* ================= CTA ================= */
+  .cta{padding:88px 0;border-top:1px solid var(--hairline);margin-top:32px;}
+  .cta h2{font-family:'Dela Gothic One',sans-serif;text-transform:uppercase;font-size:clamp(28px,5vw,48px);letter-spacing:-0.02em;max-width:16ch;margin-bottom:18px;}
+  .cta p{color:var(--grey);font-size:16px;max-width:52ch;margin-bottom:32px;font-weight:300;}
+  .cta-btns{display:flex;flex-wrap:wrap;gap:16px;}
+</style>
+
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="crumb-bar">
+  <div class="wrap crumb-row">
+    <div><a href="#">Blog</a><span class="sep">/</span><a href="#">Long Read</a></div>
+  </div>
+</div>
+
+<section class="article-hero">
+  <div class="grid-tex" style="opacity:.5"></div>
+  <div class="wrap" style="position:relative;">
+    <div class="eyebrow">EDT Blog — Long read</div>
+    <h1 class="title">INSIDE METAHRISE</h1>
+    <p class="dek">How a corporate induction became a VR game 145 employees actually wanted to finish — and how that game ended up in the Malaysia Book of Records.</p>
+    <div class="byline-row">
+      <div class="byline-item"><div class="k">Client</div><div class="v">MCMC</div></div>
+      <div class="byline-item"><div class="k">Category</div><div class="v">Case Studies</div></div>
+      <div class="byline-item"><div class="k">Read time</div><div class="v">9 min</div></div>
+      <div class="byline-item"><div class="k">Format</div><div class="v">Long read</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-media">
+  <div class="wrap">
+    <div class="os-window" data-reveal>
+      <div class="os-titlebar"><span class="name">METAHRISE.EXE — FIELD_CAPTURE.JPG</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+      <div class="feature-stage">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIj4KICAgIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjMTExMTExIi8+CiAgICA8cGF0aCBkPSJNMCAwaDQwME0wIDMyaDQwME0wIDY0aDQwME0wIDk2aDQwME0wIDEyOGg0MDBNMCAxNjBoNDAwTTAgMTkyaDQwME0wIDIyNGg0MDBNMCAyNTZoNDAwTTAgMjg4aDQwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNSIvPgogICAgPHBhdGggZD0iTTMyIDB2MzAwTTY0IDB2MzAwTTk2IDB2MzAwTTEyOCAwdjMwME0xNjAgMHYzMDBNMTkyIDB2MzAwTTIyNCAwdjMwME0yNTYgMHYzMDBNMjg4IDB2MzAwTTMyMCAwdjMwME0zNTIgMHYzMDAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiLz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE0NiwxMDMpIHNjYWxlKDAuMjgpIj4KICAgICAgPHBhdGggZD0iTTE0MS4zOSwwaC0zNS4zdjQ0LjM2SC4xOHYzNS4zaDEwNS45djM0LjM5bC0xMDYuMDkuNDQuMTUsMzUuMywxMDUuOTQtLjQ0djQ0LjhoMzUuM2M1My42MSwwLDk3LjA4LTQzLjQ2LDk3LjA4LTk3LjA4UzE5NSwwLDE0MS4zOSwwWiIgZmlsbD0iIzJEMkRGRiIgZmlsbC1vcGFjaXR5PSIwLjU1Ii8+CiAgICAgIDxwb2x5Z29uIHBvaW50cz0iMzI3LjQ4IDcxLjc5IDMyNy40OCA0NC4zNiAyODMuMTEgNDQuMzYgMjgzLjExIDcxLjc5IDI4My4xMSAxMTYuMTUgMjgzLjExIDE0My41OCAzMjcuNDggMTQzLjU4IDMyNy40OCAxMTYuMTUgMzg5LjAyIDExNi4xNSAzODkuMDIgNzEuNzkgMzI3LjQ4IDcxLjc5IiBmaWxsPSIjMkQyREZGIiBmaWxsLW9wYWNpdHk9IjAuNTUiLz4KICAgIDwvZz4KICA8L3N2Zz4=" alt="MetaHRise on-site at MCMC — new hires moving through the induction as a playable VR environment.">
+        <div class="tint"></div>
+        <div class="grid-tex"></div>
+      </div>
+    </div>
+    <p class="feature-caption">MetaHRise on-site at MCMC — new hires moving through the induction as a playable VR environment.</p>
+  </div>
+</section>
+
+<section class="article-body">
+  <div class="wrap col">
+    <p class="lede">Most inductions are a room, a slide deck, and a printed handbook nobody re-reads after week one. MCMC wanted something that would actually stick — so we didn&#x27;t design a better slideshow. We built a game.</p>
+
+
+    <div class="steps">
+      <article class="step" data-step>
+        <div class="step-num-col"><span class="step-num">01</span></div>
+        <div class="step-content">
+          <span class="section-label">The brief</span>
+          <div class="body-copy drop" data-reveal>
+            <p>MCMC&#x27;s induction was doing what most inductions do: covering the material and losing the room by slide four. New hires walked away with a folder and a vague sense of the org chart, not a feel for the organisation they&#x27;d just joined. The ask wasn&#x27;t &quot;make the deck nicer.&quot; It was harder to say out loud and harder to brief: make people want to sit through this.</p>
+            <p>That&#x27;s a design problem before it&#x27;s a technology problem. You can&#x27;t VR your way out of boring content — you have to change what the person is actually doing while they learn it. Sitting and listening was the thing that had to go.</p>
+          </div>
+          <div class="pull-quote" data-reveal>
+  <p>"You can't VR your way out of boring content. You have to change what the person is doing while they learn it."</p>
+  <div class="src">— EDT, on the MetaHRise brief</div>
+</div>
+        </div>
+      </article>
+      <article class="step" data-step>
+        <div class="step-num-col"><span class="step-num">02</span></div>
+        <div class="step-content">
+          <span class="section-label">Why a game, specifically</span>
+          <div class="body-copy" data-reveal>
+            <p>Games teach through consequence, not through delivery. Walk the wrong way in a game and you find out immediately — nobody has to tell you. We built MetaHRise on that principle: new hires move through a VR environment structured around MCMC itself, and the organisation&#x27;s structure, values and history surface as things you discover by playing, not slides you&#x27;re told to remember.</p>
+            <p>The headset was the easy part. The harder design problem was pacing — an induction has to hold someone&#x27;s attention for long enough to cover real material, without ever feeling like a chore wearing a headset. Every beat in MetaHRise earns the next one; nothing plays just to look impressive in a demo reel.</p>
+          </div>
+        </div>
+      </article>
+      <article class="step" data-step>
+        <div class="step-num-col"><span class="step-num">03</span></div>
+        <div class="step-content">
+          <span class="section-label">What we built</span>
+          <div class="body-copy" data-reveal>
+            <p>MetaHRise plays as a sequence of environments rather than a single space — each one built around a specific part of the induction, so the content changes the room instead of a narrator changing the topic. Progress is visible and immediate: new hires can see how far they are through the experience the same way they&#x27;d see progress in any game, which turned out to matter more than we expected. People finish things they can see the end of.</p>
+          </div>
+          <div class="stat-card" data-reveal>
+  <div class="os-window">
+    <div class="os-titlebar"><span class="name">RESULTS.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
+    <div class="stat-grid">
+      <div class="stat-cell">
+        <div class="stat-num">93%</div>
+        <div class="stat-label">New-hire satisfaction, post-induction survey</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">2024</div>
+        <div class="stat-label">Malaysia Book of Records entry</div>
+      </div>
+    </div>
+  </div>
+</div>
+        </div>
+      </article>
+      <article class="step" data-step>
+        <div class="step-num-col"><span class="step-num">04</span></div>
+        <div class="step-content">
+          <span class="section-label">The record</span>
+          <div class="body-copy" data-reveal>
+            <p>The Malaysia Book of Records entry wasn&#x27;t the brief — it was a consequence of taking the brief seriously. Once MetaHRise existed as a genuinely playable induction, rather than a VR-flavoured slideshow, it qualified as something worth recognising on its own terms. We&#x27;d rather ship the record as a side effect than chase it as the headline.</p>
+          </div>
+          <div class="pull-quote" data-reveal>
+  <p>"We build the technical layer other studios say is too complex, then we ship it. The record was proof, not the point."</p>
+  <div class="src">— EDT, on shipping MetaHRise</div>
+</div>
+        </div>
+      </article>
+      <article class="step" data-step>
+        <div class="step-num-col"><span class="step-num">05</span></div>
+        <div class="step-content">
+          <span class="section-label">What we&#x27;d do differently</span>
+          <div class="body-copy" data-reveal>
+            <p>Every project teaches you where you over-built. With MetaHRise, the lesson was about scope discipline inside VR specifically — it&#x27;s easy to keep adding environments because the medium makes everything feel like it deserves one. The strongest sections were the ones we cut hardest, not the ones we added the most detail to. That&#x27;s the note we carry into every VR training build since.</p>
+          </div>
+          <div class="inline-tags">
+  <span class="tag blue">VR Training</span>
+  <span class="tag">Corporate Onboarding</span>
+  <span class="tag">Malaysia Book of Records</span>
+</div>
+        </div>
+      </article>
+    </div>
+
+    <div class="closing" data-reveal>
+      <p>MetaHRise is still running inductions at MCMC. The record is framed somewhere in an office we don&#x27;t visit often enough — the 93% satisfaction number is the one we actually check.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Got an induction nobody finishes?</h2>
+    <p>Tell us what the content actually is and we&#x27;ll tell you what it should feel like to go through — VR, AR, or otherwise.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="#">Get a quote<span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="#">Read more case studies<span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  var bar = document.getElementById('progressBar');
+  function updateProgress(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (scrolled / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var targets = document.querySelectorAll('[data-reveal]');
+    var io = new IntersectionObserver(function(items){
+      items.forEach(function(item){
+        if (item.isIntersecting) {
+          item.target.classList.add('revealed');
+          io.unobserve(item.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('revealed'); });
+  }
+</script>
+
+</body>
+</html>

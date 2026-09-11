@@ -92,41 +92,68 @@ export function ArticleDetailPage() {
 
       {article.status === 'draft' && (
         <div className="panel">
-          <p>This article hasn't been generated yet.</p>
-          <button type="button" className="btn btn-primary" onClick={generate} disabled={triggering}>
-            {triggering ? 'Starting…' : 'Generate'}
-          </button>
-          {triggerError && <p className="field-error">{triggerError}</p>}
+          <PanelBar label="DRAFT.EXE" />
+          <div className="panel__body">
+            <p>This article hasn't been generated yet.</p>
+            <button type="button" className="btn btn-primary" onClick={generate} disabled={triggering}>
+              {triggering ? 'Starting…' : 'Generate'}
+              {!triggering && <span className="arrow">→</span>}
+            </button>
+            {triggerError && <p className="field-error">{triggerError}</p>}
+          </div>
         </div>
       )}
 
       {article.status === 'generating' && (
         <div className="panel">
-          <p>Generating your article — this can take a minute or two.</p>
+          <PanelBar label="GENERATING.EXE" />
+          <div className="panel__body">
+            <p>Generating your article — this can take a minute or two.</p>
+          </div>
         </div>
       )}
 
       {article.status === 'failed' && (
         <div className="panel panel--error">
-          <p>Generation failed. {article.errorCode ? ERROR_HINTS[article.errorCode] : ''}</p>
-          {article.errorMessage && <p className="muted">{article.errorMessage}</p>}
-          <button type="button" className="btn btn-primary" onClick={generate} disabled={triggering}>
-            {triggering ? 'Retrying…' : 'Try again'}
-          </button>
+          <PanelBar label="ERROR.EXE" />
+          <div className="panel__body">
+            <p>Generation failed. {article.errorCode ? ERROR_HINTS[article.errorCode] : ''}</p>
+            {article.errorMessage && <p className="muted">{article.errorMessage}</p>}
+            <button type="button" className="btn btn-primary" onClick={generate} disabled={triggering}>
+              {triggering ? 'Retrying…' : 'Try again'}
+              {!triggering && <span className="arrow">→</span>}
+            </button>
+          </div>
         </div>
       )}
 
       {article.status === 'ready' && (
         <div className="panel">
-          <p>Your article is ready.</p>
-          <div className="btn-row">
-            <button type="button" className="btn" onClick={regenerate} disabled={regenerating}>
-              {regenerating ? 'Creating…' : 'Regenerate as new version'}
-            </button>
+          <PanelBar label="ARTICLE.EXE" />
+          <div className="panel__body">
+            <p>Your article is ready.</p>
+            <div className="btn-row">
+              <button type="button" className="btn" onClick={regenerate} disabled={regenerating}>
+                {regenerating ? 'Creating…' : 'Regenerate as new version'}
+              </button>
+            </div>
+            <ArticlePreview storagePath={article.outputHtmlStoragePath} />
           </div>
-          <ArticlePreview storagePath={article.outputHtmlStoragePath} />
         </div>
       )}
+    </div>
+  );
+}
+
+function PanelBar({ label }: { label: string }) {
+  return (
+    <div className="panel__bar">
+      <span className="panel__bar-label">{label}</span>
+      <span className="panel__dots">
+        <span />
+        <span />
+        <span />
+      </span>
     </div>
   );
 }
@@ -171,7 +198,7 @@ function ArticlePreview({ storagePath }: { storagePath: string | null }) {
   return (
     <div>
       <button type="button" className="btn btn-primary" onClick={download}>
-        Download .html
+        Download .html<span className="arrow">→</span>
       </button>
       <iframe title="Article preview" className="preview-frame" sandbox="allow-scripts" srcDoc={html} />
     </div>

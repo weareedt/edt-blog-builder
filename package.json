@@ -9,6 +9,7 @@
     "templates:clean": "node scripts/clean-templates.mjs",
     "templates:build": "node scripts/build-template-registry.mjs",
     "templates:check": "node scripts/check-templates.mjs",
+    "previews:build": "npm run previews:build --workspace functions",
     "emulators": "firebase emulators:start --project demo-edt-blog-builder --import=./.emulator-data --export-on-exit=./.emulator-data",
     "dev:app": "npm run dev --workspace app",
     "dev:functions": "npm run build:watch --workspace functions",
