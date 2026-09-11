@@ -6,7 +6,7 @@ import { db } from '../lib/firebase';
 import { createArticleDoc } from '../lib/createArticleDoc';
 import { UnsupportedImageError } from '../lib/downscaleImage';
 import { uploadPendingImages, type PendingImage } from '../lib/uploadImages';
-import { TemplatePreviewFrame } from '../components/TemplatePreviewFrame';
+import { TemplatePreviewFrame, type PreviewAnimation } from '../components/TemplatePreviewFrame';
 import {
   CATEGORY_IDS,
   GALLERY_CATALOG,
@@ -19,6 +19,17 @@ import {
 
 const NONE = 'none' as const;
 const AUTO_PLACEMENT = 'auto' as const;
+
+// Each gallery gets the animation that actually demonstrates it, plus (for
+// the flip-card gallery) a narrower render so its own mobile single-column
+// layout shows one card up close rather than a whole grid shrunk down.
+const GALLERY_PREVIEW_PROPS: Record<
+  GalleryId,
+  { animation: PreviewAnimation; renderWidth?: number; renderHeight?: number }
+> = {
+  'gallery-accordion': { animation: 'accordion' },
+  'gallery-flipcards-alternating': { animation: 'flip', renderWidth: 480, renderHeight: 330 },
+};
 
 const PLACEMENT_LABELS: Record<GalleryPlacement, string> = {
   'after-intro': 'After the intro',
@@ -215,28 +226,34 @@ export function NewArticlePage() {
                 <div className="template-card__blurb">Photos appear inline in the article body only.</div>
               </div>
             </label>
-            {GALLERY_CATALOG.map((g) => (
-              <label
-                key={g.id}
-                className={`template-card${galleryId === g.id ? ' template-card--selected' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="gallery"
-                  checked={galleryId === g.id}
-                  onChange={() => setGalleryId(g.id)}
-                />
-                <TemplatePreviewFrame
-                  previewUrl={`/template-previews/${g.id}.html`}
-                  label={g.label}
-                  frameWidth={220}
-                />
-                <div className="template-card__copy">
-                  <div className="template-card__label">{g.label}</div>
-                  <div className="template-card__blurb">{g.blurb}</div>
-                </div>
-              </label>
-            ))}
+            {GALLERY_CATALOG.map((g) => {
+              const preview = GALLERY_PREVIEW_PROPS[g.id];
+              return (
+                <label
+                  key={g.id}
+                  className={`template-card${galleryId === g.id ? ' template-card--selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="gallery"
+                    checked={galleryId === g.id}
+                    onChange={() => setGalleryId(g.id)}
+                  />
+                  <TemplatePreviewFrame
+                    previewUrl={`/template-previews/${g.id}.html`}
+                    label={g.label}
+                    frameWidth={220}
+                    renderWidth={preview.renderWidth}
+                    renderHeight={preview.renderHeight}
+                    animation={preview.animation}
+                  />
+                  <div className="template-card__copy">
+                    <div className="template-card__label">{g.label}</div>
+                    <div className="template-card__blurb">{g.blurb}</div>
+                  </div>
+                </label>
+              );
+            })}
           </div>
 
           {gallery && (

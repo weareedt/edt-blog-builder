@@ -102,7 +102,7 @@ export interface GalleryCatalogEntry {
 export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
   {
     id: 'template-01-case-study-roundup',
-    label: 'Case study roundup',
+    label: 'Project Roundup',
     blurb: 'A roundup of project entries, each with a media panel framed as an OS window, tags, a blurb, and a stat line.',
     structureRangeLabel: '3 to 12 project entries',
     minImages: 0,
@@ -113,7 +113,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
   },
   {
     id: 'template-02-longform-numbered-steps',
-    label: 'Long-form numbered steps',
+    label: 'Step-by-Step Deep Dive',
     blurb: 'A single deep-dive story told as numbered steps — brief, approach, build, results, retro — with one optional feature image and per-step highlights.',
     structureRangeLabel: '3 to 8 numbered steps',
     minImages: 0,
@@ -124,7 +124,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
   },
   {
     id: 'template-03-standard-article-toc',
-    label: 'Standard article with table of contents',
+    label: 'In-Depth Guide',
     blurb: 'A sticky TOC with scrollspy, prose sections, an optional comparison table and callout.',
     structureRangeLabel: '3 to 9 sections',
     minImages: 0,
@@ -135,7 +135,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
   },
   {
     id: 'template-04-basic-scroll',
-    label: 'Basic scroll',
+    label: 'Flowing Deep Dive',
     blurb: 'A single deep-dive story told as a flat scroll of labelled sections — the same story format as long-form numbered steps, without the step numbering.',
     structureRangeLabel: '3 to 8 sections',
     minImages: 0,

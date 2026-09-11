@@ -427,6 +427,19 @@ fieldset.field {
   position: relative;
   overflow: hidden;
   background: var(--black);
+  /* Whatever sits at the crop line on any edge (an OS-window panel
+     mid-way through, a card row, a two-column entry) fades to the
+     frame's own background instead of ending on a hard-cut border —
+     reads as "there's more here," not a broken box. Two gradients
+     intersected give a vignette on all four sides at once. */
+  mask-image:
+    linear-gradient(to bottom, black 78%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to bottom, black 78%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  -webkit-mask-composite: source-in;
 }
 
 .preview-frame-shell__viewport iframe {

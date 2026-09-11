@@ -113,9 +113,15 @@ function main() {
     const { hbsSource, exampleContent } = readAnnotated(t.dir);
     const content = t.schema.parse(exampleContent);
     const imageSrcById = placeholderMapFor(content);
+    // The picker thumbnail should read as "here's this template's layout",
+    // not "here's an article about MetaHRise" — the example content's
+    // headline/dek is specific to one case study, so it's blanked for the
+    // preview render only (the same example content still powers fixture
+    // generation and the roundtrip tests, untouched).
+    const previewContent = { ...content, title: '', dek: '' };
     // prepareTemplate03Context takes no imageSrcById — every other one does.
     const context = (t.prepareContext as (input: Record<string, unknown>) => Record<string, unknown>)({
-      content,
+      content: previewContent,
       imageSrcById,
       galleryHtml: null,
     });
