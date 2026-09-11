@@ -6,13 +6,26 @@ import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 // A `demo-`-prefixed project ID tells the Firebase SDKs (and the emulator
 // suite) to run fully offline — no real project, no billing, no API key
-// needed for local development.
-const firebaseConfig = {
-  apiKey: 'demo-key',
-  projectId: 'demo-edt-blog-builder',
-  authDomain: 'demo-edt-blog-builder.firebaseapp.com',
-  storageBucket: 'demo-edt-blog-builder.appspot.com',
-};
+// needed for local development. Production builds (served via Firebase
+// Hosting) use the real project instead; its apiKey is not a secret —
+// it's scoped by the project's security rules, same as any Firebase web
+// app config.
+const firebaseConfig = import.meta.env.DEV
+  ? {
+      apiKey: 'demo-key',
+      projectId: 'demo-edt-blog-builder',
+      authDomain: 'demo-edt-blog-builder.firebaseapp.com',
+      storageBucket: 'demo-edt-blog-builder.appspot.com',
+    }
+  : {
+      apiKey: 'AIzaSyAf4Jw0at5jGZbCr8CnxJ7x_J5cTFJ5ujU',
+      projectId: 'edt-blog-builder',
+      authDomain: 'edt-blog-builder.firebaseapp.com',
+      storageBucket: 'edt-blog-builder.firebasestorage.app',
+      messagingSenderId: '64124708364',
+      appId: '1:64124708364:web:f137598694121b3d0af029',
+      measurementId: 'G-TRM758L7HW',
+    };
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
