@@ -1,4 +1,5 @@
 import './admin';
+import type { z } from 'zod';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
@@ -15,12 +16,44 @@ import { renderArticle } from './render/renderArticle';
 import { wrapDocument } from './render/wrapDocument';
 import { inlineImages, PayloadTooLargeError } from './render/inlineImages';
 import { slugify } from './render/slugify';
+import { prepareTemplate01Context } from './templates/content/template01.prepareContext';
+import { prepareTemplate02Context } from './templates/content/template02.prepareContext';
 import { prepareTemplate03Context } from './templates/content/template03.prepareContext';
-import type { Template03Content } from './templates/content/template03.schema';
+import { prepareTemplate04Context } from './templates/content/template04.prepareContext';
 import { prepareGalleryAccordionContext } from './templates/content/galleryAccordion.prepareContext';
-import type { GalleryAccordionContent } from './templates/content/galleryAccordion.schema';
+import { prepareGalleryFlipcardsAlternatingContext } from './templates/content/galleryFlipcardsAlternating.prepareContext';
 import type { ArticleDoc, ArticleErrorCode } from './templates/article';
-import type { GalleryPlacement } from './templates/types';
+import type { GalleryPlacement, TemplateId, GalleryId } from './templates/types';
+
+// One entry per templateRegistry key, normalizing each template's own
+// prepareContext signature (they differ — template-03 takes no images,
+// the rest do) to a single shape generateArticle can call generically.
+// `content` is typed `any` here deliberately: each function already knows,
+// from its own schema import, exactly which shape it expects — the
+// generateArticle caller only ever supplies content that already parsed
+// against that same template's schema.
+const prepareContextByTemplateId: Record<
+  TemplateId,
+  (input: { content: any; imageSrcById: Record<string, string>; galleryHtml: string | null }) => Record<string, unknown>
+> = {
+  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml }) =>
+    prepareTemplate01Context({ content, imageSrcById, galleryHtml }),
+  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml }) =>
+    prepareTemplate02Context({ content, imageSrcById, galleryHtml }),
+  'template-03-standard-article-toc': ({ content, galleryHtml }) =>
+    prepareTemplate03Context({ content, galleryHtml }),
+  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml }) =>
+    prepareTemplate04Context({ content, imageSrcById, galleryHtml }),
+};
+
+const prepareGalleryContextByGalleryId: Record<
+  GalleryId,
+  (input: { content: any; imageSrcById: Record<string, string> }) => Record<string, unknown>
+> = {
+  'gallery-accordion': ({ content, imageSrcById }) => prepareGalleryAccordionContext({ content, imageSrcById }),
+  'gallery-flipcards-alternating': ({ content, imageSrcById }) =>
+    prepareGalleryFlipcardsAlternatingContext({ content, imageSrcById }),
+};
 
 const PROMPT_VERSION = 'p1';
 const USE_FIXTURE_CONTENT =
@@ -84,16 +117,14 @@ export const generateArticle = onCall(
       throw new HttpsError('internal', errorMessage);
     }
 
-    // v1 supports only template-03 — the other 3 templates land in Phase 4.
-    if (article.templateId !== 'template-03-standard-article-toc') {
-      return fail('UNKNOWN', `Template "${article.templateId}" is not yet supported.`);
+    const templateEntry = templateRegistry[article.templateId];
+    if (!templateEntry) {
+      return fail('UNKNOWN', `Template "${article.templateId}" is not supported.`);
     }
-    const templateEntry = templateRegistry['template-03-standard-article-toc'];
 
-    const galleryEntry =
-      article.galleryId === 'gallery-accordion' ? galleryRegistry['gallery-accordion'] : null;
+    const galleryEntry = article.galleryId ? galleryRegistry[article.galleryId] : null;
     if (article.galleryId && !galleryEntry) {
-      return fail('UNKNOWN', `Gallery "${article.galleryId}" is not yet supported.`);
+      return fail('UNKNOWN', `Gallery "${article.galleryId}" is not supported.`);
     }
 
     // A placement the user requested only counts if this template actually
@@ -108,8 +139,13 @@ export const generateArticle = onCall(
 
     try {
       // ---- 1. Content generation (or fixture, for zero-cost dev) ----
-      let templateContent: Template03Content;
-      let galleryContent: GalleryAccordionContent | null = null;
+      // Untyped here deliberately: the concrete shape differs per
+      // templateId/galleryId, and every consumer below (persistence,
+      // prepareContextByTemplateId/prepareGalleryContextByGalleryId) either
+      // treats it opaquely or already knows, from its own schema import,
+      // exactly which shape to expect.
+      let templateContent: any;
+      let galleryContent: any = null;
       let usage: UsageTotals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
 
       if (USE_FIXTURE_CONTENT) {
@@ -121,7 +157,7 @@ export const generateArticle = onCall(
           // test — remap by position rather than requiring an exact match,
           // since fixture mode's whole point is not depending on that.
           galleryContent = {
-            items: galleryContent.items
+            items: (galleryContent.items as Array<Record<string, unknown>>)
               .slice(0, article.images.length)
               .map((item, i) => ({ ...item, imageId: article.images[i].id })),
           };
@@ -160,7 +196,13 @@ export const generateArticle = onCall(
           // existing one-retry corrective loop, rather than silently
           // resolving to an empty <img src> at render time.
           const uploadedImageIds = new Set(article.images.map((img) => img.id));
-          const strictGallerySchema = galleryEntry.schema.refine(
+          // Both gallery schemas share this shape; widened to a single
+          // concrete ZodType so `.refine` resolves to one signature instead
+          // of a union of incompatible overloads.
+          const gallerySchema = galleryEntry.schema as unknown as z.ZodType<{
+            items: Array<{ imageId: string }>;
+          }>;
+          const strictGallerySchema = gallerySchema.refine(
             (content) => content.items.every((item) => uploadedImageIds.has(item.imageId)),
             { message: `Every imageId must be one of the uploaded images: ${[...uploadedImageIds].join(', ')}` }
           );
@@ -191,28 +233,29 @@ export const generateArticle = onCall(
       });
 
       // ---- 2. Render ----
+      // Computed once and shared between the gallery and the main template
+      // body — both draw imageIds from the same uploaded article.images.
+      const imageSrcById = article.images.length > 0 ? await inlineImages(article.images) : {};
+
       let galleryHtml: string | null = null;
       let resolvedGalleryPlacement: GalleryPlacement | null = null;
 
       if (galleryEntry && galleryContent) {
-        const galleryImageSrcById = await inlineImages(article.images);
-        const galleryContext = prepareGalleryAccordionContext({
+        const galleryContext = prepareGalleryContextByGalleryId[article.galleryId as GalleryId]({
           content: galleryContent,
-          imageSrcById: galleryImageSrcById,
+          imageSrcById,
         });
         galleryHtml = renderArticle(galleryEntry.hbsSource, galleryContext);
         resolvedGalleryPlacement = requestedPlacement ?? templateContent.galleryPlacement;
       }
 
-      const templateContext = prepareTemplate03Context({
+      const templateContext = prepareContextByTemplateId[article.templateId]({
         // Safe: resolvedGalleryPlacement is only ever set to a value drawn
         // from requestedPlacement (already checked against this template's
         // supportedGalleryPlacements above) or the model's own — Zod-
         // validated against this same narrower enum — galleryPlacement.
-        content: {
-          ...templateContent,
-          galleryPlacement: resolvedGalleryPlacement as Template03Content['galleryPlacement'],
-        },
+        content: { ...templateContent, galleryPlacement: resolvedGalleryPlacement },
+        imageSrcById,
         galleryHtml,
       });
       const fragment = renderArticle(templateEntry.hbsSource, templateContext);

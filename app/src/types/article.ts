@@ -8,9 +8,13 @@ export type CategoryId = 'Guides' | 'Case Studies' | 'Products' | 'Insights';
 
 export const CATEGORY_IDS: CategoryId[] = ['Guides', 'Case Studies', 'Products', 'Insights'];
 
-export type TemplateId = 'template-03-standard-article-toc';
+export type TemplateId =
+  | 'template-01-case-study-roundup'
+  | 'template-02-longform-numbered-steps'
+  | 'template-03-standard-article-toc'
+  | 'template-04-basic-scroll';
 
-export type GalleryId = 'gallery-accordion';
+export type GalleryId = 'gallery-accordion' | 'gallery-flipcards-alternating';
 
 export type GalleryPlacement = 'after-intro' | 'mid-article' | 'before-cta' | 'end-of-article';
 
@@ -82,6 +86,7 @@ export interface TemplateCatalogEntry {
   maxImages: number;
   imagesNote: string;
   supportsGallery: boolean;
+  supportedGalleryPlacements: GalleryPlacement[];
 }
 
 export interface GalleryCatalogEntry {
@@ -94,6 +99,26 @@ export interface GalleryCatalogEntry {
 
 export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
   {
+    id: 'template-01-case-study-roundup',
+    label: 'Case study roundup',
+    blurb: 'A roundup of project entries, each with a media panel framed as an OS window, tags, a blurb, and a stat line.',
+    minImages: 0,
+    maxImages: 12,
+    imagesNote: 'Each entry can carry one photo. An entry without one shows a labelled placeholder panel — that is normal for this template.',
+    supportsGallery: true,
+    supportedGalleryPlacements: ['after-intro', 'end-of-article'],
+  },
+  {
+    id: 'template-02-longform-numbered-steps',
+    label: 'Long-form numbered steps',
+    blurb: 'A single deep-dive story told as numbered steps — brief, approach, build, results, retro — with one optional feature image and per-step highlights.',
+    minImages: 0,
+    maxImages: 1,
+    imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',
+    supportsGallery: true,
+    supportedGalleryPlacements: ['after-intro', 'before-cta'],
+  },
+  {
     id: 'template-03-standard-article-toc',
     label: 'Standard article with table of contents',
     blurb: 'A sticky TOC with scrollspy, prose sections, an optional comparison table and callout.',
@@ -101,6 +126,17 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     maxImages: 0,
     imagesNote: 'This template shows photos through an inserted gallery component, not inline images.',
     supportsGallery: true,
+    supportedGalleryPlacements: ['mid-article', 'before-cta'],
+  },
+  {
+    id: 'template-04-basic-scroll',
+    label: 'Basic scroll',
+    blurb: 'A single deep-dive story told as a flat scroll of labelled sections — the same story format as long-form numbered steps, without the step numbering.',
+    minImages: 0,
+    maxImages: 1,
+    imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',
+    supportsGallery: true,
+    supportedGalleryPlacements: ['after-intro', 'before-cta'],
   },
 ];
 
@@ -109,6 +145,13 @@ export const GALLERY_CATALOG: GalleryCatalogEntry[] = [
     id: 'gallery-accordion',
     label: 'Accordion gallery',
     blurb: 'Horizontal panels that expand on hover, each with a tag, title, and a real metric.',
+    itemMin: 3,
+    itemMax: 8,
+  },
+  {
+    id: 'gallery-flipcards-alternating',
+    label: 'Flip-card gallery',
+    blurb: 'A grid of cards that flip on click/hover to reveal a project blurb behind the photo.',
     itemMin: 3,
     itemMax: 8,
   },

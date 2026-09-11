@@ -19,6 +19,13 @@ import {
 const NONE = 'none' as const;
 const AUTO_PLACEMENT = 'auto' as const;
 
+const PLACEMENT_LABELS: Record<GalleryPlacement, string> = {
+  'after-intro': 'After the intro',
+  'mid-article': 'Mid-article',
+  'before-cta': 'Before the closing CTA',
+  'end-of-article': 'End of article',
+};
+
 export function NewArticlePage() {
   const { uid } = useAuth();
   const navigate = useNavigate();
@@ -27,7 +34,7 @@ export function NewArticlePage() {
   const [category, setCategory] = useState<CategoryId>('Insights');
   const [angle, setAngle] = useState('');
   const [keyPointsText, setKeyPointsText] = useState('');
-  const [templateId] = useState<TemplateId>(TEMPLATE_CATALOG[0].id);
+  const [templateId, setTemplateId] = useState<TemplateId>(TEMPLATE_CATALOG[0].id);
   const [galleryId, setGalleryId] = useState<GalleryId | typeof NONE>(NONE);
   const [placement, setPlacement] = useState<GalleryPlacement | typeof AUTO_PLACEMENT>(
     AUTO_PLACEMENT
@@ -52,6 +59,14 @@ export function NewArticlePage() {
       userNote: null,
     }));
     setPendingImages((prev) => [...prev, ...additions]);
+  }
+
+  function onTemplateChange(id: TemplateId) {
+    setTemplateId(id);
+    const nextTemplate = TEMPLATE_CATALOG.find((t) => t.id === id)!;
+    if (placement !== AUTO_PLACEMENT && !nextTemplate.supportedGalleryPlacements.includes(placement)) {
+      setPlacement(AUTO_PLACEMENT);
+    }
   }
 
   function removeImage(id: string) {
@@ -150,9 +165,24 @@ export function NewArticlePage() {
 
         <fieldset className="field">
           <legend>Template</legend>
-          <div className="template-card template-card--selected">
-            <div className="template-card__label">{template.label}</div>
-            <div className="template-card__blurb">{template.blurb}</div>
+          <div className="template-card-list">
+            {TEMPLATE_CATALOG.map((t) => (
+              <label
+                key={t.id}
+                className={`template-card${templateId === t.id ? ' template-card--selected' : ''}`}
+              >
+                <input
+                  type="radio"
+                  name="template"
+                  checked={templateId === t.id}
+                  onChange={() => onTemplateChange(t.id)}
+                />
+                <div>
+                  <div className="template-card__label">{t.label}</div>
+                  <div className="template-card__blurb">{t.blurb}</div>
+                </div>
+              </label>
+            ))}
           </div>
         </fieldset>
 
@@ -190,8 +220,11 @@ export function NewArticlePage() {
                   onChange={(e) => setPlacement(e.target.value as GalleryPlacement | typeof AUTO_PLACEMENT)}
                 >
                   <option value={AUTO_PLACEMENT}>Let Claude decide</option>
-                  <option value="mid-article">Mid-article</option>
-                  <option value="before-cta">Before the closing CTA</option>
+                  {template.supportedGalleryPlacements.map((p) => (
+                    <option key={p} value={p}>
+                      {PLACEMENT_LABELS[p]}
+                    </option>
+                  ))}
                 </select>
               </label>
 

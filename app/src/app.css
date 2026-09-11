@@ -240,9 +240,19 @@ fieldset.field {
   gap: 6px;
 }
 
+.template-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .template-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   border: 1px solid var(--hairline);
   padding: 14px 16px;
+  cursor: pointer;
 }
 
 .template-card--selected {
