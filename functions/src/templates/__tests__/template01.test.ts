@@ -12,14 +12,15 @@ const ANNOTATED_DIR = join(REPO_ROOT, 'templates', 'annotated', 'template-01-cas
 // original clean file: the original's sample images are ALL still-unswapped
 // placeholders, so every entry (image or not) carries a "swap this" label
 // that only makes sense for unfinished sample content — never for a real
-// uploaded photo. The annotation deliberately renders that label only for
-// entries with no photo at all (see the note in template.hbs), which is a
-// real, intentional divergence from the source's literal markup, not
-// something a whitespace/anchor normalization pass can paper over. This
-// test instead proves structural fidelity directly: every field from the
+// uploaded photo. The annotation deliberately omits the media column
+// entirely for an entry with no photo at all (see the note in
+// template.hbs) rather than rendering an empty frame, which is a real,
+// intentional divergence from the source's literal markup, not something
+// a whitespace/anchor normalization pass can paper over. This test
+// instead proves structural fidelity directly: every field from the
 // original entries' real content renders correctly, alternation is
-// computed by the renderer, and images resolve (or correctly fall back)
-// per entry.
+// computed by the renderer, and images resolve (or the whole media
+// column is correctly omitted) per entry.
 describe('template-01 structural fidelity', () => {
   function renderExample(imageIds: string[]) {
     const hbsSource = readFileSync(join(ANNOTATED_DIR, 'template.hbs'), 'utf8');
@@ -33,9 +34,9 @@ describe('template-01 structural fidelity', () => {
   it('renders all 12 entries with correct alternation, tags, and index labels', () => {
     const rendered = renderExample(['img-1', 'img-2', 'img-3', 'img-4', 'img-5', 'img-6', 'img-7', 'img-8', 'img-9', 'img-10', 'img-11']);
 
-    expect((rendered.match(/class="entry(?: flip)?" data-entry/g) ?? []).length).toBe(12);
+    expect((rendered.match(/class="entry(?: flip)?(?: no-media)?" data-entry/g) ?? []).length).toBe(12);
     // Odd 1-based positions (index 0, 2, 4...) are plain; even (index 1, 3, 5...) are flipped.
-    expect((rendered.match(/class="entry flip" data-entry/g) ?? []).length).toBe(6);
+    expect((rendered.match(/class="entry flip(?: no-media)?" data-entry/g) ?? []).length).toBe(6);
 
     expect(rendered).toContain('<span class="name">METAHRISE.EXE</span>');
     expect(rendered).toContain('<h2>MetaHRise</h2>');
@@ -48,15 +49,21 @@ describe('template-01 structural fidelity', () => {
     expect(rendered).toContain('<h2>VR Earthquake Simulation</h2>');
   });
 
-  it('renders a real image for entries with one, and the placeholder label for the one entry without', () => {
+  it('renders a real image for entries with one, and omits the whole media column for the one entry without', () => {
     const rendered = renderExample(['img-1', 'img-2', 'img-3', 'img-4', 'img-5', 'img-6', 'img-7', 'img-8', 'img-9', 'img-10', 'img-11']);
 
     expect((rendered.match(/<img class="thumb"/g) ?? []).length).toBe(11);
-    expect((rendered.match(/No photo provided for this entry/g) ?? []).length).toBe(1);
-    // "Say Hello, Tiger" is the entry with no imageId in the example content.
-    const tigerBlock = rendered.slice(rendered.indexOf('TIGER.EXE'), rendered.indexOf('TIGER.EXE') + 800);
-    expect(tigerBlock).toContain('No photo provided for this entry');
-    expect(tigerBlock).not.toContain('<img class="thumb"');
+    // One media column per entry that actually has a photo — the one
+    // without ("Say Hello, Tiger") gets no media column at all, not an
+    // empty frame with explanatory text.
+    expect((rendered.match(/class="media"/g) ?? []).length).toBe(11);
+    expect(rendered).not.toContain('No photo provided');
+    // "Say Hello, Tiger" is the entry with no imageId in the example
+    // content — its windowLabel (rendered only inside the now-omitted
+    // os-titlebar) correctly does not appear, but its other copy still does.
+    expect(rendered).not.toContain('TIGER.EXE');
+    expect(rendered).toContain('<h2>Say Hello, Tiger</h2>');
+    expect(rendered).toContain('class="entry flip no-media" data-entry');
   });
 
   it('omits the client tag when client is null', () => {
@@ -130,7 +137,7 @@ describe('template-01 structural fidelity', () => {
           galleryHtml: '<div class="gallery-wrap"><!-- gallery --></div>',
         })
       );
-      expect((rendered.match(/class="entry(?: flip)?" data-entry/g) ?? []).length).toBe(count);
+      expect((rendered.match(/class="entry(?: flip)?(?: no-media)?" data-entry/g) ?? []).length).toBe(count);
       expect(rendered).toContain('class="cta"');
       expect(rendered).toContain('gallery-wrap');
     }

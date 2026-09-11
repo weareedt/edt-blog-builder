@@ -83,16 +83,13 @@ describe('template-02 golden round-trip', () => {
       .replace('top:104px', 'top:24px');
 
     const headerFooterCommentMarker = /\/\* Header\/footer\/template-tag are intentionally[\s\S]*?\*\/\n {2}/;
-    // The source's one feature-image slot has no "no photo" fallback state
-    // (its sample image is always populated) — this template adds one
-    // defensively, matching the pattern already established for
-    // template-01's per-entry placeholder. It should not normally trigger
-    // (the imageId is constrained to actually-uploaded images upstream),
-    // but the renderer must not emit a broken empty <img> if it ever did.
-    const fallbackCssMarker = /\s*\.feature-stage \.media-slot-label\{[\s\S]*?\}\n/;
+    // If there's no photo for the feature-image slot, the whole section is
+    // omitted (see the {{#if featureImage.src}} guard) rather than shown
+    // as an empty frame — it should not normally trigger (the imageId is
+    // constrained to actually-uploaded images upstream), but this is what
+    // makes that the renderer's behavior rather than a broken empty <img>.
     const renderedStripped = rendered
       .replace(headerFooterCommentMarker, '')
-      .replace(fallbackCssMarker, '')
       // The source's eyebrow line ("Inside the build") is bespoke prose
       // written for this one demo article, not a reusable template-level
       // label — like template-01's eyebrow, it's replaced with a label

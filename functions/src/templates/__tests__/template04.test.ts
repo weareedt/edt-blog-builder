@@ -55,12 +55,10 @@ describe('template-04 golden round-trip', () => {
     const expected = stripHeaderFooterChrome(readFileSync(CLEAN_FILE, 'utf8'));
 
     const headerFooterCommentMarker = /\/\* Header\/footer\/template-tag are intentionally[\s\S]*?\*\/\n {2}/;
-    // Same defensive fallback as template-02's feature image — see the
-    // comment there.
-    const fallbackCssMarker = /\s*\.feature-stage \.media-slot-label\{[\s\S]*?\}\n/;
+    // Same "no photo means no section at all" behavior as template-02's
+    // feature image — see the comment there.
     const renderedStripped = rendered
       .replace(headerFooterCommentMarker, '')
-      .replace(fallbackCssMarker, '')
       // Same bespoke-demo-copy divergence as template-02's eyebrow line.
       .replace('EDT Blog — Long read', 'EDT Blog — ANY');
     expect(renderedStripped).not.toBe(rendered); // fails loudly if either marker regex stops matching

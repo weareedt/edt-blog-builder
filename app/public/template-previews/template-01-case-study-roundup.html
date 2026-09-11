@@ -107,6 +107,12 @@
     .entry{grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
     .entry.flip .media{order:2;}
     .entry.flip .copy{order:1;}
+    /* No photo for this entry: the media column is omitted entirely
+       (guarded further down, per-entry) rather than left as an empty
+       frame, so the copy column takes the full row instead of leaving
+       a blank second column. */
+    .entry.no-media{grid-template-columns:1fr;}
+    .entry.no-media .copy{max-width:70ch;}
   }
   .index{
     font-family:'Dela Gothic One',sans-serif;font-size:13px;color:var(--blue);
@@ -156,11 +162,6 @@
   }
   .glyph{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;opacity:.9;}
   @media (prefers-reduced-motion: reduce){.stage .thumb{transition:none;}}
-  .media-slot-label{
-    position:absolute;bottom:16px;left:16px;right:16px;background:var(--black);border:1px solid var(--blue);
-    font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 10px;color:var(--blue);
-    width:fit-content;
-  }
 
   /* ================= CTA ================= */
   .cta{padding:88px 0;border-top:1px solid var(--hairline);}
@@ -221,16 +222,7 @@
       <div class="stat-line">93% satisfaction · Malaysia Book of Records 2024</div>
     </div>
   </article>
-  <article class="entry flip" data-entry>
-    <div class="media">
-      <div class="os-window">
-        <div class="os-titlebar"><span class="name">TIGER.EXE</span><div class="os-btns"><i></i><i></i><i></i></div></div>
-        <div class="stage">
-          <div class="scan"></div>
-          <div class="media-slot-label">No photo provided for this entry</div>
-        </div>
-      </div>
-    </div>
+  <article class="entry flip no-media" data-entry>
     <div class="copy">
       <span class="index">02 / 12</span>
       <h2>Say Hello, Tiger</h2>

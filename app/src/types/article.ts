@@ -107,7 +107,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     structureRangeLabel: '3 to 12 project entries',
     minImages: 0,
     maxImages: 12,
-    imagesNote: 'Each entry can carry one photo. An entry without one shows a labelled placeholder panel — that is normal for this template.',
+    imagesNote: 'Each entry can carry one photo. An entry without one simply skips the photo panel — that is normal for this template.',
     supportsGallery: true,
     supportedGalleryPlacements: ['after-intro', 'end-of-article'],
   },
