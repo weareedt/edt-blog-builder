@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "imageId": "img-1",
+      "label": "VR Training",
+      "body": "Multiplayer VR onboarding and training, built from brief to Meta Quest 3.",
+      "projectLine": "MetaHRise — MCMC"
+    },
+    {
+      "imageId": "img-2",
+      "label": "AR Activations",
+      "body": "WebAR and native AR experiences built for high foot-traffic events.",
+      "projectLine": "ARFestKL"
+    },
+    {
+      "imageId": "img-3",
+      "label": "AI Holograms",
+      "body": "Holographic AI personas that hold a real conversation, live, on the floor.",
+      "projectLine": "Hologram Stewardess — Malaysia Airlines"
+    },
+    {
+      "imageId": "img-4",
+      "label": "Virtual Production",
+      "body": "Broadcast-grade sets built entirely in-engine through ARVENA.",
+      "projectLine": "AirAsia Supersale"
+    },
+    {
+      "imageId": "img-5",
+      "label": "AI Virtual Influencers",
+      "body": "A fully virtual persona — face, voice, and posting schedule — built for one campaign.",
+      "projectLine": "Shayla Sis Shayla — Safi"
+    },
+    {
+      "imageId": "img-6",
+      "label": "VR Simulation",
+      "body": "High-stakes scenarios rehearsed safely, before the real thing happens.",
+      "projectLine": "VR Earthquake Simulation — Tokyo FD"
+    }
+  ]
+}

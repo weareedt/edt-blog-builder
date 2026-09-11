@@ -61,6 +61,13 @@ const GALLERIES = [
     metaImport: { name: 'galleryAccordionMeta', from: '../content/galleryAccordion.meta' },
     schemaImport: { name: 'galleryAccordionContent', from: '../content/galleryAccordion.schema' },
   },
+  {
+    kind: 'gallery',
+    id: 'gallery-flipcards-alternating',
+    dir: 'gallery-flipcards-alternating',
+    metaImport: { name: 'galleryFlipcardsAlternatingMeta', from: '../content/galleryFlipcardsAlternating.meta' },
+    schemaImport: { name: 'galleryFlipcardsAlternatingContent', from: '../content/galleryFlipcardsAlternating.schema' },
+  },
 ];
 
 function readAnnotated(dir) {
