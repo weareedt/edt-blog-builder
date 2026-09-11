@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import { renderBlock, renderCallout } from './blocks';
+import { renderStepHighlight } from './template02Blocks';
 
 let helpersRegistered = false;
 
@@ -19,6 +20,10 @@ function registerHelpers(): void {
 
   Handlebars.registerHelper('renderCallout', (callout: Parameters<typeof renderCallout>[0]) => {
     return new Handlebars.SafeString(renderCallout(callout));
+  });
+
+  Handlebars.registerHelper('renderStepHighlight', (highlight: Parameters<typeof renderStepHighlight>[0]) => {
+    return new Handlebars.SafeString(renderStepHighlight(highlight));
   });
 }
 
