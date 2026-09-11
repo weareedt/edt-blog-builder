@@ -1,16 +1,16 @@
 import { escapeHtml } from './escapeHtml';
 import { sanitizeRichText } from './sanitizeRichText';
-import type { StepHighlight } from '../templates/content/template02.schema';
+import type { Highlight } from '../templates/content/highlight.schema';
 
 /**
- * Renders a step's optional trailing highlight (at most one per step,
- * matching the source design exactly — never a mix of pull-quote and
- * stat-card in the same step). All plain-text fields are HTML-escaped and
- * quote text passes through sanitizeRichText — this function is the only
- * place model-authored text becomes markup here, so every field must be
- * escaped/sanitized, never left raw.
+ * Renders one highlight block — a pull-quote, stat-card, or tag list —
+ * shared by template-02 (one per numbered step) and template-04
+ * (freestanding in a flat body flow). All plain-text fields are
+ * HTML-escaped and quote text passes through sanitizeRichText — this
+ * function is the only place model-authored text becomes markup here, so
+ * every field must be escaped/sanitized, never left raw.
  */
-export function renderStepHighlight(highlight: StepHighlight): string {
+export function renderHighlight(highlight: Highlight): string {
   switch (highlight.type) {
     case 'pullQuote':
       return [
