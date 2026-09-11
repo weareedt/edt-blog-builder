@@ -44,6 +44,13 @@ const TEMPLATES = [
     metaImport: { name: 'template02Meta', from: '../content/template02.meta' },
     schemaImport: { name: 'template02Content', from: '../content/template02.schema' },
   },
+  {
+    kind: 'template',
+    id: 'template-04-basic-scroll',
+    dir: 'template-04-basic-scroll',
+    metaImport: { name: 'template04Meta', from: '../content/template04.meta' },
+    schemaImport: { name: 'template04Content', from: '../content/template04.schema' },
+  },
 ];
 
 const GALLERIES = [
