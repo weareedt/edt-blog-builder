@@ -1,16 +1,39 @@
 import { httpsCallable } from 'firebase/functions';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../auth/AuthGate';
 import { functions, storage } from '../lib/firebase';
 import { useArticle } from '../lib/useArticle';
+import { useRegeneratedVersions } from '../lib/useRegeneratedVersions';
+import { regenerateArticle } from '../lib/regenerateArticle';
 import { StatusBadge } from '../components/StatusBadge';
+import type { ArticleErrorCode } from '../types/article';
+
+// One line of guidance per failure mode — the specific detail (e.g. the
+// actual payload size for PAYLOAD_TOO_LARGE) already lives in
+// article.errorMessage; this just says what it generally means / what to
+// try, since errorCode alone isn't self-explanatory to someone using the
+// tool rather than reading the Cloud Function's source.
+const ERROR_HINTS: Record<ArticleErrorCode, string> = {
+  SCHEMA_VALIDATION_FAILED:
+    "The model's output didn't match the required structure, even after one retry.",
+  MODEL_ERROR: 'The model declined or errored while generating.',
+  TIMEOUT: 'Generation took too long and timed out.',
+  PAYLOAD_TOO_LARGE: 'The uploaded images are too large once inlined into the article — try removing some.',
+  RENDER_FAILED: 'The content generated successfully, but rendering it to HTML failed.',
+  UNKNOWN: 'Something unexpected went wrong.',
+};
 
 export function ArticleDetailPage() {
   const { articleId } = useParams<{ articleId: string }>();
+  const { uid } = useAuth();
+  const navigate = useNavigate();
   const { article, loading } = useArticle(articleId);
+  const regeneratedVersions = useRegeneratedVersions(uid, articleId);
   const [triggering, setTriggering] = useState(false);
   const [triggerError, setTriggerError] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
 
   async function generate() {
     if (!articleId) return;
@@ -30,6 +53,17 @@ export function ArticleDetailPage() {
     }
   }
 
+  async function regenerate() {
+    if (!article) return;
+    setRegenerating(true);
+    try {
+      const newArticleId = await regenerateArticle(article);
+      navigate(`/article/${newArticleId}`);
+    } finally {
+      setRegenerating(false);
+    }
+  }
+
   if (loading) return <div className="page">Loading…</div>;
   if (!article) return <div className="page">Article not found.</div>;
 
@@ -39,6 +73,22 @@ export function ArticleDetailPage() {
         <h1>{article.title ?? article.brief.slice(0, 60)}</h1>
         <StatusBadge status={article.status} />
       </div>
+
+      {(article.regeneratedFromArticleId || regeneratedVersions.length > 0) && (
+        <p className="muted lineage-note">
+          {article.regeneratedFromArticleId && (
+            <>
+              Regenerated from{' '}
+              <Link to={`/article/${article.regeneratedFromArticleId}`}>an earlier version</Link>.{' '}
+            </>
+          )}
+          {regeneratedVersions.map((v) => (
+            <span key={v.id}>
+              Regenerated as <Link to={`/article/${v.id}`}>{v.title ?? 'a new version'}</Link>.{' '}
+            </span>
+          ))}
+        </p>
+      )}
 
       {article.status === 'draft' && (
         <div className="panel">
@@ -58,7 +108,8 @@ export function ArticleDetailPage() {
 
       {article.status === 'failed' && (
         <div className="panel panel--error">
-          <p>Generation failed: {article.errorMessage ?? article.errorCode ?? 'Unknown error.'}</p>
+          <p>Generation failed. {article.errorCode ? ERROR_HINTS[article.errorCode] : ''}</p>
+          {article.errorMessage && <p className="muted">{article.errorMessage}</p>}
           <button type="button" className="btn btn-primary" onClick={generate} disabled={triggering}>
             {triggering ? 'Retrying…' : 'Try again'}
           </button>
@@ -68,6 +119,11 @@ export function ArticleDetailPage() {
       {article.status === 'ready' && (
         <div className="panel">
           <p>Your article is ready.</p>
+          <div className="btn-row">
+            <button type="button" className="btn" onClick={regenerate} disabled={regenerating}>
+              {regenerating ? 'Creating…' : 'Regenerate as new version'}
+            </button>
+          </div>
           <ArticlePreview storagePath={article.outputHtmlStoragePath} />
         </div>
       )}

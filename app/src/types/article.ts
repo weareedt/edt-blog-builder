@@ -82,6 +82,8 @@ export interface TemplateCatalogEntry {
   id: TemplateId;
   label: string;
   blurb: string;
+  /** e.g. "3 to 12 project entries" — shown in the picker per §9.2 (range-based, never an exact count). */
+  structureRangeLabel: string;
   minImages: number;
   maxImages: number;
   imagesNote: string;
@@ -102,6 +104,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     id: 'template-01-case-study-roundup',
     label: 'Case study roundup',
     blurb: 'A roundup of project entries, each with a media panel framed as an OS window, tags, a blurb, and a stat line.',
+    structureRangeLabel: '3 to 12 project entries',
     minImages: 0,
     maxImages: 12,
     imagesNote: 'Each entry can carry one photo. An entry without one shows a labelled placeholder panel — that is normal for this template.',
@@ -112,6 +115,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     id: 'template-02-longform-numbered-steps',
     label: 'Long-form numbered steps',
     blurb: 'A single deep-dive story told as numbered steps — brief, approach, build, results, retro — with one optional feature image and per-step highlights.',
+    structureRangeLabel: '3 to 8 numbered steps',
     minImages: 0,
     maxImages: 1,
     imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',
@@ -122,6 +126,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     id: 'template-03-standard-article-toc',
     label: 'Standard article with table of contents',
     blurb: 'A sticky TOC with scrollspy, prose sections, an optional comparison table and callout.',
+    structureRangeLabel: '3 to 9 sections',
     minImages: 0,
     maxImages: 0,
     imagesNote: 'This template shows photos through an inserted gallery component, not inline images.',
@@ -132,6 +137,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     id: 'template-04-basic-scroll',
     label: 'Basic scroll',
     blurb: 'A single deep-dive story told as a flat scroll of labelled sections — the same story format as long-form numbered steps, without the step numbering.',
+    structureRangeLabel: '3 to 8 sections',
     minImages: 0,
     maxImages: 1,
     imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',

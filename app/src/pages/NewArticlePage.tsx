@@ -180,6 +180,7 @@ export function NewArticlePage() {
                 <div>
                   <div className="template-card__label">{t.label}</div>
                   <div className="template-card__blurb">{t.blurb}</div>
+                  <div className="template-card__range">{t.structureRangeLabel}</div>
                 </div>
               </label>
             ))}
@@ -241,7 +242,13 @@ export function NewArticlePage() {
             </>
           )}
 
-          {!gallery && <p className="field-hint">{template.imagesNote}</p>}
+          {!gallery && (
+            <p className="field-hint">
+              {template.label} — {template.structureRangeLabel}. {template.imagesNote} You've
+              uploaded {pendingImages.length}
+              {template.maxImages > 0 ? ` (up to ${template.maxImages} used inline)` : ''}.
+            </p>
+          )}
         </fieldset>
 
         <fieldset className="field">
