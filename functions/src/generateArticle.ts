@@ -1,6 +1,7 @@
 import './admin';
 import type { z } from 'zod';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { logger } from 'firebase-functions';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { templateRegistry, galleryRegistry } from './templates/generated/registry';
@@ -290,6 +291,16 @@ export const generateArticle = onCall(
       };
     } catch (err) {
       if (err instanceof SchemaValidationError) {
+        // The user-facing message can't usefully say *what* was wrong —
+        // but that detail matters a lot for diagnosing a real prompt/schema
+        // mismatch, so it goes to the function's own logs instead.
+        logger.error('generateArticle schema validation failed', {
+          articleId,
+          templateId: article.templateId,
+          issues: err.issues,
+          stopReason: err.stopReason,
+          outputTokens: err.outputTokens,
+        });
         return fail(
           'SCHEMA_VALIDATION_FAILED',
           "The model's output did not match the required structure after one retry."

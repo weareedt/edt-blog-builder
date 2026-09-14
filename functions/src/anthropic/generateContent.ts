@@ -4,7 +4,11 @@ import type { z } from 'zod';
 import { ANTHROPIC_MODEL, getAnthropicClient } from './client';
 
 export class SchemaValidationError extends Error {
-  constructor(public readonly issues: unknown) {
+  constructor(
+    public readonly issues: unknown,
+    public readonly stopReason: string | null,
+    public readonly outputTokens: number
+  ) {
     super('Model output failed schema validation after one retry.');
   }
 }
@@ -20,7 +24,14 @@ export class ModelRefusalError extends Error {}
 const zodToJsonSchemaUntyped = zodToJsonSchema as (schema: unknown, opts: unknown) => unknown;
 
 function toJsonSchema(schema: z.ZodTypeAny): Record<string, unknown> {
-  return zodToJsonSchemaUntyped(schema, { target: 'openApi3' }) as Record<string, unknown>;
+  // Deliberately NOT { target: 'openApi3' }: that mode represents a
+  // nullable field as an OpenAPI-only `nullable: true` sibling flag on the
+  // object schema (e.g. featureImage), which isn't real JSON Schema and
+  // Claude's tool-use doesn't reliably treat as "or null" — it was observed
+  // returning a placeholder string for a nullable object field instead of
+  // the literal null. The default target instead emits a standard
+  // `anyOf: [{...}, {type: 'null'}]`, which is unambiguous.
+  return zodToJsonSchemaUntyped(schema, {}) as Record<string, unknown>;
 }
 
 export interface GenerateStructuredContentInput<TSchema extends z.ZodTypeAny> {
@@ -136,7 +147,7 @@ export async function generateStructuredContent<TSchema extends z.ZodTypeAny>(
 
   parsed = schema.safeParse(toolUse.input);
   if (!parsed.success) {
-    throw new SchemaValidationError(parsed.error.issues);
+    throw new SchemaValidationError(parsed.error.issues, message.stop_reason, usage.outputTokens);
   }
 
   return { content: parsed.data, usage };

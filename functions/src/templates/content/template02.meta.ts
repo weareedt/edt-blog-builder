@@ -21,8 +21,9 @@ end with at most one highlight — a pull-quote, a stat-card (1-4
 number+label results), or a short tag list — never more than one, and
 never force one onto every step; most stories only need highlights on
 a couple of the strongest steps. The template supports one optional
-feature image near the top with a caption; omit it if no suitable
-photo was uploaded rather than reusing an unrelated one. An optional
+feature image near the top with a caption; if no suitable photo was
+uploaded, set featureImage to the JSON literal null — never a string,
+and never reusing an unrelated photo. An optional
 gallery may be inserted after the intro or just before the CTA, if
 one was selected.`,
 };

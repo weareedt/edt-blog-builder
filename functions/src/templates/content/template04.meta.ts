@@ -22,8 +22,9 @@ copy. Between sections, a freestanding highlight may appear — a
 pull-quote, a stat-card (1-4 number+label results), or a short tag list
 — never force one in after every section; most stories only need
 highlights after a couple of the strongest sections. The template
-supports one optional feature image near the top with a caption; omit
-it if no suitable photo was uploaded rather than reusing an unrelated
-one. An optional gallery may be inserted after the intro or just before
+supports one optional feature image near the top with a caption; if no
+suitable photo was uploaded, set featureImage to the JSON literal null
+— never a string, and never reusing an unrelated photo. An optional
+gallery may be inserted after the intro or just before
 the CTA, if one was selected.`,
 };
