@@ -207,7 +207,14 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
 
   function handleEditFrameLoad() {
     const doc = iframeRef.current?.contentDocument;
-    if (doc?.body) doc.body.contentEditable = 'true';
+    if (!doc?.body) return;
+    doc.body.contentEditable = 'true';
+    // Some templates (the numbered-steps ones) start body copy at
+    // opacity:0 and only reveal it via a scroll-triggered script — which
+    // edit mode deliberately disables (see the sandbox comment above).
+    // Add the same class that script would have added, directly, so
+    // there's no invisible-but-editable text.
+    doc.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('revealed'));
   }
 
   function cancelEdit() {
@@ -267,6 +274,13 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
         ref={iframeRef}
         title="Article preview"
         className={`preview-frame${editing ? ' preview-frame--editing' : ''}`}
+        // Read-only preview: allow-scripts (no allow-same-origin) so the
+        // article's own interactive bits (TOC scrollspy, flip cards) work
+        // without granting it same-origin access to the app. Edit mode
+        // flips this: allow-same-origin (no allow-scripts) so contentEditable
+        // and reading the edited HTML back out are possible, at the cost of
+        // disabling all scripts in the frame — including the ones that
+        // reveal scroll-triggered content (see handleEditFrameLoad).
         sandbox={editing ? 'allow-same-origin' : 'allow-scripts'}
         srcDoc={html}
         onLoad={editing ? handleEditFrameLoad : undefined}
