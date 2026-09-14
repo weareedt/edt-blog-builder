@@ -1,12 +1,13 @@
 import { httpsCallable } from 'firebase/functions';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthGate';
 import { functions, storage } from '../lib/firebase';
 import { useArticle } from '../lib/useArticle';
 import { useRegeneratedVersions } from '../lib/useRegeneratedVersions';
 import { regenerateArticle } from '../lib/regenerateArticle';
+import { updateArticleOutput } from '../lib/updateArticleOutput';
 import { StatusBadge } from '../components/StatusBadge';
 import type { ArticleErrorCode } from '../types/article';
 
@@ -137,7 +138,7 @@ export function ArticleDetailPage() {
                 {regenerating ? 'Creating…' : 'Regenerate as new version'}
               </button>
             </div>
-            <ArticlePreview storagePath={article.outputHtmlStoragePath} />
+            <ArticlePreview articleId={article.id} storagePath={article.outputHtmlStoragePath} />
           </div>
         </div>
       )}
@@ -159,26 +160,35 @@ function PanelBar({ label }: { label: string }) {
 }
 
 /** Fetches the rendered HTML from Storage — it's never inlined into the Firestore doc (see D6/1MiB note). */
-function ArticlePreview({ storagePath }: { storagePath: string | null }) {
+function ArticlePreview({ articleId, storagePath }: { articleId: string; storagePath: string | null }) {
   const [html, setHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  async function loadFresh() {
+    if (!storagePath) return;
+    const url = await getDownloadURL(ref(storage, storagePath));
+    const res = await fetch(url, { cache: 'no-store' });
+    return res.text();
+  }
 
   useEffect(() => {
     if (!storagePath) return;
     let cancelled = false;
-    (async () => {
-      try {
-        const url = await getDownloadURL(ref(storage, storagePath));
-        const res = await fetch(url);
-        const text = await res.text();
-        if (!cancelled) setHtml(text);
-      } catch (err) {
+    loadFresh()
+      .then((text) => {
+        if (!cancelled) setHtml(text ?? null);
+      })
+      .catch((err: unknown) => {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Could not load the article.');
-      }
-    })();
+      });
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storagePath]);
 
   if (!storagePath) return <p className="muted">No output stored on this document yet.</p>;
@@ -195,12 +205,72 @@ function ArticlePreview({ storagePath }: { storagePath: string | null }) {
     URL.revokeObjectURL(url);
   }
 
+  function handleEditFrameLoad() {
+    const doc = iframeRef.current?.contentDocument;
+    if (doc?.body) doc.body.contentEditable = 'true';
+  }
+
+  function cancelEdit() {
+    setSaveError(null);
+    setEditing(false);
+  }
+
+  async function saveEdit() {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc?.body) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await updateArticleOutput(articleId, doc.body.innerHTML);
+      const fresh = await loadFresh();
+      setHtml(fresh ?? null);
+      setEditing(false);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Could not save your edits.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div>
-      <button type="button" className="btn btn-primary" onClick={download}>
-        Download .html<span className="arrow">→</span>
-      </button>
-      <iframe title="Article preview" className="preview-frame" sandbox="allow-scripts" srcDoc={html} />
+      <div className="btn-row">
+        <button type="button" className="btn btn-primary" onClick={download}>
+          Download .html<span className="arrow">→</span>
+        </button>
+        {!editing && (
+          <button type="button" className="btn" onClick={() => setEditing(true)}>
+            Edit before download
+          </button>
+        )}
+        {editing && (
+          <>
+            <button type="button" className="btn btn-primary" onClick={saveEdit} disabled={saving}>
+              {saving ? 'Saving…' : 'Save changes'}
+              {!saving && <span className="arrow">→</span>}
+            </button>
+            <button type="button" className="btn" onClick={cancelEdit} disabled={saving}>
+              Cancel
+            </button>
+          </>
+        )}
+      </div>
+      {editing && (
+        <p className="field-hint">
+          Click into the text to edit it directly. Layout, images, and interactive bits (like the flip
+          cards) aren't editable here.
+        </p>
+      )}
+      {saveError && <p className="field-error">{saveError}</p>}
+      <iframe
+        key={editing ? 'edit' : 'view'}
+        ref={iframeRef}
+        title="Article preview"
+        className={`preview-frame${editing ? ' preview-frame--editing' : ''}`}
+        sandbox={editing ? 'allow-same-origin' : 'allow-scripts'}
+        srcDoc={html}
+        onLoad={editing ? handleEditFrameLoad : undefined}
+      />
     </div>
   );
 }

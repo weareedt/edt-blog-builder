@@ -590,3 +590,7 @@ fieldset.field {
   margin-top: 16px;
   background: var(--black);
 }
+
+.preview-frame--editing {
+  border-color: var(--blue);
+}
