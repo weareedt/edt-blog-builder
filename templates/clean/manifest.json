@@ -8,7 +8,7 @@
     "imageCount": 11,
     "beforeBytes": 679953,
     "afterBytes": 31883,
-    "cleanedAt": "2026-09-15T07:09:41.468Z"
+    "cleanedAt": "2026-09-15T08:49:18.278Z"
   },
   "template-02-longform-numbered-steps": {
     "id": "template-02-longform-numbered-steps",
@@ -19,7 +19,7 @@
     "imageCount": 1,
     "beforeBytes": 222089,
     "afterBytes": 24647,
-    "cleanedAt": "2026-09-15T07:09:41.474Z"
+    "cleanedAt": "2026-09-15T08:49:18.284Z"
   },
   "template-03-standard-article-toc": {
     "id": "template-03-standard-article-toc",
@@ -30,7 +30,7 @@
     "imageCount": 0,
     "beforeBytes": 24906,
     "afterBytes": 24906,
-    "cleanedAt": "2026-09-15T07:09:41.477Z"
+    "cleanedAt": "2026-09-15T08:49:18.285Z"
   },
   "template-04-basic-scroll": {
     "id": "template-04-basic-scroll",
@@ -41,28 +41,28 @@
     "imageCount": 1,
     "beforeBytes": 220316,
     "afterBytes": 22874,
-    "cleanedAt": "2026-09-15T07:09:41.479Z"
+    "cleanedAt": "2026-09-15T08:49:18.289Z"
   },
   "gallery-accordion": {
     "id": "gallery-accordion",
     "category": "galleries",
     "sourcePath": "Blog Templates/photo gallery components/gallery-accordion.html",
     "cleanPath": "templates/clean/galleries/gallery-accordion.clean.html",
-    "sourceSha256": "f48b5a39d690d8d2c29ddd78ce5b17d42684aff8d0d102d2638aab57d272a450",
+    "sourceSha256": "ac4edfdc75b8dbe8ff636769a593ca69b27cd40edf19accf11935c4e71af1f01",
     "imageCount": 6,
-    "beforeBytes": 377945,
-    "afterBytes": 6224,
-    "cleanedAt": "2026-09-15T07:09:41.482Z"
+    "beforeBytes": 378510,
+    "afterBytes": 6789,
+    "cleanedAt": "2026-09-15T08:49:18.294Z"
   },
   "gallery-flipcards-alternating": {
     "id": "gallery-flipcards-alternating",
     "category": "galleries",
     "sourcePath": "Blog Templates/photo gallery components/gallery-flipcards-alternating.html",
     "cleanPath": "templates/clean/galleries/gallery-flipcards-alternating.clean.html",
-    "sourceSha256": "023a9bcb99645ec5090926c71232b10b042b4a791da12183746c726b394eadb7",
+    "sourceSha256": "e2777117a8f8d21a5cb354048a601f00bbd58f782a6eb732c918924dedaa0144",
     "imageCount": 6,
-    "beforeBytes": 372518,
-    "afterBytes": 8131,
-    "cleanedAt": "2026-09-15T07:09:41.484Z"
+    "beforeBytes": 374236,
+    "afterBytes": 9849,
+    "cleanedAt": "2026-09-15T08:49:18.299Z"
   }
 }

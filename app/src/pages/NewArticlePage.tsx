@@ -34,6 +34,8 @@ export function NewArticlePage() {
       requestedGalleryPlacement: values.requestedGalleryPlacement,
       images,
       videos,
+      heroImageId: values.heroImageId,
+      galleryIntro: values.galleryIntro,
     });
 
     navigate(`/article/${articleId}`);

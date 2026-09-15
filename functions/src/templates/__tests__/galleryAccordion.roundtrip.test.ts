@@ -26,6 +26,10 @@ function normalize(html: string): string {
     .replace(/&amp;/g, '&');
 
   return decoded
+    // alt text is written per photo now, and the flip grid carries a
+    // per-count layout class — neither is part of the design being checked.
+    .replace(/ alt="[^"]*"/g, ' alt=""')
+    .replace(/class="flip-grid[^"]*"/g, 'class="flip-grid"')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0)

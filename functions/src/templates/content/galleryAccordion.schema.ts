@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { galleryIntroSchema } from './insert.schema';
 
 // See the file-layout note in template03.schema.ts — this is real logic and
 // lives under functions/src, while the .hbs + example-content.json for this
@@ -17,6 +18,7 @@ import { z } from 'zod';
 // title. Length *guidance* for the model lives in the meta's prose.
 const panelItem = z.object({
   imageId: z.string().min(1), // a gallery item is always a photo
+  alt: z.string().max(240).nullish(), // objective description of what's visible
   tag: z.string().max(28).nullable(),
   title: z.string().max(48).nullable(),
   metric: z.string().max(90).nullable(),
@@ -24,6 +26,7 @@ const panelItem = z.object({
 
 export const galleryAccordionContent = z.object({
   items: z.array(panelItem).min(3).max(8),
+  intro: galleryIntroSchema,
 });
 
 export type GalleryAccordionContent = z.infer<typeof galleryAccordionContent>;

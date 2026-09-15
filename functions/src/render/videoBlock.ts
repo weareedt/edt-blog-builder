@@ -64,7 +64,13 @@ export interface RenderVideoBlockInput {
   id: string;
   source: VideoSource;
   caption: string | null;
+  /** Short label over the video. Defaults to "See it in motion". */
+  eyebrow?: string | null;
+  /** One line setting up what to watch for. */
+  intro?: string | null;
 }
+
+const DEFAULT_EYEBROW = 'See it in motion';
 
 /**
  * The self-contained style for a video block. Like the gallery components it
@@ -73,13 +79,23 @@ export interface RenderVideoBlockInput {
  * template-03 has no `.os-window` of its own. Colours read the templates'
  * shared custom properties with literal fallbacks.
  *
- * Emitted once per article (see renderVideoStyles), not once per video, so
+ * A video is an interlude between sections, not part of the one above it:
+ * a hairline and an eyebrow open it, it gets room on both sides, and in the
+ * narrow scroll-template column (`.col`) it breaks out wider than the text —
+ * the one deliberate asymmetry, so a video reads as a change of pace.
+ *
+ * Emitted once per article (see generateArticle), not once per video, so
  * that an edit-save — which keeps a <style> block only if it's byte-
  * identical to one in the original output — sees exactly one copy.
  */
 export function renderVideoStyles(): string {
   return `<style>
-  .edt-video{margin:40px 0;}
+  .edt-video{margin:64px 0;padding-top:28px;border-top:1px solid var(--hairline, rgba(255,255,255,0.14));}
+  .col .edt-video{margin-left:calc(50% - min(50vw - 24px, 520px));margin-right:calc(50% - min(50vw - 24px, 520px));}
+  .edt-video__intro{margin-bottom:16px;}
+  .edt-video__eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue, #2D2DFF);}
+  .edt-video__eyebrow::before{content:"";width:8px;height:8px;background:var(--blue, #2D2DFF);}
+  .edt-video__intro p{margin-top:8px;max-width:60ch;font-size:15px;color:#cfcfcf;font-weight:300;line-height:1.6;}
   .edt-video .win{border:1px solid var(--hairline, rgba(255,255,255,0.14));background:var(--surface, #111);}
   .edt-video .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--hairline, rgba(255,255,255,0.14));}
   .edt-video .bar span{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--grey, #8C8C8C);}
@@ -91,14 +107,14 @@ export function renderVideoStyles(): string {
 }
 
 /**
- * Renders one video, framed in the same title-bar window chrome the
- * templates use for their feature images. Carries `data-block="video"` so
- * edit mode can find and move it (see the rearrange controls in the app).
- * An embed URL that doesn't resolve renders nothing rather than a broken
- * player — resolveEmbedUrl is also run at submit time, so that's a backstop.
+ * Renders one video as an interlude, framed in the same title-bar window
+ * chrome the templates use for their feature images. Carries
+ * `data-block="video"` so edit mode can find and move it. An embed URL that
+ * doesn't resolve renders nothing rather than a broken player —
+ * resolveEmbedUrl is also run at submit time, so that's a backstop.
  */
 export function renderVideoBlock(input: RenderVideoBlockInput): string {
-  const { id, source, caption } = input;
+  const { id, source, caption, eyebrow, intro } = input;
 
   let player: string;
   let label: string;
@@ -114,6 +130,9 @@ export function renderVideoBlock(input: RenderVideoBlockInput): string {
 
   return [
     `<figure class="edt-video" data-block="video" data-block-id="${escapeHtml(id)}">`,
+    `  <div class="edt-video__intro"><span class="edt-video__eyebrow">${escapeHtml(eyebrow?.trim() || DEFAULT_EYEBROW)}</span>${
+      intro?.trim() ? `<p>${escapeHtml(intro.trim())}</p>` : ''
+    }</div>`,
     '  <div class="win">',
     `    <div class="bar"><span>${escapeHtml(label)}</span><span><i></i><i></i><i></i></span></div>`,
     `    <div class="stage">${player}</div>`,

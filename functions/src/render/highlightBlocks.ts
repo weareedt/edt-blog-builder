@@ -13,6 +13,16 @@ import type { Highlight } from '../templates/content/highlight.schema';
 export function renderHighlight(highlight: Highlight): string {
   switch (highlight.type) {
     case 'pullQuote':
+      // No attribution means the model wrote this line itself: it renders as
+      // an unattributed callout — no quote marks, no credit line — rather
+      // than as words put in someone's mouth. See EDITORIAL_JUDGEMENT.
+      if (!highlight.attribution) {
+        return [
+          '<div class="pull-quote pull-quote--callout" data-reveal>',
+          `  <p>${sanitizeRichText(highlight.quote)}</p>`,
+          '</div>',
+        ].join('\n');
+      }
       return [
         '<div class="pull-quote" data-reveal>',
         `  <p>"${sanitizeRichText(highlight.quote)}"</p>`,

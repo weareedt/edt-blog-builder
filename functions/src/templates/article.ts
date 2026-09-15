@@ -84,6 +84,14 @@ export interface ArticleDoc {
   images: ArticleImage[];
   /** Absent on docs predating video support — read as `article.videos ?? []`. */
   videos?: ArticleVideo[];
+  /**
+   * The photo uploaded specifically as the hero (feature image), for the
+   * templates that have one. Always used as the hero and never in the
+   * gallery. Absent/null: Claude picks a feature photo, if any.
+   */
+  heroImageId?: string | null;
+  /** An editorial heading above the gallery, typed by the user. Overrides one Claude writes. */
+  galleryIntro?: { eyebrow: string; line: string | null } | null;
 
   // Denormalised for the dashboard
   title: string | null;

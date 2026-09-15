@@ -12,24 +12,21 @@ export const galleryAccordionMeta: GalleryStaticMeta = {
   // defaults to letting the photos speak for themselves.
   defaultCaptionMode: 'none',
   structureNotes: `A row of horizontal panels — one per photo — that expand on hover to
-reveal a caption. Use as many panels as the brief and available images
-support, typically 5 to 6, never fewer than 3 or more than 8.
+reveal a caption. Use every gallery photo you're given, in the order given,
+up to 8.
 
-Captions describe THE PHOTO IN FRONT OF YOU. Each image is shown to you
-directly — look at it and write about what it actually depicts. Do not
-reach for the known-projects list to name a panel: name a project only
-when the brief says this photo is from that project, or the photo itself
-plainly shows it (a recognisable logo, an on-screen title). A generic
-photo of someone wearing a headset is "VR headset session", not the name
-of a real EDT project that happens to involve headsets — attaching a real
-project name to an unrelated stock photo is a factual error, not a
-stylistic one.
+intro (optional): a short editorial heading so the gallery doesn't arrive
+unannounced — an eyebrow of 2 to 5 words (e.g. "The work, up close") and
+optionally one line on what the reader is about to look at. Set it to null
+if the surrounding text already sets the gallery up.
 
-Each panel takes three optional fields: a short tag (e.g. "AR Event"), a
-title, and a one-line detail. Every one of them may be null. Prefer null
-over filler: if you cannot tell what a photo shows, set all three to null
-and let the photo stand on its own. If a concrete, real result is
-available for a panel (a number, a percentage, a count), the detail line
-is the place for it — but never invent one, and never write a vague claim
-like "great results" to fill the slot.`,
+alt, per photo: an objective description of what's visible.
+
+Captions describe the moment in THE PHOTO IN FRONT OF YOU, not a guess at a
+project. Name a project only when the brief says this photo is from it, or
+the photo plainly shows it (a recognisable logo, an on-screen title) —
+attaching a real project name to an unrelated photo is a factual error.
+Each panel takes an optional tag, title and one-line detail; any may be
+null, and null is better than filler. Use the detail line for a real result
+only if the brief gives one — never invent one.`,
 };

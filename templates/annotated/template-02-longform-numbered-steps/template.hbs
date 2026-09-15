@@ -209,12 +209,12 @@
     <div class="os-window" data-reveal>
       <div class="os-titlebar"><span class="name">{{featureImage.windowLabel}}</span><div class="os-btns"><i></i><i></i><i></i></div></div>
       <div class="feature-stage">
-        <img src="{{{featureImage.src}}}" alt="{{featureImage.caption}}">
+        <img src="{{{featureImage.src}}}" alt="{{featureImage.alt}}">
         <div class="tint"></div>
         <div class="grid-tex"></div>
       </div>
     </div>
-    <p class="feature-caption">{{featureImage.caption}}</p>
+    {{#if featureImage.caption}}<p class="feature-caption">{{featureImage.caption}}</p>{{/if}}
   </div>
 </section>
 {{/if}}
@@ -230,8 +230,8 @@
 
     <div class="steps">
       {{#each steps}}
-      {{#if this.videoHtml}}
-      {{{this.videoHtml}}}
+      {{#if this.insertHtml}}
+      {{{this.insertHtml}}}
       {{else}}
       <article class="step" data-step>
         <div class="step-num-col"><span class="step-num">{{this.stepNumberLabel}}</span></div>

@@ -11,6 +11,7 @@ import {
   type ArticleImage,
   type CategoryId,
   type GalleryCaptionMode,
+  type GalleryIntro,
   type GalleryId,
   type GalleryPlacement,
   type TemplateId,
@@ -42,7 +43,7 @@ const VIDEO_PLACEMENT_LABELS: Record<VideoPlacement, string> = {
 
 const PLACEMENT_LABELS: Record<GalleryPlacement, string> = {
   'after-intro': 'After the intro',
-  'mid-article': 'Mid-article',
+  'mid-article': 'Between sections, where it fits',
   'before-cta': 'Before the closing CTA',
   'end-of-article': 'End of article',
 };
@@ -77,6 +78,9 @@ export interface ArticleFormValues {
   pendingImages: PendingImage[];
   remainingExistingImages: ArticleImage[];
   video: PendingVideo | null;
+  /** The id of the hero photo within pendingImages, if one was uploaded for a template with a hero slot. */
+  heroImageId: string | null;
+  galleryIntro: GalleryIntro | null;
 }
 
 export interface ArticleFormProps {
@@ -139,6 +143,11 @@ export function ArticleForm({
   // One id for the life of the form, so re-submitting after an error
   // overwrites the same Storage object instead of orphaning another.
   const [videoId] = useState(() => crypto.randomUUID());
+  const [heroFile, setHeroFile] = useState<File | null>(null);
+  // Stable for the life of the form, like videoId, so a retry overwrites the same upload.
+  const [heroId] = useState(() => crypto.randomUUID());
+  const [galleryHeading, setGalleryHeading] = useState('');
+  const [galleryIntroLine, setGalleryIntroLine] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -210,6 +219,12 @@ export function ArticleForm({
         caption: r.caption.trim() || null,
         captionDetail: r.captionDetail.trim() || null,
       }));
+    // The hero rides in the same upload batch but is flagged separately, so
+    // it's never counted as, or used as, a gallery photo.
+    const heroImageId = template.hasHeroImage && heroFile ? heroId : null;
+    if (heroImageId && heroFile) {
+      pendingImages.unshift({ id: heroImageId, file: heroFile, userNote: null, caption: null, captionDetail: null });
+    }
     const remainingExistingImages: ArticleImage[] = imageRows
       .filter((r) => r.existing)
       .map((r) => ({
@@ -234,6 +249,11 @@ export function ArticleForm({
         requestedGalleryPlacement: placement === AUTO_PLACEMENT ? null : placement,
         pendingImages,
         remainingExistingImages,
+        heroImageId,
+        galleryIntro:
+          gallery && galleryHeading.trim()
+            ? { eyebrow: galleryHeading.trim(), line: galleryIntroLine.trim() || null }
+            : null,
         video:
           videoKind === 'none'
             ? null
@@ -395,6 +415,31 @@ export function ArticleForm({
             </label>
 
             <label className="field" style={{ marginTop: 12 }}>
+              <span>Gallery heading (optional)</span>
+              <input
+                type="text"
+                value={galleryHeading}
+                maxLength={40}
+                onChange={(e) => setGalleryHeading(e.target.value)}
+                placeholder="e.g. The work, up close"
+              />
+              {galleryHeading.trim() && (
+                <input
+                  type="text"
+                  value={galleryIntroLine}
+                  maxLength={180}
+                  onChange={(e) => setGalleryIntroLine(e.target.value)}
+                  placeholder="One line on what the reader is about to see (optional)"
+                />
+              )}
+              <span className="field-hint">
+                {effectiveCaptionMode === 'auto'
+                  ? 'Leave blank and Claude writes one if the gallery needs an introduction.'
+                  : 'Leave blank for no heading — the gallery follows straight on from the text.'}
+              </span>
+            </label>
+
+            <label className="field" style={{ marginTop: 12 }}>
               <span>Gallery placement</span>
               <select
                 value={placement}
@@ -431,8 +476,34 @@ export function ArticleForm({
         )}
       </fieldset>
 
+      {template.hasHeroImage && (
+        <fieldset className="field">
+          <legend>Hero photo (optional)</legend>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              setHeroFile(e.target.files?.[0] ?? null);
+              e.target.value = '';
+            }}
+          />
+          {heroFile && (
+            <p className="field-hint">
+              {heroFile.name}{' '}
+              <button type="button" className="btn-ghost" onClick={() => setHeroFile(null)}>
+                Remove
+              </button>
+            </p>
+          )}
+          <span className="field-hint">
+            Shown large at the top of the article. It's kept apart from the photos below and never reused in the
+            gallery. Leave it empty and Claude may pick a hero from the other photos.
+          </span>
+        </fieldset>
+      )}
+
       <fieldset className="field">
-        <legend>Images</legend>
+        <legend>{template.hasHeroImage ? 'Other photos' : 'Photos'}</legend>
         <input
           type="file"
           accept="image/*"

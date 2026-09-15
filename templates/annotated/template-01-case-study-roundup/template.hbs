@@ -197,8 +197,8 @@
   <div class="wrap">
 
   {{#each entries}}
-  {{#if this.videoHtml}}
-  {{{this.videoHtml}}}
+  {{#if this.insertHtml}}
+  {{{this.insertHtml}}}
   {{else}}
   <article class="entry{{#if this.isFlip}} flip{{/if}}{{#unless this.src}} no-media{{/unless}}" data-entry>
     {{#if this.src}}
@@ -220,7 +220,7 @@
         {{#if this.client}}<span class="tag">Client — {{this.client}}</span>{{/if}}
       </div>
       <p class="blurb">{{this.blurb}}</p>
-      <div class="stat-line">{{this.statLine}}</div>
+      {{#if this.statLine}}<div class="stat-line">{{this.statLine}}</div>{{/if}}
     </div>
   </article>
   {{/if}}

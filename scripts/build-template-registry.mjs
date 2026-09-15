@@ -11,7 +11,7 @@
 // Run manually: `npm run templates:build`, whenever a template.hbs or
 // example-content.json under templates/annotated/ changes.
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -77,7 +77,14 @@ function readAnnotated(dir) {
   // Round-trip parse to fail loudly here (build time) rather than at
   // runtime if the JSON is malformed.
   JSON.parse(exampleContentRaw);
-  return { hbsSource, exampleContentRaw };
+  // Optional separate worked example for the prompt. example-content.json has
+  // to reproduce the design team's original file for the golden tests, so it
+  // can't also model the editorial rules (it has attributed quotes, no alt
+  // text...). prompt-example.json can; it falls back to the golden example.
+  const promptPath = join(base, 'prompt-example.json');
+  const promptExampleRaw = existsSync(promptPath) ? readFileSync(promptPath, 'utf8') : exampleContentRaw;
+  JSON.parse(promptExampleRaw);
+  return { hbsSource, exampleContentRaw, promptExampleRaw };
 }
 
 function main() {
@@ -104,6 +111,7 @@ function main() {
     meta: { ...${entry.metaImport.name}, templateVersion: computeTemplateVersion(${hbsConst}) },
     hbsSource: ${hbsConst},
     exampleContent: JSON.parse(${hbsConst.replace('_hbs', '')}_exampleJson) as unknown,
+    promptExampleContent: JSON.parse(${hbsConst.replace('_hbs', '')}_promptExampleJson) as unknown,
     schema: ${entry.schemaImport.name},
   },`;
     })
@@ -116,6 +124,7 @@ function main() {
     meta: { ...${entry.metaImport.name}, templateVersion: computeTemplateVersion(${hbsConst}) },
     hbsSource: ${hbsConst},
     exampleContent: JSON.parse(${hbsConst.replace('_hbs', '')}_exampleJson) as unknown,
+    promptExampleContent: JSON.parse(${hbsConst.replace('_hbs', '')}_promptExampleJson) as unknown,
     schema: ${entry.schemaImport.name},
   },`;
     })
@@ -127,6 +136,7 @@ function main() {
       return [
         `const ${base}_hbs = ${JSON.stringify(entry.hbsSource)};`,
         `const ${base}_exampleJson = ${JSON.stringify(entry.exampleContentRaw)};`,
+        `const ${base}_promptExampleJson = ${JSON.stringify(entry.promptExampleRaw)};`,
       ].join('\n');
     })
     .join('\n\n');

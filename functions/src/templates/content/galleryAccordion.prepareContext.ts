@@ -26,7 +26,8 @@ export function prepareGalleryAccordionContext(
     // know whether to emit the `.cap` overlay at all — an empty one still
     // paints its gradient scrim and reserves space over the photo.
     hasCaption: Boolean(item.tag || item.title || item.metric),
+    alt: item.alt ?? '',
   }));
 
-  return { items };
+  return { items, intro: content.intro ?? null };
 }

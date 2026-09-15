@@ -40,6 +40,14 @@ export interface GenerateStructuredContentInput<TSchema extends z.ZodTypeAny> {
   schema: TSchema;
   toolName: string;
   maxTokens?: number;
+  /**
+   * Editorial checks on content that already passed the schema (see
+   * prompt/editorialReview.ts). Issues get the same single corrective retry
+   * a schema failure would — never a second one. Issues that survive it are
+   * returned in `reviewIssues`, not thrown: they're quality problems, and a
+   * readable article with one stock phrase beats a failed generation.
+   */
+  review?: (content: z.infer<TSchema>) => string[];
 }
 
 export interface GenerateStructuredContentResult<T> {
@@ -50,6 +58,8 @@ export interface GenerateStructuredContentResult<T> {
     cacheReadTokens: number;
     cacheWriteTokens: number;
   };
+  /** Editorial issues still present in the returned content. */
+  reviewIssues: string[];
 }
 
 /**
@@ -57,14 +67,15 @@ export interface GenerateStructuredContentResult<T> {
  * (the schema becomes the tool's input_schema and tool_choice pins the
  * model to it) rather than asking it to emit raw JSON in prose — this is
  * the well-supported, reliable mechanism for structured output on the
- * Messages API. One retry on schema-validation failure, feeding the
- * validation errors back as a corrective tool_result turn; a second
- * failure throws SchemaValidationError rather than retrying indefinitely.
+ * Messages API. One corrective retry, fed back as a tool_result turn: for
+ * a schema failure (a second one throws SchemaValidationError), or for
+ * editorial review issues (a retry that comes back worse — invalid, or no
+ * tool call — falls back to the valid first attempt).
  */
 export async function generateStructuredContent<TSchema extends z.ZodTypeAny>(
   input: GenerateStructuredContentInput<TSchema>
 ): Promise<GenerateStructuredContentResult<z.infer<TSchema>>> {
-  const { system, userContent, schema, toolName, maxTokens = 8000 } = input;
+  const { system, userContent, schema, toolName, maxTokens = 8000, review } = input;
   const client = getAnthropicClient();
 
   // zodToJsonSchema wraps top-level objects directly in openApi3 mode —
@@ -117,22 +128,27 @@ export async function generateStructuredContent<TSchema extends z.ZodTypeAny>(
   }
 
   let parsed = schema.safeParse(toolUse.input);
+  let firstValid: z.infer<TSchema> | null = null;
+  let firstIssues: string[] = [];
+  let correction: string;
+
   if (parsed.success) {
-    return { content: parsed.data, usage };
+    firstIssues = review?.(parsed.data) ?? [];
+    if (firstIssues.length === 0) return { content: parsed.data, usage, reviewIssues: [] };
+    firstValid = parsed.data;
+    correction = [
+      'The content matches the schema, but an editorial review found these problems. Resubmit the complete content with them fixed, keeping everything else as it was unless a fix requires changing it:',
+      ...firstIssues.map((issue) => `- ${issue}`),
+    ].join('\n');
+  } else {
+    correction = JSON.stringify(parsed.error.issues, null, 2);
   }
 
   // One corrective retry: show the model exactly what was wrong.
   messages.push({ role: 'assistant', content: message.content });
   messages.push({
     role: 'user',
-    content: [
-      {
-        type: 'tool_result',
-        tool_use_id: toolUse.id,
-        is_error: true,
-        content: JSON.stringify(parsed.error.issues, null, 2),
-      },
-    ],
+    content: [{ type: 'tool_result', tool_use_id: toolUse.id, is_error: true, content: correction }],
   });
 
   message = await callOnce();
@@ -140,6 +156,7 @@ export async function generateStructuredContent<TSchema extends z.ZodTypeAny>(
 
   toolUse = extractToolUse(message);
   if (!toolUse) {
+    if (firstValid) return { content: firstValid, usage, reviewIssues: firstIssues };
     throw new ModelRefusalError(
       `Claude did not return a tool_use block on retry (stop_reason: ${message.stop_reason}).`
     );
@@ -147,8 +164,9 @@ export async function generateStructuredContent<TSchema extends z.ZodTypeAny>(
 
   parsed = schema.safeParse(toolUse.input);
   if (!parsed.success) {
+    if (firstValid) return { content: firstValid, usage, reviewIssues: firstIssues };
     throw new SchemaValidationError(parsed.error.issues, message.stop_reason, usage.outputTokens);
   }
 
-  return { content: parsed.data, usage };
+  return { content: parsed.data, usage, reviewIssues: review?.(parsed.data) ?? [] };
 }

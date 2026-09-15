@@ -15,21 +15,21 @@ export const template03Meta: TemplateStaticMeta = {
     galleryMax: 8,
     note: 'This template shows photos through an inserted gallery component, not inline images.',
   },
-  structureNotes: `This template is a standard article with a sticky, scroll-spied
-table of contents down the side. The body is a sequence of sections, each with
-a heading and one to five content blocks. Use as many sections as the brief
-genuinely supports — typically 6 to 7, never fewer than 3 or more than 9.
+  structureNotes: `A standard article with a sticky, scroll-spied table of contents down the
+side. The body is a sequence of sections, each with a heading and one to
+five content blocks. Use as many sections as the argument genuinely needs —
+typically 5 to 7, never fewer than 3 or more than 9. The TOC makes the
+structure visible, so make sure the headings read as one coherent sequence;
+if one section is a different kind of thing from the rest, frame it as such
+in its heading. Never put a number in a heading.
 
-Each section may optionally set a short navLabel distinct from its heading,
-for when the heading runs long and a shorter phrase reads better in the
-table-of-contents sidebar (most sections don't need this — leave it null).
+Each section may set a short navLabel for the TOC when its heading runs long
+(most don't need one — leave it null).
 
-Each section's blocks may mix: a paragraph, a short bullet list (2-6 items),
-a side-by-side comparison table (2-5 columns, 2-6 rows), a callout — a single
-punchy claim worth pulling out of the body copy — or, only in the article's
-final section, a short closing note. Not every section needs more than one
-paragraph; use the comparison table and callout sparingly, where the brief
-actually gives you something to compare or assert. A gallery component may be
-inserted mid-article or right before the closing CTA if one was selected —
-never invent a gallery if the user chose none.`,
+A section's blocks may mix: a paragraph, a short bullet list (2-6 items), a
+comparison table (2-5 columns, 2-6 rows) only where the brief gives real
+things to compare, or — in the final section only — a short closing note
+that resolves the argument. Between sections, a callout (label + one line)
+can pull out a single claim worth stopping on; one or two per article at
+most, and none is fine.`,
 };

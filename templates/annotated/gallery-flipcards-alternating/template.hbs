@@ -11,11 +11,37 @@
   .col .gallery-wrap,
   .roundup .gallery-wrap,
   .article-main .gallery-wrap{max-width:none;padding-left:0;padding-right:0;}
+  /* Optional editorial heading, so a gallery doesn't arrive unannounced. */
+  .gallery-intro{margin:0 0 20px;padding-top:18px;border-top:1px solid var(--hairline);}
+  .gallery-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue);}
+  .gallery-eyebrow::before{content:"";width:8px;height:8px;background:var(--blue);}
+  .gallery-intro p{margin-top:8px;max-width:60ch;font-size:15px;color:#cfcfcf;font-weight:300;line-height:1.6;}
 
   /* ============ FLIP-CARD GALLERY — drop this block into any article ============ */
+  /* Composed per card count against the space the gallery actually has
+     (a container query, not the viewport — the scroll templates' text column
+     is only ~520-650px wide, where 3 across is cramped). An odd card out
+     becomes a wide feature card rather than leaving a hole: 5 cards read
+     2+2+1, 7 read 3+3+1, 8 read 2+3+3. Two-across cards are narrow, so they
+     go square to give the back's text room. (Selectors are `.flip-grid > .flip-card`,
+     not `.flip-card`, to outrank the base rule declared further down.) */
+  .gallery-wrap{container-type:inline-size;}
   .flip-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-  @media(min-width:640px){.flip-grid{grid-template-columns:repeat(2,1fr);}}
-  @media(min-width:980px){.flip-grid{grid-template-columns:repeat(3,1fr);}}
+  @container (min-width:460px){
+    .flip-grid{grid-template-columns:repeat(2,1fr);}
+    .flip-grid > .flip-card{aspect-ratio:1/1;}
+    .flip-grid--odd > .flip-card:last-child{grid-column:1 / -1;aspect-ratio:21/9;}
+  }
+  @container (min-width:880px){
+    .flip-grid{grid-template-columns:repeat(6,1fr);}
+    .flip-grid > .flip-card{grid-column:span 2;aspect-ratio:16/10;}
+    .flip-grid--n4 > .flip-card,
+    .flip-grid--n5 > .flip-card,
+    .flip-grid--n8 > .flip-card:nth-child(-n+2){grid-column:span 3;}
+    .flip-grid--odd > .flip-card:last-child{grid-column:span 2;aspect-ratio:16/10;}
+    .flip-grid--n5 > .flip-card:last-child,
+    .flip-grid--n7 > .flip-card:last-child{grid-column:1 / -1;aspect-ratio:21/9;}
+  }
 
   .flip-card{position:relative;aspect-ratio:16/10;perspective:1200px;cursor:pointer;}
   .flip-inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.19,1,.22,1);transform-style:preserve-3d;}
@@ -40,13 +66,16 @@
 </style>
 
 <div class="gallery-wrap">
-  <div class="flip-grid">
+  {{#if intro}}
+  <header class="gallery-intro"><span class="gallery-eyebrow">{{intro.eyebrow}}</span>{{#if intro.line}}<p>{{intro.line}}</p>{{/if}}</header>
+  {{/if}}
+  <div class="flip-grid {{gridClass}}">
     {{#each items}}
     <div class="flip-card" tabindex="0">
       <div class="flip-inner">
         <div class="flip-face flip-front">
           {{#if this.src}}
-          <img src="{{{this.src}}}" alt="placeholder"><div class="tint"></div><div class="scrim"></div>
+          <img src="{{{this.src}}}" alt="{{this.alt}}"><div class="tint"></div><div class="scrim"></div>
           {{else}}
           <div class="flip-front-empty">No photo provided</div>
           {{/if}}

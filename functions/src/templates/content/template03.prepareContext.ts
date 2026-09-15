@@ -1,14 +1,14 @@
 import { ARTICLE_AUTHOR, ARTICLE_PUBLISHED_LABEL } from '../../render/constants';
 import { uniqueSlugs } from '../../render/slugify';
-import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
+import { spliceInserts, type PlacedInsert } from '../../render/spliceInserts';
 import type { Template03Content } from './template03.schema';
 
 export interface Template03RenderInput {
   content: Template03Content;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
-  /** Rendered video blocks to splice between sections. */
-  videos?: PlacedVideo[];
+  /** Rendered video/gallery blocks to splice between sections. */
+  inserts?: PlacedInsert[];
 }
 
 /**
@@ -19,7 +19,7 @@ export interface Template03RenderInput {
  * declarative presentation layer.
  */
 export function prepareTemplate03Context(input: Template03RenderInput): Record<string, unknown> {
-  const { content, galleryHtml, videos = [] } = input;
+  const { content, galleryHtml, inserts = [] } = input;
 
   const sectionItems = content.bodyItems.filter((item) => item.type === 'section');
   const anchors = uniqueSlugs(sectionItems, (s) => s.heading);
@@ -52,7 +52,7 @@ export function prepareTemplate03Context(input: Template03RenderInput): Record<s
     tocSections,
     // Spliced after the TOC is built from the real sections, so a video
     // never gets a TOC entry or a scrollspy target.
-    bodyItems: spliceVideos(bodyItems, (item) => item.type === 'section', videos),
+    bodyItems: spliceInserts(bodyItems, (item) => item.type === 'section', inserts),
     cta: content.cta,
     galleryPlacement: content.galleryPlacement,
     galleryHtml: galleryHtml ?? '',

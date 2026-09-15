@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CATEGORY_IDS } from '../types';
 import { highlightSchema } from './highlight.schema';
+import { videoIntroSchema } from './insert.schema';
 
 // See the file-layout note in template03.schema.ts.
 
@@ -30,7 +31,8 @@ export const template04Content = z
     featureImage: z
       .object({
         windowLabel: z.string().min(2).max(60), // e.g. "METAHRISE.EXE — FIELD_CAPTURE.JPG"
-        caption: z.string().min(10).max(200),
+        alt: z.string().max(240).nullish(), // objective description of what's visible
+        caption: z.string().max(200).nullable(), // why it matters — never a description
         imageId: z.string(),
       })
       .nullable(),
@@ -43,9 +45,11 @@ export const template04Content = z
         body: z.string().min(10).max(400),
       })
       .nullable(),
-    galleryPlacement: z.enum(['after-intro', 'before-cta']).nullable(),
+    galleryPlacement: z.enum(['after-intro', 'mid-article', 'before-cta']).nullable(),
+    galleryAfterSection: z.number().int().min(0).max(20).nullish(), // only for 'mid-article'
     /** Only set when the brief includes a video to place — see buildPrompt. 0 = before the first section. */
     videoAfterSection: z.number().int().min(0).max(20).nullish(),
+    videoIntro: videoIntroSchema,
   })
   .refine(
     (content) => {

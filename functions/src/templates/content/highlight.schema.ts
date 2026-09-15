@@ -7,7 +7,9 @@ export const highlightSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('pullQuote'),
     quote: z.string().min(10).max(300),
-    attribution: z.string().min(3).max(80),
+    // null = an unattributed callout line. Only a real quote from the brief
+    // may carry an attribution — see EDITORIAL_JUDGEMENT's evidence rules.
+    attribution: z.string().min(3).max(80).nullable(),
   }),
   z.object({
     type: z.literal('statCard'),

@@ -1,4 +1,4 @@
-import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
+import { spliceInserts, type PlacedInsert } from '../../render/spliceInserts';
 import type { Template01Content } from './template01.schema';
 
 export interface Template01RenderInput {
@@ -7,8 +7,8 @@ export interface Template01RenderInput {
   imageSrcById: Record<string, string>;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
-  /** Rendered video blocks to splice between entries. */
-  videos?: PlacedVideo[];
+  /** Rendered video/gallery blocks to splice between entries. */
+  inserts?: PlacedInsert[];
 }
 
 /**
@@ -18,7 +18,7 @@ export interface Template01RenderInput {
  * never in the .hbs source and never by the model.
  */
 export function prepareTemplate01Context(input: Template01RenderInput): Record<string, unknown> {
-  const { content, imageSrcById, galleryHtml, videos = [] } = input;
+  const { content, imageSrcById, galleryHtml, inserts = [] } = input;
 
   const total = content.entries.length;
   // Alternation and numbering are computed over the real entries first, so a
@@ -29,7 +29,7 @@ export function prepareTemplate01Context(input: Template01RenderInput): Record<s
     indexLabel: `${String(i + 1).padStart(2, '0')} / ${total}`,
     src: entry.imageId ? (imageSrcById[entry.imageId] ?? null) : null,
   }));
-  const entries = spliceVideos(realEntries, () => true, videos);
+  const entries = spliceInserts(realEntries, () => true, inserts);
 
   return {
     title: content.title,

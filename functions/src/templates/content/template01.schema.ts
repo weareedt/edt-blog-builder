@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_IDS } from '../types';
+import { videoIntroSchema } from './insert.schema';
 
 // See the file-layout note in template03.schema.ts.
 
@@ -9,7 +10,7 @@ const roundupEntry = z.object({
   category: z.string().min(2).max(30), // the highlighted blue tag, e.g. "VR Training"
   client: z.string().max(40).nullable(), // renders as "Client — {client}"; omitted entirely if null
   blurb: z.string().min(180).max(720),
-  statLine: z.string().min(4).max(120),
+  statLine: z.string().min(4).max(120).nullable(), // null when there's no real result to state
   /** Optional. Unset → the template's .media-slot-label placeholder renders. */
   imageId: z.string().nullable(),
   imageAlt: z.string().max(160).nullable(),
@@ -28,9 +29,11 @@ export const template01Content = z.object({
       body: z.string().min(10).max(400),
     })
     .nullable(),
-  galleryPlacement: z.enum(['after-intro', 'end-of-article']).nullable(),
+  galleryPlacement: z.enum(['after-intro', 'mid-article', 'end-of-article']).nullable(),
+  galleryAfterSection: z.number().int().min(0).max(20).nullish(), // only for 'mid-article'
   /** Only set when the brief includes a video to place — see buildPrompt. 0 = before the first entry. */
   videoAfterSection: z.number().int().min(0).max(20).nullish(),
+  videoIntro: videoIntroSchema,
 });
 
 export type Template01Content = z.infer<typeof template01Content>;

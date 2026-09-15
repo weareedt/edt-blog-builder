@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORY_IDS } from '../types';
+import { videoIntroSchema } from './insert.schema';
 
 // Note on file layout: this schema is real TypeScript logic, so it lives
 // directly under functions/src (imported by generateArticle and tests)
@@ -63,8 +64,10 @@ export const template03Content = z
       })
       .nullable(),
     galleryPlacement: z.enum(['mid-article', 'before-cta']).nullable(),
+    galleryAfterSection: z.number().int().min(0).max(20).nullish(), // only for 'mid-article'
     /** Only set when the brief includes a video to place — see buildPrompt. 0 = before the first section. */
     videoAfterSection: z.number().int().min(0).max(20).nullish(),
+    videoIntro: videoIntroSchema,
   })
   .refine(
     (content) => {

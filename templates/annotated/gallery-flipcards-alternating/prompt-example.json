@@ -1,0 +1,43 @@
+{
+  "intro": {
+    "eyebrow": "The work, up close",
+    "line": "Five builds, each flipped over to show the decision that made it work."
+  },
+  "items": [
+    {
+      "imageId": "img-1",
+      "alt": "A man in a VR headset holds two controllers while colleagues watch his view on a laptop screen beside him.",
+      "label": "MetaHRise",
+      "body": "The laptop mirror mattered as much as the headset: people waiting their turn were already learning the space before they put it on.",
+      "projectLine": "MetaHRise — MCMC"
+    },
+    {
+      "imageId": "img-2",
+      "alt": "A phone held up towards a colonial-era building shows an animated guide character on its screen.",
+      "label": "CheritAR",
+      "body": "The building does the storytelling. The phone only answers the question a passer-by already has, which is why nobody needs instructions.",
+      "projectLine": "CheritAR"
+    },
+    {
+      "imageId": "img-3",
+      "alt": "Visitors stand in a darkened room with woven patterns projected across every wall.",
+      "label": "IKAT Malaysia",
+      "body": "Putting the pattern on the walls instead of behind glass turned textile history into somewhere you stand inside. The scale is the argument.",
+      "projectLine": "IKAT Malaysia"
+    },
+    {
+      "imageId": "img-4",
+      "alt": "A crowd on a city street at night holds up phones towards a building facade.",
+      "label": "ARFestKL",
+      "body": "An AR trail is a crowd-flow problem before it's a content problem: each point went where people could stop, not where the view was best.",
+      "projectLine": "ARFestKL"
+    },
+    {
+      "imageId": "img-5",
+      "alt": "A visitor touches a large wall display showing archival photographs.",
+      "label": "Founders' Gallery",
+      "body": "A permanent gallery has to survive its ten-thousandth visitor, so the interaction is one gesture deep and the depth lives in the stories.",
+      "projectLine": "AirAsia Founders' Gallery"
+    }
+  ]
+}

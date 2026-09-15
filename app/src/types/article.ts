@@ -49,6 +49,12 @@ export interface ArticleImage {
 
 export type VideoPlacement = 'auto' | 'after-intro' | 'before-closing';
 
+/** An editorial heading above a gallery, e.g. "The work, up close" + one line. */
+export interface GalleryIntro {
+  eyebrow: string;
+  line: string | null;
+}
+
 /** Mirrors ArticleVideo in functions/src/templates/article.ts. */
 export type ArticleVideo = {
   id: string;
@@ -76,6 +82,10 @@ export interface ArticleDoc {
   images: ArticleImage[];
   /** Absent on docs predating video support. */
   videos?: ArticleVideo[];
+  /** The photo uploaded as the hero, for templates with a hero slot. Never reused in the gallery. */
+  heroImageId?: string | null;
+  /** Editorial heading above the gallery, typed by the user. */
+  galleryIntro?: GalleryIntro | null;
 
   title: string | null;
   dek: string | null;
@@ -112,6 +122,8 @@ export interface TemplateCatalogEntry {
   maxImages: number;
   imagesNote: string;
   supportsGallery: boolean;
+  /** Has a dedicated hero photo slot near the top (the feature image). */
+  hasHeroImage: boolean;
   supportedGalleryPlacements: GalleryPlacement[];
 }
 
@@ -136,18 +148,20 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     maxImages: 12,
     imagesNote: 'Each entry can carry one photo. An entry without one simply skips the photo panel — that is normal for this template.',
     supportsGallery: true,
-    supportedGalleryPlacements: ['after-intro', 'end-of-article'],
+    hasHeroImage: false,
+    supportedGalleryPlacements: ['after-intro', 'mid-article', 'end-of-article'],
   },
   {
     id: 'template-02-longform-numbered-steps',
     label: 'Step-by-Step Deep Dive',
-    blurb: 'A single deep-dive story told as numbered steps — brief, approach, build, results, retro — with one optional feature image and per-step highlights.',
+    blurb: 'One idea told as a numbered sequence — steps, lessons, principles, examples or projects — with an optional hero photo and occasional highlights.',
     structureRangeLabel: '3 to 8 numbered steps',
     minImages: 0,
     maxImages: 1,
-    imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',
+    imagesNote: 'At most one hero photo, shown near the top. Upload it with the hero photo field; it is kept separate from gallery photos.',
     supportsGallery: true,
-    supportedGalleryPlacements: ['after-intro', 'before-cta'],
+    hasHeroImage: true,
+    supportedGalleryPlacements: ['after-intro', 'mid-article', 'before-cta'],
   },
   {
     id: 'template-03-standard-article-toc',
@@ -158,6 +172,7 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     maxImages: 0,
     imagesNote: 'This template shows photos through an inserted gallery component, not inline images.',
     supportsGallery: true,
+    hasHeroImage: false,
     supportedGalleryPlacements: ['mid-article', 'before-cta'],
   },
   {
@@ -167,9 +182,10 @@ export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
     structureRangeLabel: '3 to 8 sections',
     minImages: 0,
     maxImages: 1,
-    imagesNote: 'At most one feature image, shown once near the top. It is optional — omit it if no suitable photo was uploaded.',
+    imagesNote: 'At most one hero photo, shown near the top. Upload it with the hero photo field; it is kept separate from gallery photos.',
     supportsGallery: true,
-    supportedGalleryPlacements: ['after-intro', 'before-cta'],
+    hasHeroImage: true,
+    supportedGalleryPlacements: ['after-intro', 'mid-article', 'before-cta'],
   },
 ];
 
@@ -186,7 +202,7 @@ export const GALLERY_CATALOG: GalleryCatalogEntry[] = [
   {
     id: 'gallery-flipcards-alternating',
     label: 'Flip-card gallery',
-    blurb: 'A grid of cards that flip on click/hover to reveal a blurb behind the photo.',
+    blurb: 'Cards that flip on click or hover: the photo and project on the front, the insight behind it on the back.',
     itemMin: 3,
     itemMax: 8,
     // No 'none': the back of the card is the caption, so a card with no

@@ -1,4 +1,4 @@
-import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
+import { spliceInserts, type PlacedInsert } from '../../render/spliceInserts';
 import type { Template02Content } from './template02.schema';
 
 export interface Template02RenderInput {
@@ -7,8 +7,8 @@ export interface Template02RenderInput {
   imageSrcById: Record<string, string>;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
-  /** Rendered video blocks to splice between steps. */
-  videos?: PlacedVideo[];
+  /** Rendered video/gallery blocks to splice between steps. */
+  inserts?: PlacedInsert[];
 }
 
 /**
@@ -18,7 +18,7 @@ export interface Template02RenderInput {
  * the model.
  */
 export function prepareTemplate02Context(input: Template02RenderInput): Record<string, unknown> {
-  const { content, imageSrcById, galleryHtml, videos = [] } = input;
+  const { content, imageSrcById, galleryHtml, inserts = [] } = input;
 
   // Numbered before splicing, so a video between steps doesn't take a number.
   const numberedSteps = content.steps.map((step, i) => ({
@@ -26,11 +26,15 @@ export function prepareTemplate02Context(input: Template02RenderInput): Record<s
     stepNumberLabel: String(i + 1).padStart(2, '0'),
     isFirst: i === 0,
   }));
-  const steps = spliceVideos(numberedSteps, () => true, videos);
+  const steps = spliceInserts(numberedSteps, () => true, inserts);
 
   const featureImage = content.featureImage
     ? {
         ...content.featureImage,
+        // alt and caption are separate jobs (see IMAGE_TEXT in brandVoice) —
+        // never fall back from one to the other here.
+        alt: content.featureImage.alt ?? '',
+        caption: content.featureImage.caption ?? null,
         src: imageSrcById[content.featureImage.imageId] ?? null,
       }
     : null;

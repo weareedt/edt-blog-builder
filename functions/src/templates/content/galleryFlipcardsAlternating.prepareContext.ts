@@ -26,8 +26,13 @@ export function prepareGalleryFlipcardsAlternatingContext(
       // The index tag reads "01 — VR Training", but the label is nullable,
       // so fall back to the bare number rather than rendering "01 — ".
       indexTag: item.label ? `${number} — ${item.label}` : number,
+      alt: item.alt ?? '',
     };
   });
 
-  return { items };
+  // The grid composes differently per count (e.g. 2+2+1 with a wide feature
+  // card for five) — see the .flip-grid--n* rules in the template.
+  const gridClass = `flip-grid--n${items.length} flip-grid--${items.length % 2 ? 'odd' : 'even'}`;
+
+  return { items, intro: content.intro ?? null, gridClass };
 }

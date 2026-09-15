@@ -8,6 +8,12 @@ import { templateRegistry, galleryRegistry } from './templates/generated/registr
 import { buildPrompt } from './prompt/buildPrompt';
 import { buildImageContentBlocks } from './prompt/visionBlocks';
 import {
+  countSections,
+  repairArticleContent,
+  reviewArticleContent,
+  reviewGalleryContent,
+} from './prompt/editorialReview';
+import {
   generateStructuredContent,
   SchemaValidationError,
   ModelRefusalError,
@@ -18,7 +24,7 @@ import { wrapDocument } from './render/wrapDocument';
 import { inlineImages, PayloadTooLargeError } from './render/inlineImages';
 import { slugify } from './render/slugify';
 import { renderVideoBlock, renderVideoStyles } from './render/videoBlock';
-import type { PlacedVideo } from './render/spliceVideos';
+import type { PlacedInsert } from './render/spliceInserts';
 import { prepareTemplate01Context } from './templates/content/template01.prepareContext';
 import { prepareTemplate02Context } from './templates/content/template02.prepareContext';
 import { prepareTemplate03Context } from './templates/content/template03.prepareContext';
@@ -50,17 +56,17 @@ const prepareContextByTemplateId: Record<
     content: any;
     imageSrcById: Record<string, string>;
     galleryHtml: string | null;
-    videos: PlacedVideo[];
+    inserts: PlacedInsert[];
   }) => Record<string, unknown>
 > = {
-  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml, videos }) =>
-    prepareTemplate01Context({ content, imageSrcById, galleryHtml, videos }),
-  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml, videos }) =>
-    prepareTemplate02Context({ content, imageSrcById, galleryHtml, videos }),
-  'template-03-standard-article-toc': ({ content, galleryHtml, videos }) =>
-    prepareTemplate03Context({ content, galleryHtml, videos }),
-  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml, videos }) =>
-    prepareTemplate04Context({ content, imageSrcById, galleryHtml, videos }),
+  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml, inserts }) =>
+    prepareTemplate01Context({ content, imageSrcById, galleryHtml, inserts }),
+  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml, inserts }) =>
+    prepareTemplate02Context({ content, imageSrcById, galleryHtml, inserts }),
+  'template-03-standard-article-toc': ({ content, galleryHtml, inserts }) =>
+    prepareTemplate03Context({ content, galleryHtml, inserts }),
+  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml, inserts }) =>
+    prepareTemplate04Context({ content, imageSrcById, galleryHtml, inserts }),
 };
 
 const prepareGalleryContextByGalleryId: Record<
@@ -72,7 +78,12 @@ const prepareGalleryContextByGalleryId: Record<
     prepareGalleryFlipcardsAlternatingContext({ content, imageSrcById }),
 };
 
-const PROMPT_VERSION = 'p1';
+/** Templates with a dedicated hero photo slot (featureImage). */
+const TEMPLATES_WITH_HERO: TemplateId[] = ['template-02-longform-numbered-steps', 'template-04-basic-scroll'];
+
+// p2: story-first editorial rules, the review/repair pass, hero photos,
+// gallery intros and placement between sections, video interludes.
+const PROMPT_VERSION = 'p2';
 const USE_FIXTURE_CONTENT =
   process.env.USE_FIXTURE_CONTENT === '1' || process.env.USE_FIXTURE_CONTENT === 'true';
 
@@ -164,6 +175,18 @@ export const generateArticle = onCall(
         : galleryEntry.meta.defaultCaptionMode
       : null;
 
+    // The hero photo is only honoured on a template that has a hero slot, and
+    // only if it's really one of this article's images. It never also
+    // appears in the gallery.
+    const heroImageId =
+      article.heroImageId &&
+      TEMPLATES_WITH_HERO.includes(article.templateId) &&
+      article.images.some((img) => img.id === article.heroImageId)
+        ? article.heroImageId
+        : null;
+    const galleryImages = article.images.filter((img) => img.id !== heroImageId);
+    const reviewContext = { brief: article.brief, angle: article.angle, keyPoints: article.keyPoints };
+
     try {
       // ---- 1. Content generation (or fixture, for zero-cost dev) ----
       // Untyped here deliberately: the concrete shape differs per
@@ -175,92 +198,104 @@ export const generateArticle = onCall(
       let galleryContent: any = null;
       let usage: UsageTotals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
 
+      if (galleryEntry && captionMode !== 'auto') {
+        // 'none' / 'manual' — no Anthropic call for the gallery, in fixture
+        // mode or not. See buildGalleryContentFromImages.
+        galleryContent = buildGalleryContentFromImages({
+          galleryId: article.galleryId as GalleryId,
+          mode: captionMode as Exclude<GalleryCaptionMode, 'auto'>,
+          images: galleryImages,
+          itemMin: galleryEntry.meta.itemMin,
+          itemMax: galleryEntry.meta.itemMax,
+          intro: article.galleryIntro ?? null,
+        });
+      }
+
       if (USE_FIXTURE_CONTENT) {
         templateContent = templateEntry.schema.parse(templateEntry.exampleContent);
-        if (galleryEntry && captionMode !== 'auto') {
-          // Fixture mode still honours the caption mode — otherwise a local
-          // preview of an image-only gallery would show the worked
-          // example's captions and misrepresent what real output looks like.
-          galleryContent = buildGalleryContentFromImages({
-            galleryId: article.galleryId as GalleryId,
-            mode: captionMode as Exclude<GalleryCaptionMode, 'auto'>,
-            images: article.images,
-            itemMin: galleryEntry.meta.itemMin,
-            itemMax: galleryEntry.meta.itemMax,
-          });
-        } else if (galleryEntry) {
+        if (heroImageId && templateContent.featureImage) {
+          templateContent = { ...templateContent, featureImage: { ...templateContent.featureImage, imageId: heroImageId } };
+        }
+        if (galleryEntry && captionMode === 'auto') {
           galleryContent = galleryEntry.schema.parse(galleryEntry.exampleContent);
           // Fixture content ships with fixed imageId's (img-1..img-6) that
           // won't generally match whatever was actually seeded for a local
           // test — remap by position rather than requiring an exact match,
           // since fixture mode's whole point is not depending on that.
           galleryContent = {
+            ...galleryContent,
             items: (galleryContent.items as Array<Record<string, unknown>>)
-              .slice(0, article.images.length)
-              .map((item, i) => ({ ...item, imageId: article.images[i].id })),
+              .slice(0, galleryImages.length)
+              .map((item, i) => ({ ...item, imageId: galleryImages[i].id })),
           };
         }
       } else {
-        // Only an 'auto' gallery needs the model — 'none' and 'manual' are
-        // built from the uploaded photos below, so their structure notes
-        // and worked example are dead weight in the prompt (and, being part
-        // of the cached prefix, would fragment the cache for no benefit).
         const galleryNeedsModel = Boolean(galleryEntry) && captionMode === 'auto';
 
-        const imageBlocks = await buildImageContentBlocks(article.images);
+        const imageBlocks = await buildImageContentBlocks(article.images, heroImageId);
         const { system, stableContent, briefContent } = buildPrompt({
           brief: article.brief,
           category: article.category,
           angle: article.angle,
           keyPoints: article.keyPoints,
           templateStructureNotes: templateEntry.meta.structureNotes,
-          templateExampleContent: templateEntry.exampleContent,
+          templateExampleContent: templateEntry.promptExampleContent,
           galleryStructureNotes: galleryNeedsModel ? galleryEntry!.meta.structureNotes : null,
-          galleryExampleContent: galleryNeedsModel ? galleryEntry!.exampleContent : null,
+          galleryExampleContent: galleryNeedsModel ? galleryEntry!.promptExampleContent : null,
+          gallerySelected: Boolean(galleryEntry),
           requestedGalleryPlacement: requestedPlacement,
           supportedGalleryPlacements: templateEntry.meta.supportedGalleryPlacements,
           imageCount: article.images.length,
+          heroImageId,
+          galleryImageIds: galleryImages.map((img) => img.id),
+          galleryIntroProvided: Boolean(article.galleryIntro),
           videos: (article.videos ?? []).map((v) => ({ caption: v.caption, placement: v.placement })),
         });
 
         const userContent = [...stableContent, ...imageBlocks, ...briefContent];
 
+        // With a chosen hero, a featureImage that isn't that photo fails
+        // validation and goes through the corrective retry.
+        const templateSchema = (
+          heroImageId
+            ? (templateEntry.schema as unknown as z.ZodType<{ featureImage: { imageId: string } | null }>).refine(
+                (content) => content.featureImage?.imageId === heroImageId,
+                { message: `featureImage must be set, with imageId ${heroImageId} (the hero photo the user chose).` }
+              )
+            : templateEntry.schema
+        ) as z.ZodTypeAny;
+
         const articleResult = await generateStructuredContent({
           system,
           userContent,
-          schema: templateEntry.schema,
+          schema: templateSchema,
           toolName: 'submit_article_content',
+          review: (content) => reviewArticleContent(article.templateId, content, reviewContext),
         });
         templateContent = articleResult.content;
         usage = mergeUsage(usage, articleResult.usage);
-
-        if (galleryEntry && !galleryNeedsModel) {
-          // 'none' / 'manual' — no second API call at all. See
-          // buildGalleryContentFromImages for why there's nothing to
-          // generate once the captions aren't the model's to write.
-          galleryContent = buildGalleryContentFromImages({
-            galleryId: article.galleryId as GalleryId,
-            mode: captionMode as Exclude<GalleryCaptionMode, 'auto'>,
-            images: article.images,
-            itemMin: galleryEntry.meta.itemMin,
-            itemMax: galleryEntry.meta.itemMax,
+        if (articleResult.reviewIssues.length > 0) {
+          logger.info('generateArticle editorial issues remained after retry', {
+            articleId,
+            issues: articleResult.reviewIssues,
           });
-        } else if (galleryEntry) {
-          // Constrain imageId to the images actually uploaded for THIS
-          // request — a hallucinated or mistyped id then fails Zod
-          // validation and goes through generateStructuredContent's
-          // existing one-retry corrective loop, rather than silently
-          // resolving to an empty <img src> at render time.
-          const uploadedImageIds = new Set(article.images.map((img) => img.id));
+        }
+
+        if (galleryNeedsModel) {
+          // Constrain imageId to the gallery's own photos — a hallucinated
+          // id, or the hero photo, then fails Zod validation and goes
+          // through generateStructuredContent's one-retry corrective loop,
+          // rather than silently resolving to an empty <img src> at render.
+          const allowedImageIds = new Set(galleryImages.map((img) => img.id));
           // Both gallery schemas share this shape; widened to a single
           // concrete ZodType so `.refine` resolves to one signature instead
           // of a union of incompatible overloads.
-          const gallerySchema = galleryEntry.schema as unknown as z.ZodType<{
+          const gallerySchema = galleryEntry!.schema as unknown as z.ZodType<{
             items: Array<{ imageId: string }>;
           }>;
           const strictGallerySchema = gallerySchema.refine(
-            (content) => content.items.every((item) => uploadedImageIds.has(item.imageId)),
-            { message: `Every imageId must be one of the uploaded images: ${[...uploadedImageIds].join(', ')}` }
+            (content) => content.items.every((item) => allowedImageIds.has(item.imageId)),
+            { message: `Every imageId must be one of the gallery photos: ${[...allowedImageIds].join(', ')}` }
           );
 
           const galleryResult = await generateStructuredContent({
@@ -268,10 +303,17 @@ export const generateArticle = onCall(
             userContent,
             schema: strictGallerySchema,
             toolName: 'submit_gallery_content',
+            review: (content) => reviewGalleryContent(article.galleryId as GalleryId, content),
           });
           galleryContent = galleryResult.content;
           usage = mergeUsage(usage, galleryResult.usage);
         }
+      }
+
+      // Deterministic fixes, whatever the model returned — see editorialReview.ts.
+      templateContent = repairArticleContent(article.templateId, templateContent, reviewContext);
+      if (galleryContent && article.galleryIntro) {
+        galleryContent = { ...galleryContent, intro: article.galleryIntro };
       }
 
       // Persist BEFORE rendering — a render bug is then fixable (or
@@ -302,38 +344,66 @@ export const generateArticle = onCall(
           imageSrcById,
         });
         galleryHtml = renderArticle(galleryEntry.hbsSource, galleryContext);
-        resolvedGalleryPlacement = requestedPlacement ?? templateContent.galleryPlacement;
+        // A selected gallery must render somewhere: if neither the user nor
+        // the model placed it, it goes mid-article rather than vanishing.
+        resolvedGalleryPlacement =
+          requestedPlacement ??
+          templateContent.galleryPlacement ??
+          (templateEntry.meta.supportedGalleryPlacements.includes('mid-article')
+            ? 'mid-article'
+            : templateEntry.meta.supportedGalleryPlacements[0]);
       }
 
-      // Videos: a fixed placement is resolved here; 'auto' takes the section
-      // Claude chose, falling back to after the first section if it didn't
-      // pick one (e.g. fixture mode, whose example content never sets it).
-      // The block stylesheet rides along with the first video only — see
-      // renderVideoStyles for why it must appear exactly once.
-      const placedVideos: PlacedVideo[] = (article.videos ?? []).map((video, i) => {
+      // ---- Inserts: videos and a between-sections gallery ----
+      // A fixed video placement is resolved here; 'auto' takes the section
+      // Claude chose, falling back to after the first section (e.g. fixture
+      // mode, whose example content never sets it). The video stylesheet
+      // rides along with the first video only — see renderVideoStyles.
+      const sectionCount = countSections(article.templateId, templateContent);
+      const inserts: PlacedInsert[] = [];
+      (article.videos ?? []).forEach((video) => {
         const source =
           video.kind === 'embed'
             ? { kind: 'embed' as const, url: video.url }
             : { kind: 'upload' as const, downloadUrl: video.downloadUrl, contentType: video.contentType };
-        const block = renderVideoBlock({ id: video.id, source, caption: video.caption });
+        const block = renderVideoBlock({
+          id: video.id,
+          source,
+          caption: video.caption,
+          eyebrow: templateContent.videoIntro?.eyebrow ?? null,
+          intro: templateContent.videoIntro?.line ?? null,
+        });
+        if (!block) return;
         const afterSection =
           video.placement === 'after-intro'
             ? 0
             : video.placement === 'before-closing'
               ? Number.MAX_SAFE_INTEGER
               : (templateContent.videoAfterSection ?? 1);
-        return { html: i === 0 && block ? `${renderVideoStyles()}\n${block}` : block, afterSection };
-      }).filter((v) => v.html);
+        inserts.push({ html: inserts.length === 0 ? `${renderVideoStyles()}\n${block}` : block, afterSection });
+      });
+
+      let templateGalleryHtml = galleryHtml;
+      if (galleryHtml && resolvedGalleryPlacement === 'mid-article') {
+        let afterSection = templateContent.galleryAfterSection ?? Math.ceil(sectionCount / 2);
+        // Don't stack the gallery directly against a video.
+        if (inserts.some((insert) => insert.afterSection === afterSection)) {
+          afterSection = afterSection < sectionCount ? afterSection + 1 : Math.max(0, afterSection - 1);
+        }
+        inserts.push({ html: galleryHtml, afterSection });
+        templateGalleryHtml = null;
+      }
 
       const templateContext = prepareContextByTemplateId[article.templateId]({
         // Safe: resolvedGalleryPlacement is only ever set to a value drawn
         // from requestedPlacement (already checked against this template's
-        // supportedGalleryPlacements above) or the model's own — Zod-
-        // validated against this same narrower enum — galleryPlacement.
+        // supportedGalleryPlacements above), the model's own — Zod-validated
+        // against this same narrower enum — galleryPlacement, or a value
+        // taken from supportedGalleryPlacements itself.
         content: { ...templateContent, galleryPlacement: resolvedGalleryPlacement },
         imageSrcById,
-        galleryHtml,
-        videos: placedVideos,
+        galleryHtml: templateGalleryHtml,
+        inserts,
       });
       const fragment = renderArticle(templateEntry.hbsSource, templateContext);
 
@@ -351,6 +421,7 @@ export const generateArticle = onCall(
         title,
         dek,
         slug,
+        coverImageId: heroImageId ?? article.coverImageId ?? null,
         outputHtmlStoragePath: outputPath,
         outputSizeBytes: Buffer.byteLength(doc, 'utf8'),
         resolvedGalleryPlacement,

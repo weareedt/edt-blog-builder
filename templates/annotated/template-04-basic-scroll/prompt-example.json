@@ -1,0 +1,83 @@
+{
+  "title": "INSIDE METAHRISE",
+  "dek": "How a corporate induction became a VR game 145 employees actually wanted to finish — and how that game ended up in the Malaysia Book of Records.",
+  "category": "Case Studies",
+  "readTimeMinutes": 9,
+  "client": "MCMC",
+  "featureImage": {
+    "windowLabel": "METAHRISE.EXE — FIELD_CAPTURE.JPG",
+    "alt": "A new hire in a VR headset turns towards a virtual doorway while two colleagues watch the same scene on a monitor.",
+    "caption": "The monitor mattered as much as the headset: people waiting their turn were already learning the layout.",
+    "imageId": "img-1"
+  },
+  "lede": "New hires at MCMC used to leave induction with a folder, a slide deck and a rough sense of the org chart. A week later, the folder was the only part anyone could find. The ask was simple to say and hard to build: an induction people would actually finish.",
+  "bodyItems": [
+    {
+      "type": "section",
+      "sectionLabel": "The brief",
+      "paragraphs": [
+        "MCMC's induction was doing what most inductions do: covering the material and losing the room by slide four. New hires walked away with a folder and a vague sense of the org chart, not a feel for the organisation they'd just joined. The ask wasn't \"make the deck nicer.\" It was harder to say out loud and harder to brief: make people want to sit through this.",
+        "That's a design problem before it's a technology problem. You can't VR your way out of boring content — you have to change what the person is actually doing while they learn it. Sitting and listening was the thing that had to go."
+      ]
+    },
+    {
+      "type": "highlight",
+      "highlight": {
+        "type": "pullQuote",
+        "quote": "You can't VR your way out of boring content. You have to change what the person is doing while they learn it.",
+        "attribution": null
+      }
+    },
+    {
+      "type": "section",
+      "sectionLabel": "Why a game, specifically",
+      "paragraphs": [
+        "Games teach through consequence, not through delivery. Walk the wrong way in a game and you find out immediately — nobody has to tell you. We built MetaHRise on that principle: new hires move through a VR environment structured around MCMC itself, and the organisation's structure, values and history surface as things you discover by playing, not slides you're told to remember.",
+        "The headset was the easy part. The harder design problem was pacing — an induction has to hold someone's attention for long enough to cover real material, without ever feeling like a chore wearing a headset. Every beat in MetaHRise earns the next one; nothing plays just to look impressive in a demo reel."
+      ]
+    },
+    {
+      "type": "section",
+      "sectionLabel": "What we built",
+      "paragraphs": [
+        "MetaHRise plays as a sequence of environments rather than a single space — each one built around a specific part of the induction, so the content changes the room instead of a narrator changing the topic. Progress is visible and immediate: new hires can see how far they are through the experience the same way they'd see progress in any game, which turned out to matter more than we expected. People finish things they can see the end of."
+      ]
+    },
+    {
+      "type": "highlight",
+      "highlight": {
+        "type": "statCard",
+        "windowLabel": "RESULTS.EXE",
+        "cells": [
+          {
+            "number": "93%",
+            "label": "New-hire satisfaction, post-induction survey"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "sectionLabel": "The record",
+      "paragraphs": [
+        "The Malaysia Book of Records entry wasn't the brief — it was a consequence of taking the brief seriously. Once MetaHRise existed as a genuinely playable induction, rather than a VR-flavoured slideshow, it qualified as something worth recognising on its own terms. We'd rather ship the record as a side effect than chase it as the headline."
+      ]
+    },
+    {
+      "type": "section",
+      "sectionLabel": "What we'd do differently",
+      "paragraphs": [
+        "Every project teaches you where you over-built. With MetaHRise, the lesson was about scope discipline inside VR specifically — it's easy to keep adding environments because the medium makes everything feel like it deserves one. The strongest sections were the ones we cut hardest, not the ones we added the most detail to. That's the note we carry into every VR training build since."
+      ]
+    }
+  ],
+  "closing": "MetaHRise is still running inductions at MCMC. The record is framed somewhere in an office we don't visit often enough — the 93% satisfaction number is the one we actually check.",
+  "cta": {
+    "heading": "Got an induction nobody finishes?",
+    "body": "Tell us what the content actually is and we'll tell you what it should feel like to go through — VR, AR, or otherwise."
+  },
+  "galleryPlacement": null,
+  "galleryAfterSection": null,
+  "videoAfterSection": null,
+  "videoIntro": null
+}

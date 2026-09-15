@@ -1,0 +1,36 @@
+{
+  "intro": {
+    "eyebrow": "On the ground",
+    "line": null
+  },
+  "items": [
+    {
+      "imageId": "img-1",
+      "alt": "A crowd on a city street at night holds up phones towards a building facade.",
+      "tag": "AR Trail",
+      "title": "ARFestKL",
+      "metric": null
+    },
+    {
+      "imageId": "img-2",
+      "alt": "Visitors stand in a darkened room with woven patterns projected across every wall.",
+      "tag": "Exhibition",
+      "title": "IKAT Malaysia",
+      "metric": null
+    },
+    {
+      "imageId": "img-3",
+      "alt": "A man in a VR headset holds two controllers while colleagues watch a laptop screen.",
+      "tag": "VR Training",
+      "title": "MetaHRise",
+      "metric": "Malaysia Book of Records"
+    },
+    {
+      "imageId": "img-4",
+      "alt": "Two people watch a large projection of a starfield in a dark room.",
+      "tag": null,
+      "title": null,
+      "metric": null
+    }
+  ]
+}

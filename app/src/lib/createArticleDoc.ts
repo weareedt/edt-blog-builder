@@ -3,6 +3,7 @@ import { db } from './firebase';
 import type {
   ArticleImage,
   ArticleVideo,
+  GalleryIntro,
   CategoryId,
   GalleryCaptionMode,
   GalleryId,
@@ -24,6 +25,8 @@ export interface NewArticleInput {
   requestedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];
   videos: ArticleVideo[];
+  heroImageId: string | null;
+  galleryIntro: GalleryIntro | null;
 }
 
 /**
@@ -53,11 +56,13 @@ export async function createArticleDoc(input: NewArticleInput): Promise<void> {
     resolvedGalleryPlacement: null,
     images: input.images,
     videos: input.videos,
+    heroImageId: input.heroImageId,
+    galleryIntro: input.galleryIntro,
 
     title: null,
     dek: null,
     slug: null,
-    coverImageId: input.images[0]?.id ?? null,
+    coverImageId: input.heroImageId ?? input.images[0]?.id ?? null,
     templateLabel: templateMeta.label,
     categoryLabel: input.category,
 

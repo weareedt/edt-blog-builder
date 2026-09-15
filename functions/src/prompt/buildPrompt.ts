@@ -10,11 +10,20 @@ export interface BuildPromptInput {
   keyPoints: string[];
   templateStructureNotes: string;
   templateExampleContent: unknown;
+  /** Only when Claude is writing the gallery's captions ('auto'); null otherwise. */
   galleryStructureNotes: string | null;
   galleryExampleContent: unknown | null;
+  /** Whether a gallery appears at all — its placement is the article's decision in every caption mode. */
+  gallerySelected: boolean;
   requestedGalleryPlacement: GalleryPlacement | null;
   supportedGalleryPlacements: GalleryPlacement[];
   imageCount: number;
+  /** The photo the user uploaded as the hero, for templates that have one. */
+  heroImageId: string | null;
+  /** The photos that make up the gallery (never including the hero). */
+  galleryImageIds: string[];
+  /** The user wrote the gallery's heading themselves. */
+  galleryIntroProvided: boolean;
   /** Videos attached to the article. Claude never sees the video itself — only what it's for. */
   videos: Array<{ caption: string | null; placement: VideoPlacement }>;
 }
@@ -43,26 +52,22 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     },
     {
       type: 'text',
-      text: `EXAMPLE CONTENT for this template (a worked example about a different topic — do not reuse its facts, only its shape and voice):\n${JSON.stringify(input.templateExampleContent, null, 2)}`,
+      text: `EXAMPLE CONTENT for this template — a worked example about a different topic. Take its shape, voice and restraint, never its facts. It is not a checklist: its optional parts are there because that story earned them, not because every article needs them.\n${JSON.stringify(input.templateExampleContent, null, 2)}`,
     },
   ];
 
   if (input.galleryStructureNotes) {
     stableContent.push({
       type: 'text',
-      text: `GALLERY COMPONENT (selected for this article)\n${input.galleryStructureNotes}\n\nSupported placements: ${input.supportedGalleryPlacements.join(', ')}.${
-        input.requestedGalleryPlacement
-          ? ` The user asked for placement: "${input.requestedGalleryPlacement}" — use it.`
-          : ' No placement was requested — choose whichever supported placement best fits the narrative.'
-      }`,
+      text: `GALLERY COMPONENT (you're also writing its captions)\n${input.galleryStructureNotes}`,
     });
     stableContent.push({
       type: 'text',
-      text: `EXAMPLE GALLERY CONTENT (a worked example — do not reuse its facts):\n${JSON.stringify(input.galleryExampleContent, null, 2)}`,
+      text: `EXAMPLE GALLERY CONTENT (a worked example — take its approach, never its facts):\n${JSON.stringify(input.galleryExampleContent, null, 2)}`,
       cache_control: { type: 'ephemeral' },
     });
   } else {
-    // No gallery selected — mark the template example as the cache boundary instead.
+    // No gallery captions to write — mark the template example as the cache boundary instead.
     stableContent[stableContent.length - 1] = {
       ...stableContent[stableContent.length - 1],
       cache_control: { type: 'ephemeral' },
@@ -78,33 +83,65 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
   if (input.keyPoints.length > 0) {
     briefLines.push(`Key points to cover:\n${input.keyPoints.map((p) => `- ${p}`).join('\n')}`);
   }
+
   briefLines.push(
     input.imageCount > 0
-      ? `${input.imageCount} image(s) were uploaded and are shown below — place them using their imageId, never invent one.`
-      : `No images were uploaded for inline use.`
+      ? `${input.imageCount} image(s) were uploaded and are shown below — refer to them only by imageId, never invent one.`
+      : `No images were uploaded.`
   );
-  // Only an 'auto' video asks anything of the model; fixed placements are
-  // resolved in generateArticle without it. Claude can't watch the video,
-  // so the caption is all it has to judge fit against the section text.
-  const autoVideos = input.videos.filter((v) => v.placement === 'auto');
-  if (autoVideos.length > 0) {
-    const described = autoVideos
-      .map((v) => (v.caption ? `"${v.caption}"` : 'a video with no caption'))
-      .join('; ');
+
+  if (input.heroImageId) {
     briefLines.push(
-      `A video will be embedded in this article (${described}). Set videoAfterSection to the number of the section it most directly supports — 1 places it after the first section, 0 before the first one. Put it where the surrounding text talks about what the video shows, not simply at the end. If there's no caption to judge by, place it after the first section.`
+      `HERO PHOTO: imageId ${input.heroImageId} is the photo the user chose as the hero. Use it as featureImage — write its alt (an objective description of what's visible) and its caption (why it matters, or null) — and don't use it anywhere else.`
+    );
+  }
+
+  // Placement is the article's decision whatever the gallery's caption mode.
+  if (input.gallerySelected) {
+    const placements = input.supportedGalleryPlacements.join(', ');
+    briefLines.push(
+      [
+        `GALLERY: ${input.galleryImageIds.length} photo(s) will appear as a gallery (imageIds: ${input.galleryImageIds.join(', ')}).`,
+        input.requestedGalleryPlacement
+          ? `The user asked for placement "${input.requestedGalleryPlacement}" — set galleryPlacement to it.`
+          : `Choose galleryPlacement (${placements}) by narrative: where the text has just set up what the photos show. Don't default to the end.`,
+        input.supportedGalleryPlacements.includes('mid-article')
+          ? `If galleryPlacement is mid-article, set galleryAfterSection to the section number it should follow (1 = after the first section); otherwise null. Don't put it right after a section that ends in a stat card, or next to the video.`
+          : `Set galleryAfterSection to null.`,
+        input.heroImageId ? '' : `Prefer a photo that isn't in the gallery for featureImage, if there's a choice.`,
+      ]
+        .filter(Boolean)
+        .join(' ')
+    );
+    if (input.galleryStructureNotes && input.galleryIntroProvided) {
+      briefLines.push(`The user wrote the gallery's heading themselves — in gallery content, set intro to null.`);
+    }
+  } else {
+    briefLines.push('No gallery. Set galleryPlacement and galleryAfterSection to null.');
+  }
+
+  // Claude can't watch the video, so the caption is all it has to judge fit.
+  if (input.videos.length > 0) {
+    const described = input.videos.map((v) => (v.caption ? `"${v.caption}"` : 'a video with no caption')).join('; ');
+    const auto = input.videos.some((v) => v.placement === 'auto');
+    briefLines.push(
+      [
+        `VIDEO: ${described}.`,
+        auto
+          ? `It sits between sections as an interlude, not inside one. Set videoAfterSection to the number of the section it best follows (0 = before the first) — where the text just before has set up what the video shows, not attached to whichever section comes first, and not straight after a section that ends in a stat card or quote.`
+          : `Its position is fixed by the user; set videoAfterSection to null.`,
+        `Set videoIntro to { eyebrow: 2-4 words, e.g. "See it in motion"; line: one short sentence on what to watch for, or null }.`,
+      ].join(' ')
     );
   } else {
-    briefLines.push('Set videoAfterSection to null.');
+    briefLines.push('No video. Set videoAfterSection and videoIntro to null.');
   }
 
   briefLines.push(
-    'Return one call to the content tool matching the required schema. No commentary outside the tool call.'
+    'Before writing, decide what this article argues and which of the brief\'s items are the same kind of thing. Then return one call to the content tool matching the required schema. No commentary outside the tool call.'
   );
 
-  const briefContent: Anthropic.ContentBlockParam[] = [
-    { type: 'text', text: briefLines.join('\n\n') },
-  ];
+  const briefContent: Anthropic.ContentBlockParam[] = [{ type: 'text', text: briefLines.join('\n\n') }];
 
   return { system, stableContent, briefContent };
 }

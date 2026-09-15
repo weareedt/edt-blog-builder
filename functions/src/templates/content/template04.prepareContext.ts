@@ -1,4 +1,4 @@
-import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
+import { spliceInserts, type PlacedInsert } from '../../render/spliceInserts';
 import type { Template04Content } from './template04.schema';
 
 export interface Template04RenderInput {
@@ -7,8 +7,8 @@ export interface Template04RenderInput {
   imageSrcById: Record<string, string>;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
-  /** Rendered video blocks to splice between sections. */
-  videos?: PlacedVideo[];
+  /** Rendered video/gallery blocks to splice between sections. */
+  inserts?: PlacedInsert[];
 }
 
 /**
@@ -17,7 +17,7 @@ export interface Template04RenderInput {
  * computed here — never in the .hbs source and never by the model.
  */
 export function prepareTemplate04Context(input: Template04RenderInput): Record<string, unknown> {
-  const { content, imageSrcById, galleryHtml, videos = [] } = input;
+  const { content, imageSrcById, galleryHtml, inserts = [] } = input;
 
   let sawFirstSection = false;
   const bodyItems = content.bodyItems.map((item) => {
@@ -32,6 +32,10 @@ export function prepareTemplate04Context(input: Template04RenderInput): Record<s
   const featureImage = content.featureImage
     ? {
         ...content.featureImage,
+        // alt and caption are separate jobs (see IMAGE_TEXT in brandVoice) —
+        // never fall back from one to the other here.
+        alt: content.featureImage.alt ?? '',
+        caption: content.featureImage.caption ?? null,
         src: imageSrcById[content.featureImage.imageId] ?? null,
       }
     : null;
@@ -44,7 +48,7 @@ export function prepareTemplate04Context(input: Template04RenderInput): Record<s
     client: content.client,
     featureImage,
     lede: content.lede,
-    bodyItems: spliceVideos(bodyItems, (item) => item.type === 'section', videos),
+    bodyItems: spliceInserts(bodyItems, (item) => item.type === 'section', inserts),
     closing: content.closing,
     cta: content.cta,
     galleryPlacement: content.galleryPlacement,

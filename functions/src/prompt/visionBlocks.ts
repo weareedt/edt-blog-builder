@@ -10,7 +10,8 @@ import type { ArticleImage } from '../templates/article';
  * than working from filenames alone.
  */
 export async function buildImageContentBlocks(
-  images: ArticleImage[]
+  images: ArticleImage[],
+  heroImageId: string | null = null
 ): Promise<Anthropic.ContentBlockParam[]> {
   const blocks: Anthropic.ContentBlockParam[] = [];
   if (images.length === 0) return blocks;
@@ -25,7 +26,7 @@ export async function buildImageContentBlocks(
     const mediaType = contentType as 'image/jpeg' | 'image/png' | 'image/webp';
     blocks.push({
       type: 'text',
-      text: `imageId: ${image.id}${image.userNote ? ` — note: ${image.userNote}` : ''}`,
+      text: `imageId: ${image.id}${image.id === heroImageId ? ' — HERO PHOTO (use as featureImage only)' : ''}${image.userNote ? ` — note: ${image.userNote}` : ''}`,
     });
     blocks.push({
       type: 'image',

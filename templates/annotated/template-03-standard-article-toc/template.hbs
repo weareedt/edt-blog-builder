@@ -190,8 +190,8 @@
       <p class="lede">{{lede}}</p>
 
       {{#each bodyItems}}
-      {{#if this.videoHtml}}
-      {{{this.videoHtml}}}
+      {{#if this.insertHtml}}
+      {{{this.insertHtml}}}
       {{else if (eq this.type "section")}}
       <div class="article-section" id="{{this.anchor}}">
         <h2>{{this.heading}}</h2>
@@ -203,10 +203,6 @@
       {{{renderCallout this}}}
       {{/if}}
       {{/each}}
-
-      {{#if (eq galleryPlacement "mid-article")}}
-      {{{galleryHtml}}}
-      {{/if}}
 
     </div>
   </div>

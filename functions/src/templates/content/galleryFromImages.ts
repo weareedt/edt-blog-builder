@@ -23,6 +23,8 @@ export interface BuildGalleryFromImagesInput {
   images: ArticleImage[];
   itemMin: number;
   itemMax: number;
+  /** The gallery's editorial heading, if the user wrote one. */
+  intro?: { eyebrow: string; line: string | null } | null;
 }
 
 /**
@@ -44,7 +46,7 @@ export interface BuildGalleryFromImagesInput {
 export function buildGalleryContentFromImages(
   input: BuildGalleryFromImagesInput
 ): GalleryAccordionContent | GalleryFlipcardsAlternatingContent {
-  const { galleryId, mode, images, itemMin, itemMax } = input;
+  const { galleryId, mode, images, itemMin, itemMax, intro = null } = input;
 
   if (images.length < itemMin) {
     throw new NotEnoughGalleryImagesError(images.length, itemMin);
@@ -65,6 +67,7 @@ export function buildGalleryContentFromImages(
   switch (galleryId) {
     case 'gallery-accordion':
       return {
+        intro,
         items: used.map((image) => {
           const { caption, detail } = captionOf(image);
           // `tag` has no manual equivalent — it's a categorising pill, and
@@ -74,6 +77,7 @@ export function buildGalleryContentFromImages(
       };
     case 'gallery-flipcards-alternating':
       return {
+        intro,
         items: used.map((image) => {
           const { caption, detail } = captionOf(image);
           // Likewise `projectLine`: it exists to credit a real project, and

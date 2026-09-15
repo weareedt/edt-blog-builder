@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { galleryIntroSchema } from './insert.schema';
 
 // See the file-layout note in template03.schema.ts — this is real logic and
 // lives under functions/src, while the .hbs + example-content.json for this
@@ -14,6 +15,7 @@ import { z } from 'zod';
 // the card back is a fixed-size face and long copy overflows it.
 const flipCardItem = z.object({
   imageId: z.string().min(1), // a gallery item is always a photo
+  alt: z.string().max(240).nullish(), // objective description of what's visible
   label: z.string().max(40).nullable(), // short front-facing label, e.g. "VR Training"
   body: z.string().max(220).nullable(), // back-of-card description
   projectLine: z.string().max(80).nullable(), // e.g. "MetaHRise — MCMC", or just a project name with no client
@@ -21,6 +23,7 @@ const flipCardItem = z.object({
 
 export const galleryFlipcardsAlternatingContent = z.object({
   items: z.array(flipCardItem).min(3).max(8),
+  intro: galleryIntroSchema,
 });
 
 export type GalleryFlipcardsAlternatingContent = z.infer<typeof galleryFlipcardsAlternatingContent>;
