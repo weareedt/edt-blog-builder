@@ -95,6 +95,10 @@
 
   /* ================= FEATURE IMAGE ================= */
   .feature-media{padding:8px 0 64px;}
+  /* Moved into the text column (edit mode can do this), the section's own
+     .wrap would inset the photo a second time — same fix as the galleries. */
+  .col .feature-media{padding:8px 0 40px;}
+  .col .feature-media .wrap{max-width:none;padding-inline:0;}
   .os-window{border:1px solid var(--border);background:var(--surface);}
   .os-titlebar{display:flex;align-items:center;justify-content:space-between;background:var(--blue);padding:11px 16px;border-bottom:1px solid var(--border);}
   .os-titlebar .name{font-size:11px;font-weight:600;letter-spacing:0.05em;}
@@ -205,7 +209,7 @@
   <p>"You can't VR your way out of boring content. You have to change what the person is doing while they learn it."</p>
   <div class="src">— EDT, on the MetaHRise brief</div>
 </div>
-    <span class="section-label">Why a game, specifically</span>
+        <span class="section-label">Why a game, specifically</span>
     <div class="body-copy" data-reveal>
       <p>Games teach through consequence, not through delivery. Walk the wrong way in a game and you find out immediately — nobody has to tell you. We built MetaHRise on that principle: new hires move through a VR environment structured around MCMC itself, and the organisation&#x27;s structure, values and history surface as things you discover by playing, not slides you&#x27;re told to remember.</p>
       <p>The headset was the easy part. The harder design problem was pacing — an induction has to hold someone&#x27;s attention for long enough to cover real material, without ever feeling like a chore wearing a headset. Every beat in MetaHRise earns the next one; nothing plays just to look impressive in a demo reel.</p>
@@ -229,7 +233,7 @@
     </div>
   </div>
 </div>
-    <span class="section-label">The record</span>
+        <span class="section-label">The record</span>
     <div class="body-copy" data-reveal>
       <p>The Malaysia Book of Records entry wasn&#x27;t the brief — it was a consequence of taking the brief seriously. Once MetaHRise existed as a genuinely playable induction, rather than a VR-flavoured slideshow, it qualified as something worth recognising on its own terms. We&#x27;d rather ship the record as a side effect than chase it as the headline.</p>
     </div>
@@ -237,7 +241,7 @@
   <p>"We build the technical layer other studios say is too complex, then we ship it. The record was proof, not the point."</p>
   <div class="src">— EDT, on shipping MetaHRise</div>
 </div>
-    <span class="section-label">What we&#x27;d do differently</span>
+        <span class="section-label">What we&#x27;d do differently</span>
     <div class="body-copy" data-reveal>
       <p>Every project teaches you where you over-built. With MetaHRise, the lesson was about scope discipline inside VR specifically — it&#x27;s easy to keep adding environments because the medium makes everything feel like it deserves one. The strongest sections were the ones we cut hardest, not the ones we added the most detail to. That&#x27;s the note we carry into every VR training build since.</p>
     </div>
@@ -246,7 +250,7 @@
   <span class="tag">Corporate Onboarding</span>
   <span class="tag">Malaysia Book of Records</span>
 </div>
-
+    
     <div class="closing" data-reveal>
       <p>MetaHRise is still running inductions at MCMC. The record is framed somewhere in an office we don&#x27;t visit often enough — the 93% satisfaction number is the one we actually check.</p>
     </div>

@@ -9,7 +9,8 @@ import { useRegeneratedVersions } from '../lib/useRegeneratedVersions';
 import { regenerateArticle } from '../lib/regenerateArticle';
 import { updateArticleOutput } from '../lib/updateArticleOutput';
 import { StatusBadge } from '../components/StatusBadge';
-import type { ArticleErrorCode } from '../types/article';
+import { focusBlock, getBlocks, moveBlock, serializeBodyForSave, type BlockKind } from '../lib/articleBlocks';
+import type { ArticleErrorCode, TemplateId } from '../types/article';
 
 // One line of guidance per failure mode — the specific detail (e.g. the
 // actual payload size for PAYLOAD_TOO_LARGE) already lives in
@@ -138,7 +139,11 @@ export function ArticleDetailPage() {
                 {regenerating ? 'Creating…' : 'Regenerate as new version'}
               </button>
             </div>
-            <ArticlePreview articleId={article.id} storagePath={article.outputHtmlStoragePath} />
+            <ArticlePreview
+              articleId={article.id}
+              templateId={article.templateId}
+              storagePath={article.outputHtmlStoragePath}
+            />
           </div>
         </div>
       )}
@@ -160,13 +165,34 @@ function PanelBar({ label }: { label: string }) {
 }
 
 /** Fetches the rendered HTML from Storage — it's never inlined into the Firestore doc (see D6/1MiB note). */
-function ArticlePreview({ articleId, storagePath }: { articleId: string; storagePath: string | null }) {
+const BLOCK_KIND_LABELS: Record<BlockKind, string> = {
+  section: 'Section',
+  entry: 'Entry',
+  step: 'Step',
+  callout: 'Callout',
+  highlight: 'Highlight',
+  gallery: 'Gallery',
+  video: 'Video',
+  photo: 'Photo',
+};
+
+function ArticlePreview({
+  articleId,
+  templateId,
+  storagePath,
+}: {
+  articleId: string;
+  templateId: TemplateId;
+  storagePath: string | null;
+}) {
   const [html, setHtml] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [blocks, setBlocks] = useState<Array<{ kind: BlockKind; label: string }>>([]);
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
 
   async function loadFresh() {
     if (!storagePath) return;
@@ -215,10 +241,33 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
     // Add the same class that script would have added, directly, so
     // there's no invisible-but-editable text.
     doc.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('revealed'));
+    refreshBlocks();
+  }
+
+  function refreshBlocks() {
+    const doc = iframeRef.current?.contentDocument;
+    setBlocks(doc ? getBlocks(doc, templateId).map(({ kind, label }) => ({ kind, label })) : []);
+  }
+
+  function selectBlock(index: number) {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc) return;
+    setFocusIndex(index);
+    focusBlock(doc, templateId, index);
+  }
+
+  function move(index: number, direction: -1 | 1) {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc) return;
+    const next = moveBlock(doc, templateId, index, direction);
+    refreshBlocks();
+    setFocusIndex(next);
+    focusBlock(doc, templateId, next);
   }
 
   function cancelEdit() {
     setSaveError(null);
+    setFocusIndex(null);
     setEditing(false);
   }
 
@@ -228,10 +277,11 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
     setSaving(true);
     setSaveError(null);
     try {
-      await updateArticleOutput(articleId, doc.body.innerHTML);
+      await updateArticleOutput(articleId, serializeBodyForSave(doc));
       const fresh = await loadFresh();
       setHtml(fresh ?? null);
       setEditing(false);
+      setFocusIndex(null);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Could not save your edits.');
     } finally {
@@ -264,11 +314,47 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
       </div>
       {editing && (
         <p className="field-hint">
-          Click into the text to edit it directly. Layout, images, and interactive bits (like the flip
-          cards) aren't editable here.
+          Click into the text to edit it directly. Use the outline to move sections, photos, galleries and
+          videos — step numbers and the table of contents follow the new order. Nothing is saved until you
+          press Save changes.
         </p>
       )}
       {saveError && <p className="field-error">{saveError}</p>}
+      <div className={editing ? 'edit-layout' : undefined}>
+      {editing && (
+        <aside className="block-outline" aria-label="Article outline">
+          <div className="block-outline__head">Outline</div>
+          {blocks.length === 0 && <p className="muted block-outline__empty">Nothing to rearrange here.</p>}
+          <ol className="block-outline__list">
+            {blocks.map((block, i) => (
+              <li
+                key={i}
+                className={`block-outline__item${focusIndex === i ? ' block-outline__item--focus' : ''}`}
+              >
+                <button type="button" className="block-outline__label" onClick={() => selectBlock(i)}>
+                  <span className={`block-outline__kind block-outline__kind--${block.kind}`}>
+                    {BLOCK_KIND_LABELS[block.kind]}
+                  </span>
+                  <span className="block-outline__text">{block.label}</span>
+                </button>
+                <span className="block-outline__moves">
+                  <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move ${block.label} up`}>
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => move(i, 1)}
+                    disabled={i === blocks.length - 1}
+                    aria-label={`Move ${block.label} down`}
+                  >
+                    ↓
+                  </button>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      )}
       <iframe
         key={editing ? 'edit' : 'view'}
         ref={iframeRef}
@@ -285,6 +371,7 @@ function ArticlePreview({ articleId, storagePath }: { articleId: string; storage
         srcDoc={html}
         onLoad={editing ? handleEditFrameLoad : undefined}
       />
+      </div>
     </div>
   );
 }

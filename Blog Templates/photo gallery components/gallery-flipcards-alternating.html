@@ -11,12 +11,14 @@
   .gallery-wrap{max-width:1180px;margin:0 auto;padding:40px 24px;}
   @media(min-width:900px){.gallery-wrap{padding:56px 80px;}}
   /* Dropped INSIDE an article's text column (.col in the scroll templates,
-     .article-main in the TOC one) the column already supplies the gutter, so
+     .article-main in the TOC one, .roundup in the project roundup) the column
+     already supplies the gutter, so
      the wrapper's own max-width and side padding would inset the gallery a
      second time and leave it narrower than the copy beside it. Clear them
      there and let the gallery span the column edge to edge. At page level
      the wrapper keeps them, so it still lines up with the article's .wrap. */
   .col .gallery-wrap,
+  .roundup .gallery-wrap,
   .article-main .gallery-wrap{max-width:none;padding-left:0;padding-right:0;}
 
   /* ============ FLIP-CARD GALLERY — drop this block into any article ============ */

@@ -8,18 +8,18 @@
     "imageCount": 11,
     "beforeBytes": 679953,
     "afterBytes": 31883,
-    "cleanedAt": "2026-09-15T04:29:27.626Z"
+    "cleanedAt": "2026-09-15T07:09:41.468Z"
   },
   "template-02-longform-numbered-steps": {
     "id": "template-02-longform-numbered-steps",
     "category": "articles",
     "sourcePath": "Blog Templates/template-02-longform-numbered-steps.html",
     "cleanPath": "templates/clean/articles/template-02-longform-numbered-steps.clean.html",
-    "sourceSha256": "78dad575a4961f6a5937a2253cbc6a94d9fb5a57d96484635efed4063578163d",
+    "sourceSha256": "3f6e40826852a95be2ca937dd32a9af4214a9372b3d5cf058a0d71efe3331596",
     "imageCount": 1,
-    "beforeBytes": 221828,
-    "afterBytes": 24386,
-    "cleanedAt": "2026-09-15T04:29:27.629Z"
+    "beforeBytes": 222089,
+    "afterBytes": 24647,
+    "cleanedAt": "2026-09-15T07:09:41.474Z"
   },
   "template-03-standard-article-toc": {
     "id": "template-03-standard-article-toc",
@@ -30,39 +30,39 @@
     "imageCount": 0,
     "beforeBytes": 24906,
     "afterBytes": 24906,
-    "cleanedAt": "2026-09-15T04:29:27.629Z"
+    "cleanedAt": "2026-09-15T07:09:41.477Z"
   },
   "template-04-basic-scroll": {
     "id": "template-04-basic-scroll",
     "category": "articles",
     "sourcePath": "Blog Templates/template-04-basic-scroll.html",
     "cleanPath": "templates/clean/articles/template-04-basic-scroll.clean.html",
-    "sourceSha256": "4bc55a039484bd4ab04e0bccabd263059ed9afe171141bacea00ab8b9d2792cd",
+    "sourceSha256": "37933e79df09f1a4818098524a0c08ac752d226dec3e34b9597d85cfec16b286",
     "imageCount": 1,
-    "beforeBytes": 220055,
-    "afterBytes": 22613,
-    "cleanedAt": "2026-09-15T04:29:27.632Z"
+    "beforeBytes": 220316,
+    "afterBytes": 22874,
+    "cleanedAt": "2026-09-15T07:09:41.479Z"
   },
   "gallery-accordion": {
     "id": "gallery-accordion",
     "category": "galleries",
     "sourcePath": "Blog Templates/photo gallery components/gallery-accordion.html",
     "cleanPath": "templates/clean/galleries/gallery-accordion.clean.html",
-    "sourceSha256": "a6f3921cf84b4224fe986eb0d4203ca43fc150b8de1f654eec883a2816d4ebfe",
+    "sourceSha256": "f48b5a39d690d8d2c29ddd78ce5b17d42684aff8d0d102d2638aab57d272a450",
     "imageCount": 6,
-    "beforeBytes": 377881,
-    "afterBytes": 6160,
-    "cleanedAt": "2026-09-15T04:29:27.633Z"
+    "beforeBytes": 377945,
+    "afterBytes": 6224,
+    "cleanedAt": "2026-09-15T07:09:41.482Z"
   },
   "gallery-flipcards-alternating": {
     "id": "gallery-flipcards-alternating",
     "category": "galleries",
     "sourcePath": "Blog Templates/photo gallery components/gallery-flipcards-alternating.html",
     "cleanPath": "templates/clean/galleries/gallery-flipcards-alternating.clean.html",
-    "sourceSha256": "432363c8b864d6d9c22b67592524817dd7a7b31d29733ce56860e1e6f73d787b",
+    "sourceSha256": "023a9bcb99645ec5090926c71232b10b042b4a791da12183746c726b394eadb7",
     "imageCount": 6,
-    "beforeBytes": 372454,
-    "afterBytes": 8067,
-    "cleanedAt": "2026-09-15T04:29:27.635Z"
+    "beforeBytes": 372518,
+    "afterBytes": 8131,
+    "cleanedAt": "2026-09-15T07:09:41.484Z"
   }
 }

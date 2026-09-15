@@ -89,6 +89,10 @@
 
   /* ================= FEATURE IMAGE ================= */
   .feature-media{padding:8px 0 64px;}
+  /* Moved into the text column (edit mode can do this), the section's own
+     .wrap would inset the photo a second time — same fix as the galleries. */
+  .col .feature-media{padding:8px 0 40px;}
+  .col .feature-media .wrap{max-width:none;padding-inline:0;}
   .os-window{border:1px solid var(--border);background:var(--surface);}
   .os-titlebar{
     display:flex;align-items:center;justify-content:space-between;background:var(--blue);
