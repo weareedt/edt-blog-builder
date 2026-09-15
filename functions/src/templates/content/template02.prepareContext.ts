@@ -1,3 +1,4 @@
+import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
 import type { Template02Content } from './template02.schema';
 
 export interface Template02RenderInput {
@@ -6,6 +7,8 @@ export interface Template02RenderInput {
   imageSrcById: Record<string, string>;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
+  /** Rendered video blocks to splice between steps. */
+  videos?: PlacedVideo[];
 }
 
 /**
@@ -15,13 +18,15 @@ export interface Template02RenderInput {
  * the model.
  */
 export function prepareTemplate02Context(input: Template02RenderInput): Record<string, unknown> {
-  const { content, imageSrcById, galleryHtml } = input;
+  const { content, imageSrcById, galleryHtml, videos = [] } = input;
 
-  const steps = content.steps.map((step, i) => ({
+  // Numbered before splicing, so a video between steps doesn't take a number.
+  const numberedSteps = content.steps.map((step, i) => ({
     ...step,
     stepNumberLabel: String(i + 1).padStart(2, '0'),
     isFirst: i === 0,
   }));
+  const steps = spliceVideos(numberedSteps, () => true, videos);
 
   const featureImage = content.featureImage
     ? {

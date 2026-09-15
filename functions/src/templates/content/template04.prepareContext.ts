@@ -1,3 +1,4 @@
+import { spliceVideos, type PlacedVideo } from '../../render/spliceVideos';
 import type { Template04Content } from './template04.schema';
 
 export interface Template04RenderInput {
@@ -6,6 +7,8 @@ export interface Template04RenderInput {
   imageSrcById: Record<string, string>;
   /** Raw, already-rendered gallery HTML, or null if no gallery was selected. */
   galleryHtml: string | null;
+  /** Rendered video blocks to splice between sections. */
+  videos?: PlacedVideo[];
 }
 
 /**
@@ -14,7 +17,7 @@ export interface Template04RenderInput {
  * computed here — never in the .hbs source and never by the model.
  */
 export function prepareTemplate04Context(input: Template04RenderInput): Record<string, unknown> {
-  const { content, imageSrcById, galleryHtml } = input;
+  const { content, imageSrcById, galleryHtml, videos = [] } = input;
 
   let sawFirstSection = false;
   const bodyItems = content.bodyItems.map((item) => {
@@ -41,7 +44,7 @@ export function prepareTemplate04Context(input: Template04RenderInput): Record<s
     client: content.client,
     featureImage,
     lede: content.lede,
-    bodyItems,
+    bodyItems: spliceVideos(bodyItems, (item) => item.type === 'section', videos),
     closing: content.closing,
     cta: content.cta,
     galleryPlacement: content.galleryPlacement,

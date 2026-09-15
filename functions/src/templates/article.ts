@@ -39,6 +39,33 @@ export interface ArticleImage {
   captionDetail: string | null;
 }
 
+/**
+ * A video attached to an article. Never inlined like photos are — a video
+ * is far too large to base64 into a portable .html — so the output either
+ * embeds a YouTube/Vimeo player or links to the uploaded file by its
+ * tokenised Storage download URL.
+ */
+export type ArticleVideo = {
+  id: string;
+  caption: string | null;
+  /**
+   * Where it goes. 'auto' lets Claude choose the section it best supports;
+   * the others are fixed. It can be moved afterwards in edit mode either way.
+   */
+  placement: VideoPlacement;
+} & (
+  | { kind: 'embed'; url: string }
+  | {
+      kind: 'upload';
+      storagePath: string; // users/{uid}/uploads/{articleId}/videos/{videoId}.{ext}
+      downloadUrl: string;
+      contentType: string;
+      bytes: number;
+    }
+);
+
+export type VideoPlacement = 'auto' | 'after-intro' | 'before-closing';
+
 export interface ArticleDoc {
   id: string;
   createdBy: string; // uid
@@ -55,6 +82,8 @@ export interface ArticleDoc {
   requestedGalleryPlacement: GalleryPlacement | null;
   resolvedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];
+  /** Absent on docs predating video support — read as `article.videos ?? []`. */
+  videos?: ArticleVideo[];
 
   // Denormalised for the dashboard
   title: string | null;

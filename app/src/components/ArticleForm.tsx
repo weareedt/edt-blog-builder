@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { UnsupportedImageError } from '../lib/downscaleImage';
 import type { PendingImage } from '../lib/uploadImages';
+import { resolveEmbedUrl } from '../lib/resolveEmbedUrl';
+import { checkVideoFile, UnsupportedVideoError, type PendingVideo } from '../lib/uploadVideo';
 import { TemplatePreviewFrame, type PreviewAnimation } from './TemplatePreviewFrame';
 import {
   CATEGORY_IDS,
@@ -12,6 +14,7 @@ import {
   type GalleryId,
   type GalleryPlacement,
   type TemplateId,
+  type VideoPlacement,
 } from '../types/article';
 
 const NONE = 'none' as const;
@@ -29,6 +32,12 @@ const CAPTION_MODE_HINTS: Record<GalleryCaptionMode, string> = {
     'Type a caption against each photo below. Leave one blank and that panel renders as photo only.',
   auto:
     'Claude sees each photo and captions what it actually shows. Costs one extra API call, and it can still guess wrong \u2014 check the captions before you publish.',
+};
+
+const VIDEO_PLACEMENT_LABELS: Record<VideoPlacement, string> = {
+  auto: 'Let Claude pick the section it fits',
+  'after-intro': 'After the intro',
+  'before-closing': 'Before the closing',
 };
 
 const PLACEMENT_LABELS: Record<GalleryPlacement, string> = {
@@ -67,6 +76,7 @@ export interface ArticleFormValues {
   requestedGalleryPlacement: GalleryPlacement | null;
   pendingImages: PendingImage[];
   remainingExistingImages: ArticleImage[];
+  video: PendingVideo | null;
 }
 
 export interface ArticleFormProps {
@@ -121,6 +131,14 @@ export function ArticleForm({
     }))
   );
   const [imageError, setImageError] = useState<string | null>(null);
+  const [videoKind, setVideoKind] = useState<'none' | 'embed' | 'upload'>('none');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoCaption, setVideoCaption] = useState('');
+  const [videoPlacement, setVideoPlacement] = useState<VideoPlacement>('auto');
+  // One id for the life of the form, so re-submitting after an error
+  // overwrites the same Storage object instead of orphaning another.
+  const [videoId] = useState(() => crypto.randomUUID());
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -138,7 +156,13 @@ export function ArticleForm({
     : null;
 
   const imageCountValid = !gallery || (imageRows.length >= gallery.itemMin && imageRows.length <= gallery.itemMax);
-  const canSubmit = brief.trim().length > 0 && imageCountValid && !submitting;
+  const embed = videoKind === 'embed' && videoUrl.trim() ? resolveEmbedUrl(videoUrl) : null;
+  const videoFileProblem = videoKind === 'upload' && videoFile ? checkVideoFile(videoFile) : null;
+  const videoValid =
+    videoKind === 'none' ||
+    (videoKind === 'embed' && embed !== null) ||
+    (videoKind === 'upload' && videoFile !== null && videoFileProblem === null);
+  const canSubmit = brief.trim().length > 0 && imageCountValid && videoValid && !submitting;
 
   function onFilesSelected(files: FileList | null) {
     if (!files) return;
@@ -210,10 +234,23 @@ export function ArticleForm({
         requestedGalleryPlacement: placement === AUTO_PLACEMENT ? null : placement,
         pendingImages,
         remainingExistingImages,
+        video:
+          videoKind === 'none'
+            ? null
+            : {
+                id: videoId,
+                caption: videoCaption.trim() || null,
+                placement: videoPlacement,
+                ...(videoKind === 'embed'
+                  ? { kind: 'embed' as const, url: videoUrl }
+                  : { kind: 'upload' as const, file: videoFile! }),
+              },
       });
     } catch (err) {
       if (err instanceof UnsupportedImageError) {
         setImageError(err.message);
+      } else if (err instanceof UnsupportedVideoError) {
+        setSubmitError(err.message);
       } else {
         setSubmitError(err instanceof Error ? err.message : 'Something went wrong.');
       }
@@ -459,6 +496,99 @@ export function ArticleForm({
               </li>
             ))}
           </ul>
+        )}
+      </fieldset>
+
+      <fieldset className="field">
+        <legend>Video (optional)</legend>
+        <div className="video-kind-row" role="radiogroup" aria-label="Video source">
+          {(
+            [
+              ['none', 'No video'],
+              ['embed', 'YouTube / Vimeo link'],
+              ['upload', 'Upload a file'],
+            ] as const
+          ).map(([kind, label]) => (
+            <label key={kind} className={`video-kind${videoKind === kind ? ' video-kind--selected' : ''}`}>
+              <input
+                type="radio"
+                name="video-kind"
+                checked={videoKind === kind}
+                onChange={() => setVideoKind(kind)}
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+
+        {videoKind === 'embed' && (
+          <label className="field">
+            <span>Video link</span>
+            <input
+              type="url"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=… or https://vimeo.com/…"
+            />
+            {videoUrl.trim() && !embed && (
+              <span className="field-error">
+                That doesn't look like a YouTube or Vimeo video link.
+              </span>
+            )}
+            {embed && (
+              <span className="field-hint">
+                {embed.provider === 'youtube' ? 'YouTube' : 'Vimeo'} video found. It plays inside the
+                article from {embed.provider === 'youtube' ? 'YouTube' : 'Vimeo'}, so the .html stays small.
+              </span>
+            )}
+          </label>
+        )}
+
+        {videoKind === 'upload' && (
+          <label className="field">
+            <span>Video file</span>
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+            />
+            {videoFileProblem && <span className="field-error">{videoFileProblem}</span>}
+            <span className="field-hint">
+              MP4, WebM or MOV, up to 200MB. The file isn't packed into the .html — the article links to
+              it in Firebase Storage, so it only plays while that project's Storage is live.
+            </span>
+          </label>
+        )}
+
+        {videoKind !== 'none' && (
+          <>
+            <label className="field">
+              <span>Caption (optional)</span>
+              <input
+                type="text"
+                value={videoCaption}
+                onChange={(e) => setVideoCaption(e.target.value)}
+                placeholder="What the video shows"
+              />
+              <span className="field-hint">
+                Claude can't watch the video — if you let it choose the placement, this caption is what it
+                matches against the article's sections.
+              </span>
+            </label>
+            <label className="field">
+              <span>Placement</span>
+              <select
+                value={videoPlacement}
+                onChange={(e) => setVideoPlacement(e.target.value as VideoPlacement)}
+              >
+                {(Object.keys(VIDEO_PLACEMENT_LABELS) as VideoPlacement[]).map((p) => (
+                  <option key={p} value={p}>
+                    {VIDEO_PLACEMENT_LABELS[p]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
         )}
       </fieldset>
 

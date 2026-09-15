@@ -41,17 +41,39 @@ export function sanitizeEditedArticleBody(editedBodyHtml: string, originalBodyHt
       'blockquote', 'img', 'figure', 'figcaption',
       'table', 'thead', 'tbody', 'tr', 'th', 'td',
       'title',
+      // Video blocks. An <iframe> is only kept when its src is on one of
+      // allowedIframeHostnames below — anything else is dropped whole.
+      'iframe', 'video', 'source',
     ],
     allowedAttributes: {
-      '*': ['class', 'id', 'tabindex'],
+      // data-* must survive a save: the templates' own CSS and scripts key
+      // off them (data-reveal gates scroll-in visibility, data-default picks
+      // the accordion's open panel, data-block marks what can be
+      // rearranged). Stripping them silently broke those features after the
+      // first edit. They're inert as far as script execution goes — the
+      // only scripts that read them are the byte-identical originals above.
+      '*': ['class', 'id', 'tabindex', 'data-*'],
       a: ['href'],
       img: ['src', 'alt'],
+      iframe: ['src', 'title', 'allow', 'allowfullscreen', 'loading', 'referrerpolicy'],
+      video: ['src', 'controls', 'playsinline', 'preload', 'poster'],
+      source: ['src', 'type'],
     },
     allowedSchemesByTag: {
       img: ['data', 'http', 'https'],
       a: ['http', 'https', 'mailto'],
+      iframe: ['https'],
+      // http is for the local Storage emulator (http://127.0.0.1:9199);
+      // real Firebase Storage download URLs are always https.
+      video: ['http', 'https'],
+      source: ['http', 'https'],
     },
+    allowedIframeHostnames: ['www.youtube-nocookie.com', 'www.youtube.com', 'player.vimeo.com'],
     allowProtocolRelative: false,
+    // A disallowed iframe host or video scheme only loses its src above,
+    // leaving an empty player shell behind. Drop the element entirely.
+    exclusiveFilter: (frame) =>
+      (frame.tag === 'iframe' || frame.tag === 'source') && !frame.attribs.src,
   });
 
   return sanitized.replace(/@@PRESERVED_BLOCK_(\d+)@@/g, (_match, indexStr: string) => {

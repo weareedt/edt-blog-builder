@@ -1,6 +1,7 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import { buildSystemPrompt } from './brandVoice';
 import type { CategoryId, GalleryPlacement } from '../templates/types';
+import type { VideoPlacement } from '../templates/article';
 
 export interface BuildPromptInput {
   brief: string;
@@ -14,6 +15,8 @@ export interface BuildPromptInput {
   requestedGalleryPlacement: GalleryPlacement | null;
   supportedGalleryPlacements: GalleryPlacement[];
   imageCount: number;
+  /** Videos attached to the article. Claude never sees the video itself — only what it's for. */
+  videos: Array<{ caption: string | null; placement: VideoPlacement }>;
 }
 
 export interface BuiltPrompt {
@@ -80,6 +83,21 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
       ? `${input.imageCount} image(s) were uploaded and are shown below — place them using their imageId, never invent one.`
       : `No images were uploaded for inline use.`
   );
+  // Only an 'auto' video asks anything of the model; fixed placements are
+  // resolved in generateArticle without it. Claude can't watch the video,
+  // so the caption is all it has to judge fit against the section text.
+  const autoVideos = input.videos.filter((v) => v.placement === 'auto');
+  if (autoVideos.length > 0) {
+    const described = autoVideos
+      .map((v) => (v.caption ? `"${v.caption}"` : 'a video with no caption'))
+      .join('; ');
+    briefLines.push(
+      `A video will be embedded in this article (${described}). Set videoAfterSection to the number of the section it most directly supports — 1 places it after the first section, 0 before the first one. Put it where the surrounding text talks about what the video shows, not simply at the end. If there's no caption to judge by, place it after the first section.`
+    );
+  } else {
+    briefLines.push('Set videoAfterSection to null.');
+  }
+
   briefLines.push(
     'Return one call to the content tool matching the required schema. No commentary outside the tool call.'
   );

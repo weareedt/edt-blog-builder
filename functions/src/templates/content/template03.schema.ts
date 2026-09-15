@@ -63,6 +63,8 @@ export const template03Content = z
       })
       .nullable(),
     galleryPlacement: z.enum(['mid-article', 'before-cta']).nullable(),
+    /** Only set when the brief includes a video to place — see buildPrompt. 0 = before the first section. */
+    videoAfterSection: z.number().int().min(0).max(20).nullish(),
   })
   .refine(
     (content) => {

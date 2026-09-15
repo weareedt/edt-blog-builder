@@ -47,6 +47,18 @@ export interface ArticleImage {
   captionDetail: string | null;
 }
 
+export type VideoPlacement = 'auto' | 'after-intro' | 'before-closing';
+
+/** Mirrors ArticleVideo in functions/src/templates/article.ts. */
+export type ArticleVideo = {
+  id: string;
+  caption: string | null;
+  placement: VideoPlacement;
+} & (
+  | { kind: 'embed'; url: string }
+  | { kind: 'upload'; storagePath: string; downloadUrl: string; contentType: string; bytes: number }
+);
+
 export interface ArticleDoc {
   id: string;
   createdBy: string;
@@ -62,6 +74,8 @@ export interface ArticleDoc {
   requestedGalleryPlacement: GalleryPlacement | null;
   resolvedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];
+  /** Absent on docs predating video support. */
+  videos?: ArticleVideo[];
 
   title: string | null;
   dek: string | null;

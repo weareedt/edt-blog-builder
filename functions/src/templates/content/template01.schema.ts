@@ -29,6 +29,8 @@ export const template01Content = z.object({
     })
     .nullable(),
   galleryPlacement: z.enum(['after-intro', 'end-of-article']).nullable(),
+  /** Only set when the brief includes a video to place — see buildPrompt. 0 = before the first entry. */
+  videoAfterSection: z.number().int().min(0).max(20).nullish(),
 });
 
 export type Template01Content = z.infer<typeof template01Content>;

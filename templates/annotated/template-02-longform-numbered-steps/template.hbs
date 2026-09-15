@@ -226,6 +226,9 @@
 
     <div class="steps">
       {{#each steps}}
+      {{#if this.videoHtml}}
+      {{{this.videoHtml}}}
+      {{else}}
       <article class="step" data-step>
         <div class="step-num-col"><span class="step-num">{{this.stepNumberLabel}}</span></div>
         <div class="step-content">
@@ -240,6 +243,7 @@
           {{/if}}
         </div>
       </article>
+      {{/if}}
       {{/each}}
     </div>
 

@@ -196,7 +196,9 @@
     {{/if}}
 
     {{#each bodyItems}}
-    {{#if (eq this.type "section")}}
+    {{#if this.videoHtml}}
+    {{{this.videoHtml}}}
+    {{else if (eq this.type "section")}}
     <span class="section-label">{{this.sectionLabel}}</span>
     <div class="body-copy{{#if this.isFirstSection}} drop{{/if}}" data-reveal>
       {{#each this.paragraphs}}

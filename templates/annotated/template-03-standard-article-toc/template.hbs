@@ -190,7 +190,9 @@
       <p class="lede">{{lede}}</p>
 
       {{#each bodyItems}}
-      {{#if (eq this.type "section")}}
+      {{#if this.videoHtml}}
+      {{{this.videoHtml}}}
+      {{else if (eq this.type "section")}}
       <div class="article-section" id="{{this.anchor}}">
         <h2>{{this.heading}}</h2>
         {{#each this.blocks}}

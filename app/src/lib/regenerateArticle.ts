@@ -29,6 +29,7 @@ export async function regenerateArticle(source: ArticleDoc): Promise<string> {
     requestedGalleryPlacement: source.requestedGalleryPlacement,
     resolvedGalleryPlacement: null,
     images: source.images,
+    videos: source.videos ?? [],
 
     title: null,
     dek: null,

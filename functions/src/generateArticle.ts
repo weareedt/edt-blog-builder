@@ -17,6 +17,8 @@ import { renderArticle } from './render/renderArticle';
 import { wrapDocument } from './render/wrapDocument';
 import { inlineImages, PayloadTooLargeError } from './render/inlineImages';
 import { slugify } from './render/slugify';
+import { renderVideoBlock, renderVideoStyles } from './render/videoBlock';
+import type { PlacedVideo } from './render/spliceVideos';
 import { prepareTemplate01Context } from './templates/content/template01.prepareContext';
 import { prepareTemplate02Context } from './templates/content/template02.prepareContext';
 import { prepareTemplate03Context } from './templates/content/template03.prepareContext';
@@ -44,16 +46,21 @@ import type {
 // against that same template's schema.
 const prepareContextByTemplateId: Record<
   TemplateId,
-  (input: { content: any; imageSrcById: Record<string, string>; galleryHtml: string | null }) => Record<string, unknown>
+  (input: {
+    content: any;
+    imageSrcById: Record<string, string>;
+    galleryHtml: string | null;
+    videos: PlacedVideo[];
+  }) => Record<string, unknown>
 > = {
-  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml }) =>
-    prepareTemplate01Context({ content, imageSrcById, galleryHtml }),
-  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml }) =>
-    prepareTemplate02Context({ content, imageSrcById, galleryHtml }),
-  'template-03-standard-article-toc': ({ content, galleryHtml }) =>
-    prepareTemplate03Context({ content, galleryHtml }),
-  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml }) =>
-    prepareTemplate04Context({ content, imageSrcById, galleryHtml }),
+  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml, videos }) =>
+    prepareTemplate01Context({ content, imageSrcById, galleryHtml, videos }),
+  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml, videos }) =>
+    prepareTemplate02Context({ content, imageSrcById, galleryHtml, videos }),
+  'template-03-standard-article-toc': ({ content, galleryHtml, videos }) =>
+    prepareTemplate03Context({ content, galleryHtml, videos }),
+  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml, videos }) =>
+    prepareTemplate04Context({ content, imageSrcById, galleryHtml, videos }),
 };
 
 const prepareGalleryContextByGalleryId: Record<
@@ -213,6 +220,7 @@ export const generateArticle = onCall(
           requestedGalleryPlacement: requestedPlacement,
           supportedGalleryPlacements: templateEntry.meta.supportedGalleryPlacements,
           imageCount: article.images.length,
+          videos: (article.videos ?? []).map((v) => ({ caption: v.caption, placement: v.placement })),
         });
 
         const userContent = [...stableContent, ...imageBlocks, ...briefContent];
@@ -297,6 +305,26 @@ export const generateArticle = onCall(
         resolvedGalleryPlacement = requestedPlacement ?? templateContent.galleryPlacement;
       }
 
+      // Videos: a fixed placement is resolved here; 'auto' takes the section
+      // Claude chose, falling back to after the first section if it didn't
+      // pick one (e.g. fixture mode, whose example content never sets it).
+      // The block stylesheet rides along with the first video only — see
+      // renderVideoStyles for why it must appear exactly once.
+      const placedVideos: PlacedVideo[] = (article.videos ?? []).map((video, i) => {
+        const source =
+          video.kind === 'embed'
+            ? { kind: 'embed' as const, url: video.url }
+            : { kind: 'upload' as const, downloadUrl: video.downloadUrl, contentType: video.contentType };
+        const block = renderVideoBlock({ id: video.id, source, caption: video.caption });
+        const afterSection =
+          video.placement === 'after-intro'
+            ? 0
+            : video.placement === 'before-closing'
+              ? Number.MAX_SAFE_INTEGER
+              : (templateContent.videoAfterSection ?? 1);
+        return { html: i === 0 && block ? `${renderVideoStyles()}\n${block}` : block, afterSection };
+      }).filter((v) => v.html);
+
       const templateContext = prepareContextByTemplateId[article.templateId]({
         // Safe: resolvedGalleryPlacement is only ever set to a value drawn
         // from requestedPlacement (already checked against this template's
@@ -305,6 +333,7 @@ export const generateArticle = onCall(
         content: { ...templateContent, galleryPlacement: resolvedGalleryPlacement },
         imageSrcById,
         galleryHtml,
+        videos: placedVideos,
       });
       const fragment = renderArticle(templateEntry.hbsSource, templateContext);
 

@@ -288,6 +288,7 @@ fieldset.field {
 }
 
 .field input[type='text'],
+.field input[type='url'],
 .field textarea,
 .field select {
   background: var(--surface);
@@ -535,6 +536,28 @@ fieldset.field {
   color: var(--grey);
   cursor: pointer;
   padding: 4px 8px;
+}
+
+.video-kind-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.video-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--hairline);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.video-kind--selected {
+  border-color: var(--blue);
+  color: var(--white);
 }
 
 /* Styled as an OS window — the same title-bar + square-button chrome every

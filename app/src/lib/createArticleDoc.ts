@@ -2,6 +2,7 @@ import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import type {
   ArticleImage,
+  ArticleVideo,
   CategoryId,
   GalleryCaptionMode,
   GalleryId,
@@ -22,6 +23,7 @@ export interface NewArticleInput {
   galleryCaptionMode: GalleryCaptionMode | null;
   requestedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];
+  videos: ArticleVideo[];
 }
 
 /**
@@ -50,6 +52,7 @@ export async function createArticleDoc(input: NewArticleInput): Promise<void> {
     requestedGalleryPlacement: input.requestedGalleryPlacement,
     resolvedGalleryPlacement: null,
     images: input.images,
+    videos: input.videos,
 
     title: null,
     dek: null,
