@@ -496,8 +496,8 @@ export function ArticleForm({
             </p>
           )}
           <span className="field-hint">
-            Shown large at the top of the article. It's kept apart from the photos below and never reused in the
-            gallery. Leave it empty and Claude may pick a hero from the other photos.
+            Shown large at the top of the article, and never reused in the gallery. Leave it empty and the article
+            has no hero image — no placeholder, and no photo borrowed from the ones below.
           </span>
         </fieldset>
       )}

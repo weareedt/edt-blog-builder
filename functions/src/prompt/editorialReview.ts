@@ -67,6 +67,35 @@ const COUNT_BACK_PATTERNS = [
 const DESCRIPTIVE_CARD_BACK =
   /^(?:a|an|two|three|four|several|visitors|people|guests|a\s+group(?:\s+of)?)\s+(?:[\w'’-]+\s+){0,5}?(?:stand|stands|holds|holding|reaches|watch|watches|watching|looks|looking|pause|pauses|sits|sitting|walks|walking|steadies|raises|leans)\b/i;
 
+// Invented lived experience: an anecdote, a conversation, a remembered
+// moment. Fine when the brief describes it; otherwise it's fabrication
+// dressed up as voice.
+const ANECDOTE_PATTERNS = [
+  /\b(?:a|one|our)\s+(?:client|customer|visitor|founder|partner|brand|stakeholder)\s+(?:once\s+|recently\s+)?(?:asked|told|said|wanted|came\s+to)\s*(?:us)?\b/i,
+  /\bsomeone\s+(?:once\s+)?(?:asked|told)\s+us\b/i,
+  /\b(?:we|i)\s+once\s+\w+/i,
+  /\bI\s+(?:remember|recall)\b/,
+  /\bthere\s+was\s+a\s+(?:pause|silence|moment)\b/i,
+];
+
+// Precise-sounding magnitudes and ordinals ("the ten-thousandth visitor").
+// Plurals ("thousands of visitors") are deliberately not matched — vague
+// scale isn't a fabricated figure.
+const INVENTED_MAGNITUDE =
+  /\b(?:[a-z]+-)?(?:hundred|thousand|million|billion)(?:th)?\b|\b(?:tenth|twentieth|fiftieth|hundredth|thousandth|millionth)\b/i;
+
+// Captions and card text that claim to know what people in a photo are
+// thinking, feeling, deciding or learning.
+const MIND_READING =
+  /\b(?:deciding|wondering|thinking|realis(?:e|es|ed|ing)|excited|curious|delighted|amazed|nervous|hoping|already\s+learning|(?:were|are|is)\s+learning|trying\s+to\s+(?:figure|work\s+out|decide)|feel(?:s|ing)?\s+(?:like|that)|forgetting)\b/i;
+
+// "Five kinds of…" whose last item is a rule rather than another kind.
+const TITLE_KIND_COUNT = new RegExp(
+  `\\b${NUMBER_WORD}\\s+(?:[\\w-]+\\s+)?(?:kinds|types|formats|categories|tools|technologies|ways|modes)\\b`,
+  'i'
+);
+const PRINCIPLE_LABEL = /\b(?:has\s+to|have\s+to|must|should|needs?\s+to|comes?\s+first|always|never|the\s+rule)\b/i;
+
 const STOPWORDS = new Set(
   (
     "that this with from they them their there what when where which while have were will would could should into onto than then your ours about each just only also more most very really actually here " +
@@ -138,6 +167,57 @@ function collectStrings(value: unknown, path = '', out: Array<[string, string]> 
     }
   }
   return out;
+}
+
+function specificityIssues(strings: Array<[string, string]>, ctx: ReviewContext): string[] {
+  const issues: string[] = [];
+  const brief = normaliseForMatch([ctx.brief, ctx.angle ?? '', ...ctx.keyPoints].join(' '));
+  for (const [path, text] of strings) {
+    // Stat cells have their own, more specific check.
+    if (/\.cells\[\d+\]/.test(path)) continue;
+    const unsupported = numberTokens(text).filter((t) => !numbersSupported(t, ctx));
+    if (unsupported.length > 0) {
+      issues.push(
+        `${path} states a specific figure (${unsupported.map((t) => `"${t}"`).join(', ')}) that isn't in the brief or the known projects. Keep the writing concrete, but don't invent figures — make the point without the number.`
+      );
+    }
+    const magnitude = text.match(INVENTED_MAGNITUDE);
+    if (magnitude && !brief.includes(normaliseForMatch(magnitude[0]))) {
+      issues.push(
+        `${path} uses a precise-sounding detail ("${magnitude[0]}") that isn't in the brief. Don't invent figures, ordinals or durations to make copy feel real.`
+      );
+    }
+    for (const pattern of ANECDOTE_PATTERNS) {
+      const m = text.match(pattern);
+      if (m && !brief.includes(normaliseForMatch(m[0]).replace(/^(?:a|one|our) /, ''))) {
+        issues.push(
+          `${path} tells an anecdote ("${m[0]}") the brief doesn't describe. Keep the point of view, but don't invent clients, conversations or moments — make the point directly.`
+        );
+        break;
+      }
+    }
+  }
+  return issues;
+}
+
+function mindReadingIssue(path: string, text: string | null | undefined): string | null {
+  const m = text?.match(MIND_READING);
+  return m
+    ? `${path} claims to know what people in the photo are thinking or doing inwardly ("${m[0]}"). Interpret what the image shows about the work, not what's in anyone's head.`
+    : null;
+}
+
+function sectionLabels(templateId: TemplateId, content: Content): string[] {
+  switch (templateId) {
+    case 'template-02-longform-numbered-steps':
+      return (content.steps ?? []).map((s: Content) => s.sectionLabel);
+    case 'template-04-basic-scroll':
+      return (content.bodyItems ?? []).filter((b: Content) => b.type === 'section').map((b: Content) => b.sectionLabel);
+    case 'template-03-standard-article-toc':
+      return (content.bodyItems ?? []).filter((b: Content) => b.type === 'section').map((b: Content) => b.heading);
+    default:
+      return [];
+  }
 }
 
 export function countSections(templateId: TemplateId, content: Content): number {
@@ -235,13 +315,37 @@ export function reviewArticleContent(templateId: TemplateId, content: Content, c
     }
   }
 
+  issues.push(...specificityIssues(collectStrings(content), ctx));
+
+  if (feature) {
+    for (const [path, text] of [['featureImage.caption', feature.caption], ['featureImage.alt', feature.alt]] as const) {
+      const issue = mindReadingIssue(path, text);
+      if (issue) issues.push(issue);
+    }
+  }
+
+  const labels = sectionLabels(templateId, content);
+  if (content.title && labels.length >= 3 && TITLE_KIND_COUNT.test(content.title)) {
+    const last = labels[labels.length - 1];
+    if (PRINCIPLE_LABEL.test(last) && !PRINCIPLE_LABEL.test(labels[0])) {
+      issues.push(
+        `The title counts every item as the same kind of thing, but the last one ("${last}") reads as a principle rather than another of the same kind. Frame the structure honestly — e.g. title it as ${labels.length - 1} of one kind plus one rule, or make the principle the closing idea instead of a numbered item.`
+      );
+    }
+  }
+
   return issues;
 }
 
-export function reviewGalleryContent(galleryId: GalleryId, content: Content): string[] {
+export function reviewGalleryContent(galleryId: GalleryId, content: Content, ctx?: ReviewContext): string[] {
   const issues = tellIssues(collectStrings(content));
+  if (ctx) issues.push(...specificityIssues(collectStrings(content), ctx));
   (content.items ?? []).forEach((item: Content, i: number) => {
     if (!item.alt?.trim()) issues.push(`items[${i}].alt is missing. Describe, objectively, what is visible in the photo.`);
+    for (const key of ['alt', 'label', 'body', 'title', 'metric'] as const) {
+      const issue = mindReadingIssue(`items[${i}].${key}`, item[key]);
+      if (issue) issues.push(issue);
+    }
     if (galleryId !== 'gallery-flipcards-alternating' || !item.body) return;
     const echoesAlt = item.alt && jaccard(stems(item.alt), stems(item.body)) >= 0.45;
     if (echoesAlt || DESCRIPTIVE_CARD_BACK.test(item.body.trim())) {

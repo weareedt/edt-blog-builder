@@ -10,7 +10,7 @@ export const template02Meta: TemplateStaticMeta = {
     maxInline: 1,
     galleryMin: 3,
     galleryMax: 8,
-    note: 'At most one hero photo, shown near the top. If the user uploaded a hero photo, it is always that one.',
+    note: 'At most one hero photo, shown near the top — only the photo uploaded as the hero. No hero upload, no hero image.',
   },
   structureNotes: `One article told as a numbered sequence. The template prints the numbers
 (01, 02, 03…) beside each item itself, so never put a number in a section
@@ -32,8 +32,8 @@ and none is fine. Follow the evidence rules for stat cards and quotes.
 
 Hero photo (featureImage): optional, shown once near the top. It takes an
 alt (objective description of what's visible), a caption (why it matters,
-or null) and a short all-caps windowLabel. If there's no suitable photo, set
-featureImage to the JSON literal null.
+or null) and a short all-caps windowLabel. It is only ever the photo the
+user uploaded as the hero; with no hero upload, featureImage is null.
 
 Closing: optional. It resolves the argument; it never recaps the items.`,
 };

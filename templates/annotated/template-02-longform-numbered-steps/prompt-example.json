@@ -7,15 +7,15 @@
   "featureImage": {
     "windowLabel": "METAHRISE.EXE — FIELD_CAPTURE.JPG",
     "alt": "A new hire in a VR headset turns towards a virtual doorway while two colleagues watch the same scene on a monitor.",
-    "caption": "The monitor mattered as much as the headset: people waiting their turn were already learning the layout.",
+    "caption": "Mirroring the headset view onto a monitor turned the queue into an audience: the room could follow each session, not just the person wearing it.",
     "imageId": "img-1"
   },
-  "lede": "New hires at MCMC used to leave induction with a folder, a slide deck and a rough sense of the org chart. A week later, the folder was the only part anyone could find. The ask was simple to say and hard to build: an induction people would actually finish.",
+  "lede": "Inductions are usually designed to cover material, not to be finished. MCMC's ask turned that around: an induction new hires would actually want to get to the end of.",
   "steps": [
     {
       "sectionLabel": "The brief",
       "paragraphs": [
-        "MCMC's induction was doing what most inductions do: covering the material and losing the room by slide four. New hires walked away with a folder and a vague sense of the org chart, not a feel for the organisation they'd just joined. The ask wasn't \"make the deck nicer.\" It was harder to say out loud and harder to brief: make people want to sit through this.",
+        "A conventional induction covers the material and leaves new hires with a handbook and an org chart, rather than a feel for the organisation they've just joined. The ask wasn't to make the deck nicer. It was harder to brief than that: make people want to go through it.",
         "That's a design problem before it's a technology problem. You can't VR your way out of boring content — you have to change what the person is actually doing while they learn it. Sitting and listening was the thing that had to go."
       ],
       "highlight": {
@@ -35,7 +35,7 @@
     {
       "sectionLabel": "What we built",
       "paragraphs": [
-        "MetaHRise plays as a sequence of environments rather than a single space — each one built around a specific part of the induction, so the content changes the room instead of a narrator changing the topic. Progress is visible and immediate: new hires can see how far they are through the experience the same way they'd see progress in any game, which turned out to matter more than we expected. People finish things they can see the end of."
+        "MetaHRise plays as a sequence of environments rather than a single space — each one built around a specific part of the induction, so the content changes the room instead of a narrator changing the topic. Progress is visible and immediate: new hires can see how far they are through the experience the same way they'd see progress in any game, because people are more likely to finish something when they can see where it ends."
       ],
       "highlight": {
         "type": "statCard",
@@ -63,7 +63,7 @@
       "highlight": null
     }
   ],
-  "closing": "MetaHRise is still running inductions at MCMC. The record is framed somewhere in an office we don't visit often enough — the 93% satisfaction number is the one we actually check.",
+  "closing": "The Malaysia Book of Records entry is the headline, but the 93% satisfaction figure is the measure that answers the brief: new hires finished the induction, and rated it.",
   "cta": {
     "heading": "Got an induction nobody finishes?",
     "body": "Tell us what the content actually is and we'll tell you what it should feel like to go through — VR, AR, or otherwise."

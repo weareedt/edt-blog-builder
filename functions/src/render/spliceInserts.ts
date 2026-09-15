@@ -1,3 +1,17 @@
+/**
+ * Where an auto-placed interlude (a video, or a gallery between sections)
+ * actually goes. Media reads best as a break between groups of sections, so
+ * in an article of four or more sections it never sits straight after the
+ * first section or after the last — after 02 of 05, not after 01, where it
+ * makes one section disproportionately heavy. Shorter articles take the
+ * requested position as given. With no request, it goes in the middle.
+ */
+export function placeInterlude(requested: number | null | undefined, sectionCount: number): number {
+  if (requested == null) return Math.max(sectionCount >= 4 ? 2 : 1, Math.floor(sectionCount / 2));
+  if (sectionCount < 4) return Math.min(Math.max(requested, 0), sectionCount);
+  return Math.min(Math.max(requested, 2), sectionCount - 1);
+}
+
 /** A rendered block (a video, or a gallery placed between sections) and where it goes. */
 export interface PlacedInsert {
   html: string;

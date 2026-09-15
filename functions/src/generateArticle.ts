@@ -24,7 +24,7 @@ import { wrapDocument } from './render/wrapDocument';
 import { inlineImages, PayloadTooLargeError } from './render/inlineImages';
 import { slugify } from './render/slugify';
 import { renderVideoBlock, renderVideoStyles } from './render/videoBlock';
-import type { PlacedInsert } from './render/spliceInserts';
+import { placeInterlude, type PlacedInsert } from './render/spliceInserts';
 import { prepareTemplate01Context } from './templates/content/template01.prepareContext';
 import { prepareTemplate02Context } from './templates/content/template02.prepareContext';
 import { prepareTemplate03Context } from './templates/content/template03.prepareContext';
@@ -247,6 +247,7 @@ export const generateArticle = onCall(
           supportedGalleryPlacements: templateEntry.meta.supportedGalleryPlacements,
           imageCount: article.images.length,
           heroImageId,
+          templateHasHero: TEMPLATES_WITH_HERO.includes(article.templateId),
           galleryImageIds: galleryImages.map((img) => img.id),
           galleryIntroProvided: Boolean(article.galleryIntro),
           videos: (article.videos ?? []).map((v) => ({ caption: v.caption, placement: v.placement })),
@@ -303,7 +304,7 @@ export const generateArticle = onCall(
             userContent,
             schema: strictGallerySchema,
             toolName: 'submit_gallery_content',
-            review: (content) => reviewGalleryContent(article.galleryId as GalleryId, content),
+            review: (content) => reviewGalleryContent(article.galleryId as GalleryId, content, reviewContext),
           });
           galleryContent = galleryResult.content;
           usage = mergeUsage(usage, galleryResult.usage);
@@ -312,6 +313,12 @@ export const generateArticle = onCall(
 
       // Deterministic fixes, whatever the model returned — see editorialReview.ts.
       templateContent = repairArticleContent(article.templateId, templateContent, reviewContext);
+      // The hero slot only ever shows a photo uploaded as the hero. No hero
+      // upload means no hero image at all — never a gallery photo promoted
+      // into it, and never a placeholder frame.
+      if (TEMPLATES_WITH_HERO.includes(article.templateId) && !heroImageId && templateContent.featureImage) {
+        templateContent = { ...templateContent, featureImage: null };
+      }
       if (galleryContent && article.galleryIntro) {
         galleryContent = { ...galleryContent, intro: article.galleryIntro };
       }
@@ -371,7 +378,8 @@ export const generateArticle = onCall(
           source,
           caption: video.caption,
           eyebrow: templateContent.videoIntro?.eyebrow ?? null,
-          intro: templateContent.videoIntro?.line ?? null,
+          // A caption already explains the video; a line above it would only repeat it.
+          intro: video.caption ? null : (templateContent.videoIntro?.line ?? null),
         });
         if (!block) return;
         const afterSection =
@@ -379,13 +387,13 @@ export const generateArticle = onCall(
             ? 0
             : video.placement === 'before-closing'
               ? Number.MAX_SAFE_INTEGER
-              : (templateContent.videoAfterSection ?? 1);
+              : placeInterlude(templateContent.videoAfterSection, sectionCount);
         inserts.push({ html: inserts.length === 0 ? `${renderVideoStyles()}\n${block}` : block, afterSection });
       });
 
       let templateGalleryHtml = galleryHtml;
       if (galleryHtml && resolvedGalleryPlacement === 'mid-article') {
-        let afterSection = templateContent.galleryAfterSection ?? Math.ceil(sectionCount / 2);
+        let afterSection = placeInterlude(templateContent.galleryAfterSection, sectionCount);
         // Don't stack the gallery directly against a video.
         if (inserts.some((insert) => insert.afterSection === afterSection)) {
           afterSection = afterSection < sectionCount ? afterSection + 1 : Math.max(0, afterSection - 1);

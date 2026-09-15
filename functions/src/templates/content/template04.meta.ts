@@ -10,7 +10,7 @@ export const template04Meta: TemplateStaticMeta = {
     maxInline: 1,
     galleryMin: 3,
     galleryMax: 8,
-    note: 'At most one hero photo, shown near the top. If the user uploaded a hero photo, it is always that one.',
+    note: 'At most one hero photo, shown near the top — only the photo uploaded as the hero. No hero upload, no hero image.',
   },
   structureNotes: `One story told in depth as a flowing scroll of labelled sections, with no
 numbering. The beats come from the brief, not a fixed list — a project
@@ -27,8 +27,8 @@ and follow the evidence rules for stat cards and quotes.
 
 Hero photo (featureImage): optional, shown once near the top. It takes an
 alt (objective description of what's visible), a caption (why it matters,
-or null) and a short all-caps windowLabel. If there's no suitable photo, set
-featureImage to the JSON literal null.
+or null) and a short all-caps windowLabel. It is only ever the photo the
+user uploaded as the hero; with no hero upload, featureImage is null.
 
 Closing: optional. It resolves the story; it never recaps the sections.`,
 };

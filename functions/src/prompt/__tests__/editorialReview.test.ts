@@ -171,6 +171,80 @@ describe('editorial repair — immersive-tech regression article', () => {
   });
 });
 
+/**
+ * Second regression case: the "Five kinds of immersive, and what each one is
+ * actually for" article. Much better than the first — but it invented a
+ * client anecdote to open on, called four formats and a principle "five
+ * kinds", read people's minds in a caption, and invented a
+ * precise-sounding figure.
+ */
+const ARTICLE_5 = template02Content.parse({
+  title: 'Five kinds of immersive, and what each one is actually for',
+  dek: 'VR, AR, immersive rooms and interactive installations solve different problems. The technology only works when the story picks it, not the other way round.',
+  category: 'Insights',
+  readTimeMinutes: 8,
+  client: null,
+  featureImage: {
+    windowLabel: 'FIELD_NOTES.EXE',
+    alt: 'A man in a suit wearing a VR headset holds two controllers while two colleagues watch him from either side in a conference hall.',
+    caption: "The audience for a VR build is never just the person wearing the headset — it's everyone standing next to them, deciding whether to try it themselves.",
+    imageId: 'img-1',
+  },
+  lede: 'A client once asked us to "add some AR" to an event because a competitor had done it the year before. We asked what they wanted people to walk away knowing. There was a pause.',
+  steps: [
+    { sectionLabel: 'VR, when the lesson needs consequence', paragraphs: ['Training slides tell people what happened. VR lets them find out what happens if they do the wrong thing.'], highlight: null },
+    { sectionLabel: 'AR, when the place already has the story', paragraphs: ['CheritAR puts this to work at street level: point a phone at a heritage building and its history surfaces.'], highlight: null },
+    { sectionLabel: 'Immersive rooms, when the space itself has to change', paragraphs: ['IKAT Malaysia staged the history of ikat weaving as a walkable environment rather than a case of textiles.'], highlight: null },
+    { sectionLabel: 'Interactive installs, when watching should stop', paragraphs: ["The AirAsia Founders' Gallery keeps its interaction simple because a permanent space has to survive its ten-thousandth visitor."], highlight: null },
+    { sectionLabel: 'The story has to lead', paragraphs: ['None of the four above is a starting point. They are answers to a question you have to ask first.'], highlight: null },
+  ],
+  closing: null,
+  cta: { heading: 'Not sure which format your content needs?', body: "Tell us what you want people to walk away understanding, and we'll tell you whether that's a headset, a phone, a room or a wall." },
+  galleryPlacement: 'mid-article',
+});
+
+describe('editorial review — "five kinds of immersive" regression article', () => {
+  const ctx = { brief: 'Insights article on VR, AR, immersive rooms and interactive installations, and why the story should choose the technology.', angle: null, keyPoints: [] };
+  const issues = reviewArticleContent('template-02-longform-numbered-steps', ARTICLE_5, ctx);
+  const has = (fragment: string) => issues.some((i) => i.includes(fragment));
+
+  it('catches an invented client anecdote and a dramatised moment', () => {
+    expect(has('lede tells an anecdote ("A client once asked us")')).toBe(true);
+  });
+
+  it('keeps an anecdote the brief actually describes', () => {
+    const withSource = { ...ctx, brief: `${ctx.brief} Open with this: a client once asked us to add some AR because a competitor had.` };
+    const sourced = reviewArticleContent('template-02-longform-numbered-steps', ARTICLE_5, withSource);
+    expect(sourced.some((i) => i.includes('client once asked us'))).toBe(false);
+  });
+
+  it('catches four formats and a principle titled as "five kinds"', () => {
+    expect(has('reads as a principle rather than another of the same kind')).toBe(true);
+  });
+
+  it('catches a caption that reads the minds of people in the photo', () => {
+    expect(has('featureImage.caption claims to know what people in the photo are thinking')).toBe(true);
+  });
+
+  it('catches a precise-sounding invented figure', () => {
+    expect(has('("ten-thousandth")')).toBe(true);
+  });
+
+  it('catches flip-card text that reads minds, and a digit that is not in the brief', () => {
+    const gallery = galleryFlipcardsAlternatingContent.parse({
+      items: [
+        { imageId: 'a', alt: 'Two people watch a laptop.', label: 'VR training', body: 'Colleagues watching the mirrored view were already learning the space before their own turn.', projectLine: null },
+        { imageId: 'b', alt: 'A wall of light.', label: 'Responsive surfaces', body: 'A 400ms response time is the difference between a screen and a space.', projectLine: null },
+        { imageId: 'c', alt: 'A projected room.', label: 'Immersive room', body: 'The room stops reading as a room once the projection wraps it.', projectLine: null },
+      ],
+    });
+    const galleryIssues = reviewGalleryContent('gallery-flipcards-alternating', gallery, ctx);
+    expect(galleryIssues.some((g) => g.startsWith('items[0].body claims to know'))).toBe(true);
+    expect(galleryIssues.some((g) => g.startsWith('items[1].body states a specific figure ("400")'))).toBe(true);
+    expect(galleryIssues.some((g) => g.startsWith('items[2]'))).toBe(false);
+  });
+});
+
 describe('editorial review — the prompt examples model the rules they teach', () => {
   it('finds nothing to fix in the step-by-step prompt example', () => {
     const example = JSON.parse(
@@ -182,6 +256,7 @@ describe('editorial review — the prompt examples model the rules they teach', 
 
   it('finds nothing to fix in the flip-card prompt example', () => {
     const example = JSON.parse(readFileSync(join(ANNOTATED, 'gallery-flipcards-alternating', 'prompt-example.json'), 'utf8'));
-    expect(reviewGalleryContent('gallery-flipcards-alternating', galleryFlipcardsAlternatingContent.parse(example))).toEqual([]);
+    const ctx = { brief: 'Our immersive work.', angle: null, keyPoints: [] };
+    expect(reviewGalleryContent('gallery-flipcards-alternating', galleryFlipcardsAlternatingContent.parse(example), ctx)).toEqual([]);
   });
 });

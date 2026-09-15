@@ -8,7 +8,7 @@
     "imageCount": 11,
     "beforeBytes": 679957,
     "afterBytes": 31887,
-    "cleanedAt": "2026-09-15T09:00:46.172Z"
+    "cleanedAt": "2026-09-15T09:09:56.459Z"
   },
   "template-02-longform-numbered-steps": {
     "id": "template-02-longform-numbered-steps",
@@ -19,7 +19,7 @@
     "imageCount": 1,
     "beforeBytes": 222093,
     "afterBytes": 24651,
-    "cleanedAt": "2026-09-15T09:00:46.177Z"
+    "cleanedAt": "2026-09-15T09:09:56.468Z"
   },
   "template-03-standard-article-toc": {
     "id": "template-03-standard-article-toc",
@@ -30,7 +30,7 @@
     "imageCount": 0,
     "beforeBytes": 24910,
     "afterBytes": 24910,
-    "cleanedAt": "2026-09-15T09:00:46.177Z"
+    "cleanedAt": "2026-09-15T09:09:56.469Z"
   },
   "template-04-basic-scroll": {
     "id": "template-04-basic-scroll",
@@ -41,7 +41,7 @@
     "imageCount": 1,
     "beforeBytes": 220320,
     "afterBytes": 22878,
-    "cleanedAt": "2026-09-15T09:00:46.179Z"
+    "cleanedAt": "2026-09-15T09:09:56.473Z"
   },
   "gallery-accordion": {
     "id": "gallery-accordion",
@@ -52,7 +52,7 @@
     "imageCount": 6,
     "beforeBytes": 378510,
     "afterBytes": 6789,
-    "cleanedAt": "2026-09-15T09:00:46.186Z"
+    "cleanedAt": "2026-09-15T09:09:56.477Z"
   },
   "gallery-flipcards-alternating": {
     "id": "gallery-flipcards-alternating",
@@ -63,6 +63,6 @@
     "imageCount": 6,
     "beforeBytes": 374236,
     "afterBytes": 9849,
-    "cleanedAt": "2026-09-15T09:00:46.192Z"
+    "cleanedAt": "2026-09-15T09:09:56.482Z"
   }
 }

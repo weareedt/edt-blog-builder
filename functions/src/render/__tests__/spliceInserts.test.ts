@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { spliceInserts } from '../spliceInserts';
+import { placeInterlude, spliceInserts } from '../spliceInserts';
 import { renderArticle } from '../renderArticle';
 import { renderVideoBlock, renderVideoStyles } from '../videoBlock';
 import { templateRegistry } from '../../templates/generated/registry';
@@ -38,6 +38,30 @@ describe('spliceInserts', () => {
 
   it('gives every real item insertHtml: null for Handlebars strict mode', () => {
     expect(spliceInserts([S('a')], isSection, [])).toEqual([{ type: 'section', name: 'a', insertHtml: null }]);
+  });
+});
+
+describe('placeInterlude', () => {
+  it('moves an interlude off section 1 in a longer article — after 02 of 05', () => {
+    expect(placeInterlude(1, 5)).toBe(2);
+    expect(placeInterlude(0, 5)).toBe(2);
+  });
+
+  it('never places it after the last section of a longer article', () => {
+    expect(placeInterlude(5, 5)).toBe(4);
+  });
+
+  it('keeps a sensible request as given', () => {
+    expect(placeInterlude(3, 6)).toBe(3);
+  });
+
+  it('defaults to between the groups when nothing was requested', () => {
+    expect(placeInterlude(null, 5)).toBe(2);
+    expect(placeInterlude(undefined, 8)).toBe(4);
+  });
+
+  it('takes the request as given in a short article', () => {
+    expect(placeInterlude(1, 3)).toBe(1);
   });
 });
 

@@ -20,6 +20,8 @@ export interface BuildPromptInput {
   imageCount: number;
   /** The photo the user uploaded as the hero, for templates that have one. */
   heroImageId: string | null;
+  /** The template has a hero slot (featureImage). Without an uploaded hero it stays empty. */
+  templateHasHero: boolean;
   /** The photos that make up the gallery (never including the hero). */
   galleryImageIds: string[];
   /** The user wrote the gallery's heading themselves. */
@@ -94,6 +96,10 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
     briefLines.push(
       `HERO PHOTO: imageId ${input.heroImageId} is the photo the user chose as the hero. Use it as featureImage — write its alt (an objective description of what's visible) and its caption (why it matters, or null) — and don't use it anywhere else.`
     );
+  } else if (input.templateHasHero) {
+    briefLines.push(
+      'No hero photo was uploaded. Set featureImage to null — never promote a gallery or other photo into the hero slot.'
+    );
   }
 
   // Placement is the article's decision whatever the gallery's caption mode.
@@ -106,9 +112,8 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
           ? `The user asked for placement "${input.requestedGalleryPlacement}" — set galleryPlacement to it.`
           : `Choose galleryPlacement (${placements}) by narrative: where the text has just set up what the photos show. Don't default to the end.`,
         input.supportedGalleryPlacements.includes('mid-article')
-          ? `If galleryPlacement is mid-article, set galleryAfterSection to the section number it should follow (1 = after the first section); otherwise null. Don't put it right after a section that ends in a stat card, or next to the video.`
+          ? `If galleryPlacement is mid-article, set galleryAfterSection to the section number it should follow — between groups of sections, not straight after the first one; otherwise null. Don't put it right after a section that ends in a stat card, or next to the video.`
           : `Set galleryAfterSection to null.`,
-        input.heroImageId ? '' : `Prefer a photo that isn't in the gallery for featureImage, if there's a choice.`,
       ]
         .filter(Boolean)
         .join(' ')
@@ -128,9 +133,11 @@ export function buildPrompt(input: BuildPromptInput): BuiltPrompt {
       [
         `VIDEO: ${described}.`,
         auto
-          ? `It sits between sections as an interlude, not inside one. Set videoAfterSection to the number of the section it best follows (0 = before the first) — where the text just before has set up what the video shows, not attached to whichever section comes first, and not straight after a section that ends in a stat card or quote.`
+          ? `It sits between sections as an interlude, ideally between two groups of sections (after section 2 of 5, say) where it changes the pace. Set videoAfterSection to the section it follows — where the text before it has set up what the video shows. With four or more sections, never straight after the first or the last, and not after a section that ends in a stat card or callout.`
           : `Its position is fixed by the user; set videoAfterSection to null.`,
-        `Set videoIntro to { eyebrow: 2-4 words, e.g. "See it in motion"; line: one short sentence on what to watch for, or null }.`,
+        input.videos.some((v) => v.caption)
+          ? `Set videoIntro to { eyebrow: 2-4 words, e.g. "See it in motion"; line: null } — the video already has a caption, and a line above it would only repeat it.`
+          : `Set videoIntro to { eyebrow: 2-4 words, e.g. "See it in motion"; line: one short sentence on what to watch for, or null }.`,
       ].join(' ')
     );
   } else {

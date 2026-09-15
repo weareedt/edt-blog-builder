@@ -47,7 +47,9 @@ export const EDITORIAL_JUDGEMENT = `How to think about the article: story first,
    make it the closing idea that ties the others together, the tension the
    opening sets up, or name the shift in its label. A sequence can be
    ideas, lessons, examples, principles or projects, but the items in it
-   should be the same kind of thing.
+   should be the same kind of thing. The title has to match the structure
+   you chose: four formats plus the principle behind them is "four formats
+   and one rule", not "five kinds".
 
 3. The opening advances the idea; it never restates the title or dek. The
    dek has already said what the article is about. Open on an observation,
@@ -78,8 +80,19 @@ export const EDITORIAL_JUDGEMENT = `How to think about the article: story first,
 7. Rhythm. Media and highlights pace the page; they shouldn't interrupt it.
    Don't stack heavy components back to back (a stat card, then a video,
    then a gallery). Place a video or gallery where the text just before it
-   has set up what it shows, as a break between sections — not attached to
-   whichever section comes first, and not left at the end by default.`;
+   has set up what it shows, as a break between groups of sections — after
+   section 2 of 5, say, not straight after section 1, and not left at the
+   end by default.
+
+8. Sound human without inventing human experience. Have a clear point of
+   view — what EDT thinks, has built and would recommend, and why — but
+   never invent anecdotes, conversations, clients, reactions or moments
+   ("a client once asked us…", "there was a pause") unless the brief
+   describes them. Concrete is not the same as specific-sounding: never
+   invent figures, ordinals, durations or dates to make copy feel real
+   ("the ten-thousandth visitor", "by slide four", "a week later"). Make
+   writing concrete with the real projects you're allowed to name,
+   observable design decisions, and plain reasoning.`;
 
 export const WRITING_TELLS = `Write like someone at EDT who built these things and has a point of view — not like a content generator.
 - Prefer a concrete, project-led observation to a general claim.
@@ -101,9 +114,11 @@ export const IMAGE_TEXT = `Alt text and captions are different jobs — never re
   while three colleagues watch a laptop screen."
 - Caption (caption): why the image matters — what was happening, what the
   reader should notice, what it shows about the work. It must add something
-  the alt text doesn't. e.g. "The laptop mirror mattered as much as the
-  headset: people waiting their turn were already learning the layout."
-  If you have nothing to add beyond a description, set caption to null.
+  the alt text doesn't. e.g. "Mirroring the headset view onto a laptop
+  turned the queue into an audience: the room could follow each session."
+  Interpret what the image shows about the work, but never claim what the
+  people in it are thinking, feeling, deciding or learning. If you have
+  nothing to add beyond a description, set caption to null.
 - Photography language is candid and environmental — people experiencing
   something, not posing. Never stock-photo language ("professionals
   collaborating", "innovative team synergy").`;
