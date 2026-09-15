@@ -8,7 +8,7 @@
     "imageCount": 11,
     "beforeBytes": 679957,
     "afterBytes": 31887,
-    "cleanedAt": "2026-09-15T09:09:56.459Z"
+    "cleanedAt": "2026-09-15T09:32:32.859Z"
   },
   "template-02-longform-numbered-steps": {
     "id": "template-02-longform-numbered-steps",
@@ -19,7 +19,7 @@
     "imageCount": 1,
     "beforeBytes": 222093,
     "afterBytes": 24651,
-    "cleanedAt": "2026-09-15T09:09:56.468Z"
+    "cleanedAt": "2026-09-15T09:32:32.862Z"
   },
   "template-03-standard-article-toc": {
     "id": "template-03-standard-article-toc",
@@ -30,7 +30,7 @@
     "imageCount": 0,
     "beforeBytes": 24910,
     "afterBytes": 24910,
-    "cleanedAt": "2026-09-15T09:09:56.469Z"
+    "cleanedAt": "2026-09-15T09:32:32.863Z"
   },
   "template-04-basic-scroll": {
     "id": "template-04-basic-scroll",
@@ -41,7 +41,7 @@
     "imageCount": 1,
     "beforeBytes": 220320,
     "afterBytes": 22878,
-    "cleanedAt": "2026-09-15T09:09:56.473Z"
+    "cleanedAt": "2026-09-15T09:32:32.865Z"
   },
   "gallery-accordion": {
     "id": "gallery-accordion",
@@ -52,17 +52,17 @@
     "imageCount": 6,
     "beforeBytes": 378510,
     "afterBytes": 6789,
-    "cleanedAt": "2026-09-15T09:09:56.477Z"
+    "cleanedAt": "2026-09-15T09:32:32.868Z"
   },
   "gallery-flipcards-alternating": {
     "id": "gallery-flipcards-alternating",
     "category": "galleries",
     "sourcePath": "Blog Templates/photo gallery components/gallery-flipcards-alternating.html",
     "cleanPath": "templates/clean/galleries/gallery-flipcards-alternating.clean.html",
-    "sourceSha256": "e2777117a8f8d21a5cb354048a601f00bbd58f782a6eb732c918924dedaa0144",
+    "sourceSha256": "1f6f6b194383886b988ea219462206ab56e25edaf87c0b2879b0785a104c3cb5",
     "imageCount": 6,
-    "beforeBytes": 374236,
-    "afterBytes": 9849,
-    "cleanedAt": "2026-09-15T09:09:56.482Z"
+    "beforeBytes": 374486,
+    "afterBytes": 10099,
+    "cleanedAt": "2026-09-15T09:32:32.869Z"
   }
 }
