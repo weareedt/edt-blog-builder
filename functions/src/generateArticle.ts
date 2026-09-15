@@ -23,8 +23,17 @@ import { prepareTemplate03Context } from './templates/content/template03.prepare
 import { prepareTemplate04Context } from './templates/content/template04.prepareContext';
 import { prepareGalleryAccordionContext } from './templates/content/galleryAccordion.prepareContext';
 import { prepareGalleryFlipcardsAlternatingContext } from './templates/content/galleryFlipcardsAlternating.prepareContext';
+import {
+  buildGalleryContentFromImages,
+  NotEnoughGalleryImagesError,
+} from './templates/content/galleryFromImages';
 import type { ArticleDoc, ArticleErrorCode } from './templates/article';
-import type { GalleryPlacement, TemplateId, GalleryId } from './templates/types';
+import type {
+  GalleryCaptionMode,
+  GalleryPlacement,
+  TemplateId,
+  GalleryId,
+} from './templates/types';
 
 // One entry per templateRegistry key, normalizing each template's own
 // prepareContext signature (they differ — template-03 takes no images,
@@ -138,6 +147,16 @@ export const generateArticle = onCall(
         ? article.requestedGalleryPlacement
         : null;
 
+    // Same defensive shape as requestedPlacement: a mode this gallery can't
+    // render (or an absent one, on docs predating the field) falls back to
+    // the gallery's own default rather than rendering something broken.
+    const captionMode: GalleryCaptionMode | null = galleryEntry
+      ? article.galleryCaptionMode &&
+        galleryEntry.meta.supportedCaptionModes.includes(article.galleryCaptionMode)
+        ? article.galleryCaptionMode
+        : galleryEntry.meta.defaultCaptionMode
+      : null;
+
     try {
       // ---- 1. Content generation (or fixture, for zero-cost dev) ----
       // Untyped here deliberately: the concrete shape differs per
@@ -151,7 +170,18 @@ export const generateArticle = onCall(
 
       if (USE_FIXTURE_CONTENT) {
         templateContent = templateEntry.schema.parse(templateEntry.exampleContent);
-        if (galleryEntry) {
+        if (galleryEntry && captionMode !== 'auto') {
+          // Fixture mode still honours the caption mode — otherwise a local
+          // preview of an image-only gallery would show the worked
+          // example's captions and misrepresent what real output looks like.
+          galleryContent = buildGalleryContentFromImages({
+            galleryId: article.galleryId as GalleryId,
+            mode: captionMode as Exclude<GalleryCaptionMode, 'auto'>,
+            images: article.images,
+            itemMin: galleryEntry.meta.itemMin,
+            itemMax: galleryEntry.meta.itemMax,
+          });
+        } else if (galleryEntry) {
           galleryContent = galleryEntry.schema.parse(galleryEntry.exampleContent);
           // Fixture content ships with fixed imageId's (img-1..img-6) that
           // won't generally match whatever was actually seeded for a local
@@ -164,6 +194,12 @@ export const generateArticle = onCall(
           };
         }
       } else {
+        // Only an 'auto' gallery needs the model — 'none' and 'manual' are
+        // built from the uploaded photos below, so their structure notes
+        // and worked example are dead weight in the prompt (and, being part
+        // of the cached prefix, would fragment the cache for no benefit).
+        const galleryNeedsModel = Boolean(galleryEntry) && captionMode === 'auto';
+
         const imageBlocks = await buildImageContentBlocks(article.images);
         const { system, stableContent, briefContent } = buildPrompt({
           brief: article.brief,
@@ -172,8 +208,8 @@ export const generateArticle = onCall(
           keyPoints: article.keyPoints,
           templateStructureNotes: templateEntry.meta.structureNotes,
           templateExampleContent: templateEntry.exampleContent,
-          galleryStructureNotes: galleryEntry?.meta.structureNotes ?? null,
-          galleryExampleContent: galleryEntry?.exampleContent ?? null,
+          galleryStructureNotes: galleryNeedsModel ? galleryEntry!.meta.structureNotes : null,
+          galleryExampleContent: galleryNeedsModel ? galleryEntry!.exampleContent : null,
           requestedGalleryPlacement: requestedPlacement,
           supportedGalleryPlacements: templateEntry.meta.supportedGalleryPlacements,
           imageCount: article.images.length,
@@ -190,7 +226,18 @@ export const generateArticle = onCall(
         templateContent = articleResult.content;
         usage = mergeUsage(usage, articleResult.usage);
 
-        if (galleryEntry) {
+        if (galleryEntry && !galleryNeedsModel) {
+          // 'none' / 'manual' — no second API call at all. See
+          // buildGalleryContentFromImages for why there's nothing to
+          // generate once the captions aren't the model's to write.
+          galleryContent = buildGalleryContentFromImages({
+            galleryId: article.galleryId as GalleryId,
+            mode: captionMode as Exclude<GalleryCaptionMode, 'auto'>,
+            images: article.images,
+            itemMin: galleryEntry.meta.itemMin,
+            itemMax: galleryEntry.meta.itemMax,
+          });
+        } else if (galleryEntry) {
           // Constrain imageId to the images actually uploaded for THIS
           // request — a hallucinated or mistyped id then fails Zod
           // validation and goes through generateStructuredContent's
@@ -311,6 +358,11 @@ export const generateArticle = onCall(
       }
       if (err instanceof PayloadTooLargeError) {
         return fail('PAYLOAD_TOO_LARGE', err.message);
+      }
+      if (err instanceof NotEnoughGalleryImagesError) {
+        // The brief form already enforces this before submit, so reaching
+        // here means photos were removed after the draft was created.
+        return fail('UNKNOWN', err.message);
       }
       const message = err instanceof Error ? err.message : 'Unknown error.';
       return fail('UNKNOWN', message);

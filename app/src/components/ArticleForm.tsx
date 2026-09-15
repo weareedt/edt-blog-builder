@@ -8,6 +8,7 @@ import {
   TEMPLATE_CATALOG,
   type ArticleImage,
   type CategoryId,
+  type GalleryCaptionMode,
   type GalleryId,
   type GalleryPlacement,
   type TemplateId,
@@ -15,6 +16,20 @@ import {
 
 const NONE = 'none' as const;
 const AUTO_PLACEMENT = 'auto' as const;
+
+const CAPTION_MODE_LABELS: Record<GalleryCaptionMode, string> = {
+  none: 'No captions — photos only',
+  manual: 'I\u2019ll write the captions',
+  auto: 'Let Claude write them from the photos',
+};
+
+const CAPTION_MODE_HINTS: Record<GalleryCaptionMode, string> = {
+  none: 'Each photo fills its panel with no text over it.',
+  manual:
+    'Type a caption against each photo below. Leave one blank and that panel renders as photo only.',
+  auto:
+    'Claude sees each photo and captions what it actually shows. Costs one extra API call, and it can still guess wrong \u2014 check the captions before you publish.',
+};
 
 const PLACEMENT_LABELS: Record<GalleryPlacement, string> = {
   'after-intro': 'After the intro',
@@ -35,6 +50,8 @@ const GALLERY_PREVIEW_PROPS: Record<
 interface ImageRow {
   id: string;
   note: string;
+  caption: string;
+  captionDetail: string;
   file: File | null;
   existing: ArticleImage | null;
 }
@@ -46,6 +63,7 @@ export interface ArticleFormValues {
   keyPoints: string[];
   templateId: TemplateId;
   galleryId: GalleryId | null;
+  galleryCaptionMode: GalleryCaptionMode | null;
   requestedGalleryPlacement: GalleryPlacement | null;
   pendingImages: PendingImage[];
   remainingExistingImages: ArticleImage[];
@@ -58,6 +76,7 @@ export interface ArticleFormProps {
   initialKeyPoints?: string[];
   initialTemplateId?: TemplateId;
   initialGalleryId?: GalleryId | null;
+  initialCaptionMode?: GalleryCaptionMode | null;
   initialPlacement?: GalleryPlacement | null;
   existingImages?: ArticleImage[];
   submitLabel: string;
@@ -72,6 +91,7 @@ export function ArticleForm({
   initialKeyPoints = [],
   initialTemplateId = TEMPLATE_CATALOG[0].id,
   initialGalleryId = null,
+  initialCaptionMode = null,
   initialPlacement = null,
   existingImages = [],
   submitLabel,
@@ -87,8 +107,18 @@ export function ArticleForm({
   const [placement, setPlacement] = useState<GalleryPlacement | typeof AUTO_PLACEMENT>(
     initialPlacement ?? AUTO_PLACEMENT
   );
+  // Null until the user picks one, so the gallery's own default applies and
+  // keeps applying if they switch galleries.
+  const [captionMode, setCaptionMode] = useState<GalleryCaptionMode | null>(initialCaptionMode);
   const [imageRows, setImageRows] = useState<ImageRow[]>(
-    existingImages.map((img) => ({ id: img.id, note: img.userNote ?? '', file: null, existing: img }))
+    existingImages.map((img) => ({
+      id: img.id,
+      note: img.userNote ?? '',
+      caption: img.caption ?? '',
+      captionDetail: img.captionDetail ?? '',
+      file: null,
+      existing: img,
+    }))
   );
   const [imageError, setImageError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -96,6 +126,16 @@ export function ArticleForm({
 
   const template = TEMPLATE_CATALOG.find((t) => t.id === templateId)!;
   const gallery = galleryId === NONE ? null : GALLERY_CATALOG.find((g) => g.id === galleryId)!;
+
+  // What's actually in force right now: the user's pick if this gallery
+  // supports it, otherwise the gallery's default. Switching from the
+  // accordion to the flip-cards therefore drops an unsupported 'none'
+  // rather than silently rendering blank card backs.
+  const effectiveCaptionMode: GalleryCaptionMode | null = gallery
+    ? captionMode && gallery.supportedCaptionModes.includes(captionMode)
+      ? captionMode
+      : gallery.defaultCaptionMode
+    : null;
 
   const imageCountValid = !gallery || (imageRows.length >= gallery.itemMin && imageRows.length <= gallery.itemMax);
   const canSubmit = brief.trim().length > 0 && imageCountValid && !submitting;
@@ -108,6 +148,8 @@ export function ArticleForm({
       file,
       existing: null,
       note: '',
+      caption: '',
+      captionDetail: '',
     }));
     setImageRows((prev) => [...prev, ...additions]);
   }
@@ -124,8 +166,8 @@ export function ArticleForm({
     setImageRows((prev) => prev.filter((r) => r.id !== id));
   }
 
-  function setImageRowNote(id: string, note: string) {
-    setImageRows((prev) => prev.map((r) => (r.id === id ? { ...r, note } : r)));
+  function setImageRowField(id: string, field: 'note' | 'caption' | 'captionDetail', value: string) {
+    setImageRows((prev) => prev.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -137,10 +179,21 @@ export function ArticleForm({
 
     const pendingImages: PendingImage[] = imageRows
       .filter((r) => r.file)
-      .map((r) => ({ id: r.id, file: r.file!, userNote: r.note || null }));
+      .map((r) => ({
+        id: r.id,
+        file: r.file!,
+        userNote: r.note || null,
+        caption: r.caption.trim() || null,
+        captionDetail: r.captionDetail.trim() || null,
+      }));
     const remainingExistingImages: ArticleImage[] = imageRows
       .filter((r) => r.existing)
-      .map((r) => ({ ...r.existing!, userNote: r.note || null }));
+      .map((r) => ({
+        ...r.existing!,
+        userNote: r.note || null,
+        caption: r.caption.trim() || null,
+        captionDetail: r.captionDetail.trim() || null,
+      }));
 
     try {
       await onSubmit({
@@ -153,6 +206,7 @@ export function ArticleForm({
           .filter(Boolean),
         templateId,
         galleryId: galleryId === NONE ? null : galleryId,
+        galleryCaptionMode: effectiveCaptionMode,
         requestedGalleryPlacement: placement === AUTO_PLACEMENT ? null : placement,
         pendingImages,
         remainingExistingImages,
@@ -287,6 +341,23 @@ export function ArticleForm({
         {gallery && (
           <>
             <label className="field" style={{ marginTop: 12 }}>
+              <span>Gallery captions</span>
+              <select
+                value={effectiveCaptionMode ?? gallery.defaultCaptionMode}
+                onChange={(e) => setCaptionMode(e.target.value as GalleryCaptionMode)}
+              >
+                {gallery.supportedCaptionModes.map((m) => (
+                  <option key={m} value={m}>
+                    {CAPTION_MODE_LABELS[m]}
+                  </option>
+                ))}
+              </select>
+              <span className="field-hint">
+                {CAPTION_MODE_HINTS[effectiveCaptionMode ?? gallery.defaultCaptionMode]}
+              </span>
+            </label>
+
+            <label className="field" style={{ marginTop: 12 }}>
               <span>Gallery placement</span>
               <select
                 value={placement}
@@ -338,20 +409,53 @@ export function ArticleForm({
 
         {imageRows.length > 0 && (
           <ul className="pending-image-list">
-            {imageRows.map((r) => (
+            {imageRows.map((r, index) => (
               <li key={r.id} className="pending-image-list__item">
-                <span className="pending-image-list__name">
-                  {r.file ? r.file.name : 'Uploaded photo'}
-                </span>
-                <input
-                  type="text"
-                  placeholder="Optional note for this photo"
-                  value={r.note}
-                  onChange={(e) => setImageRowNote(r.id, e.target.value)}
-                />
-                <button type="button" onClick={() => removeImageRow(r.id)} aria-label="Remove photo">
-                  ✕
-                </button>
+                <div className="pending-image-list__row">
+                  <span className="pending-image-list__name">
+                    {r.file ? r.file.name : 'Uploaded photo'}
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Optional note for this photo"
+                    value={r.note}
+                    onChange={(e) => setImageRowField(r.id, 'note', e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImageRow(r.id)}
+                    aria-label="Remove photo"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Only in 'manual' — in the other modes these fields would
+                    accept text that never renders anywhere. */}
+                {effectiveCaptionMode === 'manual' && gallery && index < gallery.itemMax && (
+                  <div className="pending-image-list__captions">
+                    <input
+                      type="text"
+                      placeholder={
+                        gallery.id === 'gallery-flipcards-alternating'
+                          ? 'Card label (shown on the front)'
+                          : 'Caption (shown over the photo)'
+                      }
+                      value={r.caption}
+                      onChange={(e) => setImageRowField(r.id, 'caption', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder={
+                        gallery.id === 'gallery-flipcards-alternating'
+                          ? 'Description (shown on the back)'
+                          : 'Second line (optional)'
+                      }
+                      value={r.captionDetail}
+                      onChange={(e) => setImageRowField(r.id, 'captionDetail', e.target.value)}
+                    />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

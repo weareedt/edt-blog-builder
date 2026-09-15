@@ -48,12 +48,12 @@
           {{else}}
           <div class="flip-front-empty">No photo provided</div>
           {{/if}}
-          <span class="hint">↻</span><div class="label">{{this.label}}</div>
+          <span class="hint">↻</span>{{#if this.label}}<div class="label">{{this.label}}</div>{{/if}}
         </div>
         <div class="flip-face flip-back">
           <span class="tag">{{this.indexTag}}</span>
-          <p>{{this.body}}</p>
-          <div class="stack">{{this.projectLine}}</div>
+          {{#if this.body}}<p>{{this.body}}</p>{{/if}}
+          {{#if this.projectLine}}<div class="stack">{{this.projectLine}}</div>{{/if}}
         </div>
       </div>
     </div>

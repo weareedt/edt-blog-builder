@@ -4,11 +4,22 @@ import { z } from 'zod';
 // lives under functions/src, while the .hbs + example-content.json for this
 // gallery live under templates/annotated/gallery-accordion/.
 
+// Every caption field is nullable, and deliberately so. When these were
+// required, the model had no way to express "I can't tell what this photo
+// is" — so it filled the slot from the known-projects list and captioned
+// unrelated stock photos with real EDT project names. Nullable fields give
+// it somewhere honest to land; see the caption guidance in the meta, and
+// GalleryCaptionMode in ../types for the modes that skip the model entirely.
+// The max lengths are real layout constraints — the caption sits in a
+// single non-wrapping line over the photo. There are deliberately no min
+// lengths: this same shape is built from hand-typed captions in 'manual'
+// mode (see galleryFromImages.ts), where "Gate 3" is a perfectly good
+// title. Length *guidance* for the model lives in the meta's prose.
 const panelItem = z.object({
   imageId: z.string().min(1), // a gallery item is always a photo
-  tag: z.string().min(2).max(28),
-  title: z.string().min(2).max(48),
-  metric: z.string().min(2).max(90),
+  tag: z.string().max(28).nullable(),
+  title: z.string().max(48).nullable(),
+  metric: z.string().max(90).nullable(),
 });
 
 export const galleryAccordionContent = z.object({

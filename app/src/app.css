@@ -482,10 +482,33 @@ fieldset.field {
   gap: 8px;
 }
 
+/* The item stacks: the filename/note/remove row, and — only in the manual
+   caption mode — the caption fields for that photo underneath it. */
 .pending-image-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pending-image-list__row {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.pending-image-list__captions {
+  display: flex;
+  gap: 8px;
+  /* Indent to the filename column so the caption fields read as belonging
+     to the row above rather than as another photo. */
+  padding-left: 170px;
+}
+
+@media (max-width: 720px) {
+  .pending-image-list__captions {
+    padding-left: 0;
+    flex-direction: column;
+  }
 }
 
 .pending-image-list__name {

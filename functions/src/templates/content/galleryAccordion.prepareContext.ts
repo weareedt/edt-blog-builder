@@ -22,6 +22,10 @@ export function prepareGalleryAccordionContext(
     ...item,
     src: imageSrcById[item.imageId] ?? '',
     isDefault: index === 0,
+    // Every caption field is independently nullable, so the .hbs needs to
+    // know whether to emit the `.cap` overlay at all — an empty one still
+    // paints its gradient scrim and reserves space over the photo.
+    hasCaption: Boolean(item.tag || item.title || item.metric),
   }));
 
   return { items };

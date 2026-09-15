@@ -18,6 +18,9 @@ export type GalleryId = 'gallery-accordion' | 'gallery-flipcards-alternating';
 
 export type GalleryPlacement = 'after-intro' | 'mid-article' | 'before-cta' | 'end-of-article';
 
+/** Where a gallery's per-photo caption text comes from. See functions/src/templates/types.ts. */
+export type GalleryCaptionMode = 'none' | 'manual' | 'auto';
+
 export type ArticleStatus = 'draft' | 'generating' | 'ready' | 'failed';
 
 export type ArticleErrorCode =
@@ -36,7 +39,12 @@ export interface ArticleImage {
   width: number;
   height: number;
   bytes: number;
+  /** A hint to Claude about this photo. Never rendered. */
   userNote: string | null;
+  /** Literal caption text, rendered verbatim when galleryCaptionMode is 'manual'. */
+  caption: string | null;
+  /** The second caption line — the accordion's detail, the flip-card's back. */
+  captionDetail: string | null;
 }
 
 export interface ArticleDoc {
@@ -49,6 +57,8 @@ export interface ArticleDoc {
   keyPoints: string[];
   templateId: TemplateId;
   galleryId: GalleryId | null;
+  /** Null (or absent, on older docs) means the gallery's own default. */
+  galleryCaptionMode: GalleryCaptionMode | null;
   requestedGalleryPlacement: GalleryPlacement | null;
   resolvedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];
@@ -97,6 +107,9 @@ export interface GalleryCatalogEntry {
   blurb: string;
   itemMin: number;
   itemMax: number;
+  /** Caption modes this gallery can render — the flip-cards can't do 'none'. */
+  supportedCaptionModes: GalleryCaptionMode[];
+  defaultCaptionMode: GalleryCaptionMode;
 }
 
 export const TEMPLATE_CATALOG: TemplateCatalogEntry[] = [
@@ -150,15 +163,21 @@ export const GALLERY_CATALOG: GalleryCatalogEntry[] = [
   {
     id: 'gallery-accordion',
     label: 'Accordion gallery',
-    blurb: 'Horizontal panels that expand on hover, each with a tag, title, and a real metric.',
+    blurb: 'Horizontal panels that expand on hover, each optionally captioned.',
     itemMin: 3,
     itemMax: 8,
+    supportedCaptionModes: ['none', 'manual', 'auto'],
+    defaultCaptionMode: 'none',
   },
   {
     id: 'gallery-flipcards-alternating',
     label: 'Flip-card gallery',
-    blurb: 'A grid of cards that flip on click/hover to reveal a project blurb behind the photo.',
+    blurb: 'A grid of cards that flip on click/hover to reveal a blurb behind the photo.',
     itemMin: 3,
     itemMax: 8,
+    // No 'none': the back of the card is the caption, so a card with no
+    // text flips over to a blank face.
+    supportedCaptionModes: ['manual', 'auto'],
+    defaultCaptionMode: 'auto',
   },
 ];

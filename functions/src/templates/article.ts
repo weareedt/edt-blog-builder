@@ -1,4 +1,10 @@
-import type { CategoryId, GalleryId, GalleryPlacement, TemplateId } from './types';
+import type {
+  CategoryId,
+  GalleryCaptionMode,
+  GalleryId,
+  GalleryPlacement,
+  TemplateId,
+} from './types';
 
 export type ArticleStatus = 'draft' | 'generating' | 'ready' | 'failed';
 
@@ -18,7 +24,19 @@ export interface ArticleImage {
   width: number;
   height: number;
   bytes: number;
+  /**
+   * A hint to Claude about this photo ("shot at the KLIA pilot"). Never
+   * rendered — it only ever reaches the model, as part of the vision block.
+   */
   userNote: string | null;
+  /**
+   * Literal caption text, rendered verbatim, used when the article's
+   * galleryCaptionMode is 'manual'. Distinct from userNote: this one is
+   * copy, not a prompt. Null/absent means that panel renders image-only.
+   */
+  caption: string | null;
+  /** The second caption line — the accordion's detail, the flip-card's back. */
+  captionDetail: string | null;
 }
 
 export interface ArticleDoc {
@@ -32,6 +50,8 @@ export interface ArticleDoc {
   keyPoints: string[];
   templateId: TemplateId;
   galleryId: GalleryId | null;
+  /** Null (or absent, on docs predating this field) means the gallery's own default. */
+  galleryCaptionMode: GalleryCaptionMode | null;
   requestedGalleryPlacement: GalleryPlacement | null;
   resolvedGalleryPlacement: GalleryPlacement | null;
   images: ArticleImage[];

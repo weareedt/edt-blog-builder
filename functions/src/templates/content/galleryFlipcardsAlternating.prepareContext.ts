@@ -18,11 +18,16 @@ export function prepareGalleryFlipcardsAlternatingContext(
 ): Record<string, unknown> {
   const { content, imageSrcById } = input;
 
-  const items = content.items.map((item, index) => ({
-    ...item,
-    src: imageSrcById[item.imageId] ?? '',
-    indexTag: `${String(index + 1).padStart(2, '0')} — ${item.label}`,
-  }));
+  const items = content.items.map((item, index) => {
+    const number = String(index + 1).padStart(2, '0');
+    return {
+      ...item,
+      src: imageSrcById[item.imageId] ?? '',
+      // The index tag reads "01 — VR Training", but the label is nullable,
+      // so fall back to the bare number rather than rendering "01 — ".
+      indexTag: item.label ? `${number} — ${item.label}` : number,
+    };
+  });
 
   return { items };
 }

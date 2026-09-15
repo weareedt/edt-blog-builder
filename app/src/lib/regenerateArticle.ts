@@ -25,6 +25,7 @@ export async function regenerateArticle(source: ArticleDoc): Promise<string> {
     keyPoints: source.keyPoints,
     templateId: source.templateId,
     galleryId: source.galleryId,
+    galleryCaptionMode: source.galleryCaptionMode ?? null,
     requestedGalleryPlacement: source.requestedGalleryPlacement,
     resolvedGalleryPlacement: null,
     images: source.images,

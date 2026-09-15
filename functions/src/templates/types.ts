@@ -10,6 +10,26 @@ export type TemplateId =
 
 export type GalleryId = 'gallery-accordion' | 'gallery-flipcards-alternating';
 
+/**
+ * Where a gallery's per-photo caption text comes from.
+ *
+ * `auto` is the only mode that costs an Anthropic call. It was also the
+ * only mode that existed originally, and it is what produced captions
+ * naming real EDT projects over unrelated stock photos — the model had a
+ * known-projects list, a schema demanding a title per panel, and no way to
+ * say "this photo isn't one of those." `manual` and `none` remove the
+ * model from the loop entirely rather than trying to prompt around that.
+ */
+export type GalleryCaptionMode =
+  /** No caption text at all — the photo carries the panel on its own. */
+  | 'none'
+  /** Caption text comes from what the user typed against each photo. */
+  | 'manual'
+  /** Claude writes the captions from the photo it can actually see. */
+  | 'auto';
+
+export const GALLERY_CAPTION_MODES: GalleryCaptionMode[] = ['none', 'manual', 'auto'];
+
 /** Where a gallery may be spliced into a given template's body. */
 export type GalleryPlacement = 'after-intro' | 'mid-article' | 'before-cta' | 'end-of-article';
 
@@ -53,6 +73,15 @@ export interface GalleryStaticMeta {
   blurb: string;
   itemMin: number;
   itemMax: number;
+  /**
+   * Caption modes this gallery can actually render. Not every gallery can
+   * do without text: the flip-cards' whole mechanic is that the back of
+   * the card holds the caption, so a card with nothing on the back flips
+   * to a blank face — 'none' is therefore not offered for that one.
+   */
+  supportedCaptionModes: GalleryCaptionMode[];
+  /** Used when the article doesn't specify one. Must appear in supportedCaptionModes. */
+  defaultCaptionMode: GalleryCaptionMode;
   structureNotes: string;
 }
 

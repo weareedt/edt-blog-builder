@@ -58,7 +58,9 @@
       <div class="panel-empty">No photo</div>
       {{/if}}
       <span class="index">{{pad2 @index}}</span>
-      <div class="cap"><span class="tag">{{this.tag}}</span><h3>{{this.title}}</h3><p>{{this.metric}}</p></div>
+      {{#if this.hasCaption}}
+      <div class="cap">{{#if this.tag}}<span class="tag">{{this.tag}}</span>{{/if}}{{#if this.title}}<h3>{{this.title}}</h3>{{/if}}{{#if this.metric}}<p>{{this.metric}}</p>{{/if}}</div>
+      {{/if}}
     </div>
     {{/each}}
   </div>

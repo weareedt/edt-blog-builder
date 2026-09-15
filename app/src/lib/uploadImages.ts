@@ -7,6 +7,9 @@ export interface PendingImage {
   id: string;
   file: File;
   userNote: string | null;
+  /** Rendered caption text, used when the gallery's caption mode is 'manual'. */
+  caption: string | null;
+  captionDetail: string | null;
 }
 
 /**
@@ -34,6 +37,8 @@ export async function uploadPendingImage(
     height,
     bytes: blob.size,
     userNote: pending.userNote,
+    caption: pending.caption,
+    captionDetail: pending.captionDetail,
   };
 }
 

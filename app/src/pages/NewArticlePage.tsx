@@ -23,6 +23,7 @@ export function NewArticlePage() {
       keyPoints: values.keyPoints,
       templateId: values.templateId,
       galleryId: values.galleryId,
+      galleryCaptionMode: values.galleryCaptionMode,
       requestedGalleryPlacement: values.requestedGalleryPlacement,
       images,
     });
