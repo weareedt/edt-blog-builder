@@ -557,6 +557,12 @@ fieldset.field {
   }
 }
 
+/* The preview frame's own top margin separates it from the button row when
+   it stands alone; beside the outline it would sit lower than the outline. */
+.edit-layout .preview-frame {
+  margin-top: 0;
+}
+
 .block-outline {
   position: sticky;
   top: 16px;
