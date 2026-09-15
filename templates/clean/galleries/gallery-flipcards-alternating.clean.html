@@ -2,7 +2,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
   :root{
-    --blue:#2D2DFF; --black:#0A0A0A; --surface:#111111; --grey:#8C8C8C; --white:#FFFFFF; --hairline:rgba(255,255,255,0.14);
+    --blue:#2D2DFF; --black:#0A0A0A; --grey:#8C8C8C; --white:#FFFFFF; --hairline:rgba(255,255,255,0.14);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -10,6 +10,14 @@
   img{display:block;max-width:100%;}
   .gallery-wrap{max-width:1180px;margin:0 auto;padding:40px 24px;}
   @media(min-width:900px){.gallery-wrap{padding:56px 80px;}}
+  /* Dropped INSIDE an article's text column (.col in the scroll templates,
+     .article-main in the TOC one) the column already supplies the gutter, so
+     the wrapper's own max-width and side padding would inset the gallery a
+     second time and leave it narrower than the copy beside it. Clear them
+     there and let the gallery span the column edge to edge. At page level
+     the wrapper keeps them, so it still lines up with the article's .wrap. */
+  .col .gallery-wrap,
+  .article-main .gallery-wrap{max-width:none;padding-left:0;padding-right:0;}
 
   /* ============ FLIP-CARD GALLERY — drop this block into any article ============ */
   .flip-grid{display:grid;grid-template-columns:1fr;gap:16px;}

@@ -10,6 +10,14 @@
   img{display:block;max-width:100%;}
   .gallery-wrap{max-width:1180px;margin:0 auto;padding:40px 24px;}
   @media(min-width:900px){.gallery-wrap{padding:56px 80px;}}
+  /* Dropped INSIDE an article's text column (.col in the scroll templates,
+     .article-main in the TOC one) the column already supplies the gutter, so
+     the wrapper's own max-width and side padding would inset the gallery a
+     second time and leave it narrower than the copy beside it. Clear them
+     there and let the gallery span the column edge to edge. At page level
+     the wrapper keeps them, so it still lines up with the article's .wrap. */
+  .col .gallery-wrap,
+  .article-main .gallery-wrap{max-width:none;padding-left:0;padding-right:0;}
 
   /* ============ ACCORDION GALLERY — drop this block into any article ============ */
   .accordion{
@@ -28,6 +36,17 @@
   .panel .cap .tag{display:inline-block;border:1px solid var(--blue);color:var(--blue);background:rgba(10,10,10,0.6);font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;margin-bottom:8px;}
   .panel .cap h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:var(--white);line-height:1.25;}
   .panel .cap p{margin-top:4px;font-size:12.5px;color:rgba(255,255,255,0.8);font-weight:300;}
+  .panel-empty{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;
+    background:repeating-linear-gradient(45deg, var(--black), var(--black) 8px, var(--surface) 8px, var(--surface) 16px);
+    color:var(--grey);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+    writing-mode:vertical-rl;
+  }
+  .accordion:not(:hover) .panel[data-default="true"] .panel-empty,
+  .panel:hover .panel-empty{writing-mode:horizontal-tb;}
+  @media(max-width:760px){
+    .panel-empty{writing-mode:horizontal-tb;}
+  }
   @media(max-width:760px){
     .accordion{flex-direction:column;height:auto;}
     .panel{flex:none !important;height:64px;transition:height .5s ease;}
