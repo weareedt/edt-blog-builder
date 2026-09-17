@@ -10,3 +10,4 @@ export const ping = onCall(() => {
 
 export { generateArticle } from './generateArticle';
 export { updateArticleOutput } from './updateArticleOutput';
+export { publishArticle, unpublishArticle } from './publishArticle';

@@ -8,7 +8,6 @@ import { templateRegistry, galleryRegistry } from './templates/generated/registr
 import { buildPrompt } from './prompt/buildPrompt';
 import { buildImageContentBlocks } from './prompt/visionBlocks';
 import {
-  countSections,
   repairArticleContent,
   reviewArticleContent,
   reviewGalleryContent,
@@ -19,18 +18,10 @@ import {
   ModelRefusalError,
 } from './anthropic/generateContent';
 import { ANTHROPIC_MODEL } from './anthropic/client';
-import { renderArticle } from './render/renderArticle';
 import { wrapDocument } from './render/wrapDocument';
 import { inlineImages, PayloadTooLargeError } from './render/inlineImages';
 import { slugify } from './render/slugify';
-import { renderVideoBlock, renderVideoStyles } from './render/videoBlock';
-import { placeInterlude, type PlacedInsert } from './render/spliceInserts';
-import { prepareTemplate01Context } from './templates/content/template01.prepareContext';
-import { prepareTemplate02Context } from './templates/content/template02.prepareContext';
-import { prepareTemplate03Context } from './templates/content/template03.prepareContext';
-import { prepareTemplate04Context } from './templates/content/template04.prepareContext';
-import { prepareGalleryAccordionContext } from './templates/content/galleryAccordion.prepareContext';
-import { prepareGalleryFlipcardsAlternatingContext } from './templates/content/galleryFlipcardsAlternating.prepareContext';
+import { renderFullArticle } from './render/renderFullArticle';
 import {
   buildGalleryContentFromImages,
   NotEnoughGalleryImagesError,
@@ -42,41 +33,6 @@ import type {
   TemplateId,
   GalleryId,
 } from './templates/types';
-
-// One entry per templateRegistry key, normalizing each template's own
-// prepareContext signature (they differ — template-03 takes no images,
-// the rest do) to a single shape generateArticle can call generically.
-// `content` is typed `any` here deliberately: each function already knows,
-// from its own schema import, exactly which shape it expects — the
-// generateArticle caller only ever supplies content that already parsed
-// against that same template's schema.
-const prepareContextByTemplateId: Record<
-  TemplateId,
-  (input: {
-    content: any;
-    imageSrcById: Record<string, string>;
-    galleryHtml: string | null;
-    inserts: PlacedInsert[];
-  }) => Record<string, unknown>
-> = {
-  'template-01-case-study-roundup': ({ content, imageSrcById, galleryHtml, inserts }) =>
-    prepareTemplate01Context({ content, imageSrcById, galleryHtml, inserts }),
-  'template-02-longform-numbered-steps': ({ content, imageSrcById, galleryHtml, inserts }) =>
-    prepareTemplate02Context({ content, imageSrcById, galleryHtml, inserts }),
-  'template-03-standard-article-toc': ({ content, galleryHtml, inserts }) =>
-    prepareTemplate03Context({ content, galleryHtml, inserts }),
-  'template-04-basic-scroll': ({ content, imageSrcById, galleryHtml, inserts }) =>
-    prepareTemplate04Context({ content, imageSrcById, galleryHtml, inserts }),
-};
-
-const prepareGalleryContextByGalleryId: Record<
-  GalleryId,
-  (input: { content: any; imageSrcById: Record<string, string> }) => Record<string, unknown>
-> = {
-  'gallery-accordion': ({ content, imageSrcById }) => prepareGalleryAccordionContext({ content, imageSrcById }),
-  'gallery-flipcards-alternating': ({ content, imageSrcById }) =>
-    prepareGalleryFlipcardsAlternatingContext({ content, imageSrcById }),
-};
 
 /** Templates with a dedicated hero photo slot (featureImage). */
 const TEMPLATES_WITH_HERO: TemplateId[] = ['template-02-longform-numbered-steps', 'template-04-basic-scroll'];
@@ -342,78 +298,19 @@ export const generateArticle = onCall(
       // body — both draw imageIds from the same uploaded article.images.
       const imageSrcById = article.images.length > 0 ? await inlineImages(article.images) : {};
 
-      let galleryHtml: string | null = null;
-      let resolvedGalleryPlacement: GalleryPlacement | null = null;
-
-      if (galleryEntry && galleryContent) {
-        const galleryContext = prepareGalleryContextByGalleryId[article.galleryId as GalleryId]({
-          content: galleryContent,
-          imageSrcById,
-        });
-        galleryHtml = renderArticle(galleryEntry.hbsSource, galleryContext);
-        // A selected gallery must render somewhere: if neither the user nor
-        // the model placed it, it goes mid-article rather than vanishing.
-        resolvedGalleryPlacement =
-          requestedPlacement ??
-          templateContent.galleryPlacement ??
-          (templateEntry.meta.supportedGalleryPlacements.includes('mid-article')
-            ? 'mid-article'
-            : templateEntry.meta.supportedGalleryPlacements[0]);
-      }
-
-      // ---- Inserts: videos and a between-sections gallery ----
-      // A fixed video placement is resolved here; 'auto' takes the section
-      // Claude chose, falling back to after the first section (e.g. fixture
-      // mode, whose example content never sets it). The video stylesheet
-      // rides along with the first video only — see renderVideoStyles.
-      const sectionCount = countSections(article.templateId, templateContent);
-      const inserts: PlacedInsert[] = [];
-      (article.videos ?? []).forEach((video) => {
-        const source =
-          video.kind === 'embed'
-            ? { kind: 'embed' as const, url: video.url }
-            : { kind: 'upload' as const, downloadUrl: video.downloadUrl, contentType: video.contentType };
-        const block = renderVideoBlock({
-          id: video.id,
-          source,
-          caption: video.caption,
-          eyebrow: templateContent.videoIntro?.eyebrow ?? null,
-          // A caption already explains the video; a line above it would only repeat it.
-          intro: video.caption ? null : (templateContent.videoIntro?.line ?? null),
-        });
-        if (!block) return;
-        const afterSection =
-          video.placement === 'after-intro'
-            ? 0
-            : video.placement === 'before-closing'
-              ? Number.MAX_SAFE_INTEGER
-              : placeInterlude(templateContent.videoAfterSection, sectionCount);
-        inserts.push({ html: inserts.length === 0 ? `${renderVideoStyles()}\n${block}` : block, afterSection });
-      });
-
-      let templateGalleryHtml = galleryHtml;
-      if (galleryHtml && resolvedGalleryPlacement === 'mid-article') {
-        let afterSection = placeInterlude(templateContent.galleryAfterSection, sectionCount);
-        // Don't stack the gallery directly against a video.
-        if (inserts.some((insert) => insert.afterSection === afterSection)) {
-          afterSection = afterSection < sectionCount ? afterSection + 1 : Math.max(0, afterSection - 1);
-        }
-        inserts.push({ html: galleryHtml, afterSection });
-        templateGalleryHtml = null;
-      }
-
-      const templateContext = prepareContextByTemplateId[article.templateId]({
-        // Safe: resolvedGalleryPlacement is only ever set to a value drawn
-        // from requestedPlacement (already checked against this template's
-        // supportedGalleryPlacements above), the model's own — Zod-validated
-        // against this same narrower enum — galleryPlacement, or a value
-        // taken from supportedGalleryPlacements itself.
-        content: { ...templateContent, galleryPlacement: resolvedGalleryPlacement },
+      // Rendering, gallery placement and video interludes all live in
+      // renderFullArticle, shared with publishArticle so the downloadable file
+      // and the published page can never drift apart. The only difference is
+      // imageSrcById: base64 here, Storage URLs there.
+      const { fragment, resolvedGalleryPlacement } = renderFullArticle({
+        templateId: article.templateId,
+        galleryId: article.galleryId,
+        templateContent,
+        galleryContent,
         imageSrcById,
-        galleryHtml: templateGalleryHtml,
-        inserts,
+        videos: article.videos ?? [],
+        requestedGalleryPlacement: requestedPlacement,
       });
-      const fragment = renderArticle(templateEntry.hbsSource, templateContext);
 
       const { title, dek } = templateContent;
       const doc = wrapDocument({ title, description: dek, bodyHtml: fragment });

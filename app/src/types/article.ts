@@ -108,6 +108,11 @@ export interface ArticleDoc {
   rootArticleId: string;
   regeneratedFromArticleId: string | null;
 
+  /** Publishing to the EDT site. Absent on docs that were never published. */
+  published?: boolean;
+  publishedSlug?: string | null;
+  publishedAt?: unknown;
+
   createdAt: unknown; // Firestore Timestamp — typed loosely to avoid an SDK-type import here
   updatedAt: unknown;
 }

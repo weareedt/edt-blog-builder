@@ -117,4 +117,36 @@ export interface ArticleDoc {
   // Lineage
   rootArticleId: string;
   regeneratedFromArticleId: string | null;
+
+  // Publishing to the EDT site. Absent on docs that were never published.
+  published?: boolean;
+  /** The URL it publishes under: weareedt.com/blog/<publishedSlug>. */
+  publishedSlug?: string | null;
+  publishedAt?: unknown;
+}
+
+/**
+ * One row of the EDT site's blog: everything /blog and /blog/<slug> need,
+ * denormalised so the site reads one collection and renders it directly.
+ * Written only by publishArticle.
+ */
+export interface PublishedArticleDoc {
+  slug: string;
+  /** The builder article this came from, so republishing overwrites in place. */
+  articleId: string;
+  title: string;
+  dek: string;
+  category: CategoryId;
+  readTimeMinutes: number | null;
+  /** Storage URL, for the feed card and social previews. */
+  coverImageUrl: string | null;
+  coverImageAlt: string | null;
+  templateId: TemplateId;
+  /** The article's own CSS, scoped to .edt-article (see buildPublishedArticle). */
+  styleCss: string;
+  /** The article markup, wrapped in .edt-article. No <style>, no <script>. */
+  bodyHtml: string;
+  publishedBy: string;
+  publishedAt: unknown;
+  updatedAt: unknown;
 }

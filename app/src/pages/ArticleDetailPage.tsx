@@ -8,9 +8,10 @@ import { useArticle } from '../lib/useArticle';
 import { useRegeneratedVersions } from '../lib/useRegeneratedVersions';
 import { regenerateArticle } from '../lib/regenerateArticle';
 import { updateArticleOutput } from '../lib/updateArticleOutput';
+import { publishArticle, unpublishArticle } from '../lib/publishArticle';
 import { StatusBadge } from '../components/StatusBadge';
 import { focusBlock, getBlocks, moveBlock, serializeBodyForSave, type BlockKind } from '../lib/articleBlocks';
-import type { ArticleErrorCode, TemplateId } from '../types/article';
+import type { ArticleDoc, ArticleErrorCode, TemplateId } from '../types/article';
 
 // One line of guidance per failure mode — the specific detail (e.g. the
 // actual payload size for PAYLOAD_TOO_LARGE) already lives in
@@ -139,6 +140,7 @@ export function ArticleDetailPage() {
                 {regenerating ? 'Creating…' : 'Regenerate as new version'}
               </button>
             </div>
+            <PublishControls article={article} />
             <ArticlePreview
               articleId={article.id}
               templateId={article.templateId}
@@ -147,6 +149,84 @@ export function ArticleDetailPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Publishing to the EDT site. The article keeps its own URL once published —
+ * republishing after an edit updates that page in place rather than making a
+ * second one — so the slug is only editable before the first publish.
+ */
+function PublishControls({ article }: { article: ArticleDoc }) {
+  const [slug, setSlug] = useState(article.publishedSlug ?? article.slug ?? '');
+  const [busy, setBusy] = useState<null | 'publish' | 'unpublish'>(null);
+  const [error, setError] = useState<string | null>(null);
+  const published = Boolean(article.published && article.publishedSlug);
+
+  async function run(action: 'publish' | 'unpublish') {
+    setBusy(action);
+    setError(null);
+    try {
+      if (action === 'publish') {
+        const result = await publishArticle(article.id, slug.trim() || undefined);
+        setSlug(result.slug);
+      } else {
+        await unpublishArticle(article.id);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `Could not ${action} this article.`);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="publish-box">
+      <div className="publish-box__head">
+        <span className="publish-box__label">EDT site</span>
+        <span className={`status-badge status-badge--${published ? 'ready' : 'draft'}`}>
+          {published ? 'Published' : 'Not published'}
+        </span>
+      </div>
+
+      <label className="field">
+        <span>Article URL</span>
+        <div className="publish-box__slug">
+          <span className="publish-box__prefix">weareedt.com/blog/</span>
+          <input
+            type="text"
+            value={slug}
+            disabled={published}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="a-hologram-that-answers-gate-questions"
+          />
+        </div>
+        <span className="field-hint">
+          {published
+            ? 'Published articles keep their URL. Publish again after an edit and this page updates in place.'
+            : 'Leave blank to use the title. Photos are re-published as image files, so the page loads far faster than the download.'}
+        </span>
+      </label>
+
+      {error && <p className="field-error">{error}</p>}
+
+      <div className="btn-row">
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => run('publish')}
+          disabled={busy !== null}
+        >
+          {busy === 'publish' ? 'Publishing…' : published ? 'Update published article' : 'Publish to the site'}
+          {busy === null && <span className="arrow">→</span>}
+        </button>
+        {published && (
+          <button type="button" className="btn" onClick={() => run('unpublish')} disabled={busy !== null}>
+            {busy === 'unpublish' ? 'Removing…' : 'Unpublish'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
