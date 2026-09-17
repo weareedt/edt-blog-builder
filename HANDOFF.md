@@ -56,29 +56,23 @@ plan. Without it, nothing server-side can deploy.
 real cost; Functions and Storage traffic for an internal tool of this size is
 small. There is no per-seat cost.
 
-### 3.2 Put the Anthropic API key in Firebase — **blocker, needs a small code change**
+### 3.2 Put the Anthropic API key in Firebase — **blocker**
 
 The key currently lives only in a local, git-ignored file
-(`functions/.env.local`). It has never been committed, and must not be.
+(`functions/.env.local`). It has never been committed, and must not be. Store
+it as a Firebase secret before deploying:
 
 ```bash
 firebase functions:secrets:set ANTHROPIC_API_KEY --project production
 ```
 
-⚠️ **Code change required alongside this.** The function reads
-`process.env.ANTHROPIC_API_KEY`, which works locally, but a deployed v2
-Cloud Function only receives a secret it explicitly declares. `generateArticle`
-does not declare it yet, so a deployed generation would fail with
-"ANTHROPIC_API_KEY is not set". The fix is one option on the function
-definition in `functions/src/generateArticle.ts`:
+Paste the key when prompted. That is the only step: the code side is already
+done — `generateArticle` declares `secrets: ['ANTHROPIC_API_KEY']`, which is
+what lets a deployed function actually receive it. Nothing changes locally;
+the emulator still reads the key from `functions/.env.local`.
 
-```ts
-export const generateArticle = onCall(
-  { timeoutSeconds: 540, memory: '1GiB', secrets: ['ANTHROPIC_API_KEY'] },
-  …
-```
-
-Ask the builder's author to make and test this change before you deploy.
+The same key is used for every article, so rotating it later is one
+`functions:secrets:set` plus a redeploy.
 
 ### 3.3 Deploy
 
@@ -232,5 +226,5 @@ on the UI for free.
 
 Anything about the builder, the publishing flow or the site files can go back
 to whoever maintains this repo. The two things worth settling early are
-**§3.2** (the API key code change, which blocks a working deploy) and **§3.4**
+**§3.2** (storing the API key, which blocks a working deploy) and **§3.4**
 (sign-in, which blocks sharing the URL).

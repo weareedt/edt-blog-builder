@@ -60,7 +60,17 @@ function mergeUsage(a: UsageTotals, b: UsageTotals): UsageTotals {
 }
 
 export const generateArticle = onCall(
-  { timeoutSeconds: 540, memory: '1GiB' },
+  {
+    timeoutSeconds: 540,
+    memory: '1GiB',
+    // Declared, not just set. A deployed v2 function only receives the
+    // secrets it names here — without this, getAnthropicClient() would throw
+    // "ANTHROPIC_API_KEY is not set" in production however carefully the
+    // secret was stored (`firebase functions:secrets:set ANTHROPIC_API_KEY`).
+    // Locally it changes nothing: the emulator keeps reading the key from
+    // functions/.env.local.
+    secrets: ['ANTHROPIC_API_KEY'],
+  },
   async (request) => {
     if (!request.auth) throw new HttpsError('unauthenticated', 'Sign-in required.');
     const { articleId } = (request.data ?? {}) as { articleId?: string };
